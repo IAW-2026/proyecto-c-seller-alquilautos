@@ -13,6 +13,17 @@ export function fmtDate(s: string | Date | null | undefined): string {
   return d.toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" });
 }
 
-export function fmtMoney(n: number | string): string {
-  return `$${Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+type Decimalish = { toNumber: () => number };
+type MoneyInput = number | string | Decimalish;
+
+export function fmtMoney(n: MoneyInput): string {
+  const num =
+    typeof n === "object" && n !== null && "toNumber" in n
+      ? n.toNumber()
+      : Number(n);
+
+  return `$${num.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }
