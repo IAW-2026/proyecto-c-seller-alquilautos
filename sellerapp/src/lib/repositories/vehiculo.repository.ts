@@ -15,3 +15,27 @@ export async function findVehiculosByPropietario(id_propietario: string) {
     where: { id_propietario },
   });
 }
+
+export async function createVehiculo(data: {
+  id_propietario: string;
+  marca: string;
+  modelo: string;
+  precio: number;
+  ubicacion: string;
+  fotos: string[];
+}) {
+  return db.vehiculo.create({ data });
+}
+
+export async function updateVehiculo(id: string, data: {
+  marca?: string;
+  modelo?: string;
+  precio?: number;
+  ubicacion?: string;
+  fotos?: string[];
+}) {
+  return db.vehiculo.update({
+    where: { id_vehiculo: id },
+    data,
+  });
+}
