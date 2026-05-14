@@ -42,9 +42,10 @@ export function Header({ onMenu }: HeaderProps) {
     try { localStorage.setItem("aa_theme", theme); } catch {}
   }, [theme]);
 
+  
   const resolved = theme === "system"
-    ? (window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-    : theme;
+  ? (typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+  : theme;
 
   const toggleTheme = () => setTheme(resolved === "dark" ? "light" : "dark");
 
