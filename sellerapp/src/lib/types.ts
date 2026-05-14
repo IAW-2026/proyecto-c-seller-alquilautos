@@ -1,3 +1,5 @@
+
+
 export interface Propietario {
   id_propietario: string;
   email: string;
@@ -13,7 +15,7 @@ export interface Vehiculo {
   id_propietario: string;
   marca: string;
   modelo: string;
-  precio: number | string;
+  precio: number | string | { toNumber: () => number };
   ubicacion: string;
   fotos: string[];
   createdAt?: Date;
