@@ -23,7 +23,11 @@ export function VehiculoCard({ vehiculo, readOnly = false }: VehiculoCardProps) 
           <div className="sub">{vehiculo.ubicacion}</div>
         </div>
         <div className="price">
-          {fmtMoney(vehiculo.precio)}
+          {fmtMoney(
+            typeof vehiculo.precio === "object" 
+              ? vehiculo.precio.toNumber() 
+              : vehiculo.precio
+          )}
           <small>/ día</small>
         </div>
       </div>
