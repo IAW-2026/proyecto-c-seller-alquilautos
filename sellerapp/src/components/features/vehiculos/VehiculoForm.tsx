@@ -19,6 +19,7 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
     precio: vehiculo?.precio?.toString() ?? "",
     ubicacion: vehiculo?.ubicacion ?? "",
     fotos: vehiculo?.fotos?.join(", ") ?? "",
+    estado: vehiculo?.estado ?? "Disponible",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -128,7 +129,23 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
             className="span-2"
           />
         </Field>
+
+        <Field label="Estado" htmlFor="estado">
+          <select
+            id="estado"
+            name="estado"
+            value={form.estado}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setForm(prev => ({ ...prev, estado: e.target.value as "Disponible" | "Alquilado" }))
+            }
+          >
+            <option value="Disponible">Disponible</option>
+            <option value="Alquilado">Alquilado</option>
+          </select>
+        </Field>
       </div>
+
+
 
       <div className="form-actions">
         <Button

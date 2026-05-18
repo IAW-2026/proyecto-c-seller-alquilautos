@@ -20,6 +20,7 @@ export interface Vehiculo {
   fotos: string[];
   createdAt?: Date;
   updatedAt?: Date;
+  estado?: "Disponible" | "Alquilado";
 }
 
 export interface Reserva {

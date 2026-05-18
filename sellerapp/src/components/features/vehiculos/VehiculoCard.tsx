@@ -16,6 +16,11 @@ export function VehiculoCard({ vehiculo, readOnly = false }: VehiculoCardProps) 
         {vehiculo.fotos && vehiculo.fotos[0]
           ? <img src={vehiculo.fotos[0]} alt={`${vehiculo.marca} ${vehiculo.modelo}`} />
           : <div className="photo-ph">[ foto del vehículo ]</div>}
+          {vehiculo.estado && (
+            <div className="status">
+              <StatusBadge estado={vehiculo.estado} />
+            </div>
+          )}
       </div>
       <div className="veh-body">
         <div>
