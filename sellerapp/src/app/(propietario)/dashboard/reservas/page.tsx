@@ -46,16 +46,31 @@ export default async function ReservasPage({
           <div className="sub">Gestioná las reservas de todos tus vehículos.</div>
         </div>
         <div className="tabs" role="tablist">
-          {ESTADOS.map(e => (
-            <Link
-              key={e}
-              href={`?estado=${e === "Todos" ? "" : e}&page=1`}
-              className={"tabs " + (estado === e || (e === "Todos" && !estado) ? "active" : "")}
-              role="tab"
-            >
-              {e}
-            </Link>
-          ))}
+          {ESTADOS.map(e => {
+            const isActive = estado === e || (e === "Todos" && !estado);
+            return (
+              <Link
+                key={e}
+                href={`?estado=${e === "Todos" ? "" : e}&page=1`}
+                role="tab"
+                style={{
+                  border: "none",
+                  background: isActive ? "var(--btn-primary-bg)" : "transparent",
+                  padding: "7px 14px",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  color: isActive ? "var(--btn-primary-text)" : "var(--text-secondary)",
+                  cursor: "pointer",
+                  textDecoration: "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                }}
+              >
+                {e}
+              </Link>
+            );
+          })}
         </div>
       </div>
 
