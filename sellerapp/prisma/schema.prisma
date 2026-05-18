@@ -30,12 +30,18 @@ model Vehiculo {
   precio         Decimal   @db.Decimal(10, 2)
   ubicacion      String
   fotos          String[]
+  estado         EstadoVehiculo @default(Disponible)
 
   propietario    Propietario @relation(fields: [id_propietario], references: [id_propietario])
   reservas       Reserva[]
 
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+enum EstadoVehiculo {
+  Disponible
+  Alquilado
 }
 
 model Reserva {
