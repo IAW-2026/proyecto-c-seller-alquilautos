@@ -27,8 +27,10 @@ export function Header({ onMenu }: HeaderProps) {
   const pathname = usePathname();
   const title = titleFor(pathname);
   const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     try {
       const saved = localStorage.getItem("aa_theme") as "light" | "dark" | "system" | null;
       if (saved) setTheme(saved);
@@ -36,16 +38,18 @@ export function Header({ onMenu }: HeaderProps) {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
     const root = document.documentElement;
     if (theme === "system") root.removeAttribute("data-theme");
     else root.setAttribute("data-theme", theme);
     try { localStorage.setItem("aa_theme", theme); } catch {}
-  }, [theme]);
+  }, [theme, mounted]);
 
-  
-  const resolved = theme === "system"
-  ? (typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-  : theme;
+  const resolved = !mounted
+    ? "light"
+    : theme === "system"
+    ? (window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : theme;
 
   const toggleTheme = () => setTheme(resolved === "dark" ? "light" : "dark");
 
