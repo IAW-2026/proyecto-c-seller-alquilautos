@@ -5,3 +5,14 @@ export async function findPropietarioById(id: string) {
     where: { id_propietario: id },
   });
 }
+
+export async function createPropietario(data: {
+  email: string;
+  nombre: string;
+  apellido: string;
+  fecha_nacimiento: Date;
+  dni: string;
+  direccion: string;
+}) {
+  return db.propietario.create({ data });
+}
