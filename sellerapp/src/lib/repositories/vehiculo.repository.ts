@@ -23,6 +23,7 @@ export async function createVehiculo(data: {
   precio: number;
   ubicacion: string;
   fotos: string[];
+  estado?: "Disponible" | "Alquilado";
 }) {
   return db.vehiculo.create({ data });
 }
@@ -33,6 +34,7 @@ export async function updateVehiculo(id: string, data: {
   precio?: number;
   ubicacion?: string;
   fotos?: string[];
+  estado?: "Disponible" | "Alquilado";
 }) {
   return db.vehiculo.update({
     where: { id_vehiculo: id },
