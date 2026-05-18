@@ -1,4 +1,4 @@
-import { findPropietarioById, createPropietario } from "@/lib/repositories/propietario.repository";
+import { findPropietarioById, createPropietario, updatePropietario } from "@/lib/repositories/propietario.repository";
 import type { OnboardingInput } from "@/lib/validators/propietario";
 
 export async function getPropietario(id: string) {
@@ -21,4 +21,23 @@ export async function registrarPropietario(email: string, input: OnboardingInput
     direccion: input.direccion,
   });
   return { data: propietario, error: null };
+}
+
+export async function actualizarPropietario(id: string, data: {
+  nombre?: string;
+  apellido?: string;
+  fecha_nacimiento?: string;
+  dni?: string;
+  direccion?: string;
+  email?: string;
+}) {
+  const existente = await findPropietarioById(id);
+  if (!existente) return { data: null, error: "Propietario no encontrado" };
+
+  const updated = await updatePropietario(id, {
+    ...data,
+    fecha_nacimiento: data.fecha_nacimiento ? new Date(data.fecha_nacimiento) : undefined,
+  });
+
+  return { data: updated, error: null };
 }

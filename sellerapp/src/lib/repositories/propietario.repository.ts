@@ -16,3 +16,17 @@ export async function createPropietario(data: {
 }) {
   return db.propietario.create({ data });
 }
+
+export async function updatePropietario(id: string, data: {
+  nombre?: string;
+  apellido?: string;
+  fecha_nacimiento?: Date;
+  dni?: string;
+  direccion?: string;
+  email?: string;
+}) {
+  return db.propietario.update({
+    where: { id_propietario: id },
+    data,
+  });
+}
