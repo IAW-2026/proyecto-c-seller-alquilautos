@@ -16,6 +16,8 @@ const NAV_PROPIETARIO: NavItem[] = [
   { to: "/dashboard", label: "Panel Principal", icon: "grid" },
   { to: "/dashboard/vehiculos", label: "Mi Flota", icon: "car" },
   { to: "/dashboard/reservas", label: "Reservas", icon: "calendar" },
+  { to: "/dashboard/ingresos", label: "Ingresos", icon: "money" },
+  { to: "/dashboard/configuracion", label: "Configuración", icon: "settings" },
 ];
 
 const NAV_ADMIN: NavItem[] = [
@@ -42,7 +44,7 @@ export function Sidebar({ open = false, onClose, isAdmin = false, userName, user
   const isActive = (to: string) =>
     pathname === to || (to !== "/dashboard" && to !== "/admin" && pathname.startsWith(to));
 
-  return (
+ return (
     <>
       {open && <div className="scrim" onClick={onClose} />}
       <aside className={"sidebar " + (open ? "open" : "")}>
@@ -63,14 +65,6 @@ export function Sidebar({ open = false, onClose, isAdmin = false, userName, user
             </Link>
           ))}
           <div style={{ flex: 1 }} />
-          <Link
-            href={isAdmin ? "/dashboard" : "/admin"}
-            onClick={onClose}
-            className="nav-link"
-          >
-            <Icon name={isAdmin ? "user" : "shield"} className="icon" />
-            <span>{isAdmin ? "Vista Propietario" : "Vista Admin"}</span>
-          </Link>
         </nav>
         <div className="sidebar-user">
           <div style={{ flex: 1 }}>
