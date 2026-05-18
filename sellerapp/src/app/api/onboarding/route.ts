@@ -12,6 +12,12 @@ export async function POST(req: Request) {
     }
 
     const metadata = sessionClaims?.publicMetadata as { role?: string; id_propietario?: string };
+    
+    // Si ya tiene rol y no es propietario → no puede hacer onboarding
+    if (metadata?.role && metadata.role !== "propietario") {
+      return NextResponse.json({ data: null, error: "No autorizado" }, { status: 403 });
+    }
+
     if (metadata?.id_propietario) {
       return NextResponse.json(
         {
@@ -50,7 +56,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ data: { id_propietario: propietario.id_propietario }, error: null }, { status: 201 });
     } catch (error: any) {
       if (error?.code === 'P2002') {
-        // Prisma te dice qué campo es el duplicado en error.meta.target
         const target = error.meta?.target;
         const campo = Array.isArray(target) ? target[0] : String(target ?? 'campo');
         
