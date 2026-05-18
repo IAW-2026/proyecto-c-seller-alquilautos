@@ -4,9 +4,7 @@ import { getPropietario } from "@/lib/services/propietario.service";
 import { getVehiculosByPropietario } from "@/lib/services/vehiculo.service";
 import { getReservasByPropietario } from "@/lib/services/reserva.service";
 import { MetricCard } from "@/components/ui/MetricCard";
-import { VehiculoCard } from "@/components/features/vehiculos/VehiculoCard";
-import { ReservaRow } from "@/components/features/reservas/ReservaRow";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { VehiculosGrid } from "@/components/features/vehiculos/VehiculosGrid";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
 
@@ -76,57 +74,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <div className="dash-grid">
-        <div>
-          <div className="section-head">
-            <h3>Reservas pendientes</h3>
-            {pendientes.length > 0 && (
-              <span className="counter">{pendientes.length}</span>
-            )}
-            <span className="spacer" />
-            <Link href="/dashboard/reservas">Ver todas</Link>
-          </div>
-          <div className="res-list">
-            {pendientes.length === 0 ? (
-              <EmptyState
-                icon="calendar"
-                title="Sin reservas pendientes"
-                message="No tenés reservas que requieran tu atención"
-              />
-            ) : (
-              pendientes.map(r => (
-                <ReservaRow key={r.id_reserva} reserva={r} />
-              ))
-            )}
-          </div>
-        </div>
-
-        <div>
-          <div className="section-head">
-            <h3>Mis vehículos</h3>
-            <span className="spacer" />
-            <Link href="/dashboard/vehiculos">Ver todos</Link>
-          </div>
-          {vehiculos.length === 0 ? (
-            <EmptyState
-              icon="car"
-              title="Sin vehículos"
-              message="Publicá tu primer vehículo"
-              action={
-                <Link href="/dashboard/vehiculos/nuevo" className="btn primary">
-                  <Icon name="plus" size={14} /> Publicar vehículo
-                </Link>
-              }
-            />
-          ) : (
-            <div className="veh-grid">
-              {vehiculos.slice(0, 3).map(v => (
-                <VehiculoCard key={v.id_vehiculo} vehiculo={v} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+      <VehiculosGrid vehiculos={vehiculos} />
     </div>
   );
 }
