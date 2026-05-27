@@ -2,7 +2,8 @@
 import { findVehiculoById } from "@/lib/repositories/vehiculo.repository";
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
-import { findReservaById, createReserva, updateReservaEstado, findReservasByPropietario } from "@/lib/repositories/reserva.repository";
+import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario } from "@/lib/repositories/reserva.repository";
+import { EstadoReserva } from "@prisma/client";
 
 function parseFecha(fecha: string): Date {
   const [dia, mes, anio] = fecha.split("-");
@@ -51,15 +52,19 @@ export async function crearReserva(input: CrearReservaInput) {
 
 
 
-export async function actualizarEstadoReserva(id: string, estado: "Aceptada" | "Rechazada") {
+export async function actualizarEstadoReserva(id: string, estado: EstadoReserva) {
   const reserva = await findReservaById(id);
   if (!reserva) return { data: null, error: "Reserva no encontrada" };
-  if (reserva.estado !== "Pendiente") return { data: null, error: "Solo se pueden modificar reservas pendientes" };
   const updated = await updateReservaEstado(id, estado);
   return { data: updated, error: null };
 }
 
 export async function getReservasByPropietario(id_propietario: string) {
   const reservas = await findReservasByPropietario(id_propietario);
+  return { data: { reservas }, error: null };
+}
+
+export async function getReservasByAlquilador(id_alquilador: string) {
+  const reservas = await findReservasByAlquilador(id_alquilador);
   return { data: { reservas }, error: null };
 }
