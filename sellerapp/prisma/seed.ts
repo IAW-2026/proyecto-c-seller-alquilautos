@@ -1,4 +1,3 @@
-
 import { PrismaClient } from "@prisma/client";
 import { PrismaNeon } from "@prisma/adapter-neon";
 import "dotenv/config";
@@ -34,9 +33,9 @@ async function main() {
       id_propietario: propietario1.id_propietario,
       marca: "Toyota",
       modelo: "Corolla",
+      anio: 2023,
       precio: 15000,
-      ubicacion: "Buenos Aires, Argentina",
-      fotos: ["https://example.com/fotos/corolla1.jpg", "https://example.com/fotos/corolla2.jpg"],
+      fotos: ["https://images.unsplash.com/photo-1623869675781-80aa31012a5a?w=900&q=80"],
     },
   });
 
@@ -45,9 +44,9 @@ async function main() {
       id_propietario: propietario1.id_propietario,
       marca: "Ford",
       modelo: "Focus",
+      anio: 2022,
       precio: 12000,
-      ubicacion: "Buenos Aires, Argentina",
-      fotos: ["https://example.com/fotos/focus1.jpg"],
+      fotos: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&q=80"],
     },
   });
 
@@ -56,9 +55,9 @@ async function main() {
       id_propietario: propietario2.id_propietario,
       marca: "Chevrolet",
       modelo: "Cruze",
+      anio: 2022,
       precio: 13500,
-      ubicacion: "Córdoba, Argentina",
-      fotos: ["https://example.com/fotos/cruze1.jpg"],
+      fotos: ["https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&q=80"],
     },
   });
 
@@ -67,9 +66,9 @@ async function main() {
       id_propietario: propietario2.id_propietario,
       marca: "Volkswagen",
       modelo: "Golf",
+      anio: 2021,
       precio: 18000,
-      ubicacion: "Rosario, Argentina",
-      fotos: ["https://example.com/fotos/golf1.jpg", "https://example.com/fotos/golf2.jpg"],
+      fotos: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=900&q=80"],
     },
   });
 
@@ -78,9 +77,9 @@ async function main() {
       id_propietario: propietario1.id_propietario,
       marca: "Honda",
       modelo: "Civic",
+      anio: 2023,
       precio: 16500,
-      ubicacion: "Buenos Aires, Argentina",
-      fotos: ["https://example.com/fotos/civic1.jpg"],
+      fotos: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=900&q=80"],
     },
   });
 
@@ -89,8 +88,8 @@ async function main() {
       id_vehiculo: vehiculo1.id_vehiculo,
       id_propietario: propietario1.id_propietario,
       id_alquilador: "alquilador_001",
-      fecha_inicio: new Date("2025-06-01"),
-      fecha_final: new Date("2025-06-07"),
+      fecha_inicio: new Date("2026-06-01"),
+      fecha_final: new Date("2026-06-07"),
       estado: "Pendiente",
     },
   });
@@ -100,8 +99,8 @@ async function main() {
       id_vehiculo: vehiculo2.id_vehiculo,
       id_propietario: propietario1.id_propietario,
       id_alquilador: "alquilador_002",
-      fecha_inicio: new Date("2025-06-10"),
-      fecha_final: new Date("2025-06-15"),
+      fecha_inicio: new Date("2026-06-10"),
+      fecha_final: new Date("2026-06-15"),
       estado: "Aceptada",
     },
   });
@@ -111,8 +110,8 @@ async function main() {
       id_vehiculo: vehiculo3.id_vehiculo,
       id_propietario: propietario2.id_propietario,
       id_alquilador: "alquilador_001",
-      fecha_inicio: new Date("2025-05-20"),
-      fecha_final: new Date("2025-05-25"),
+      fecha_inicio: new Date("2026-05-20"),
+      fecha_final: new Date("2026-05-25"),
       estado: "Rechazada",
     },
   });
@@ -122,9 +121,9 @@ async function main() {
       id_vehiculo: vehiculo5.id_vehiculo,
       id_propietario: propietario1.id_propietario,
       id_alquilador: "alquilador_003",
-      fecha_inicio: new Date("2025-07-01"),
-      fecha_final: new Date("2025-07-10"),
-      estado: "Pendiente",
+      fecha_inicio: new Date("2026-07-01"),
+      fecha_final: new Date("2026-07-10"),
+      estado: "Coordinada",
     },
   });
 

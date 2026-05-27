@@ -28,9 +28,10 @@ model Vehiculo {
   marca          String
   modelo         String
   precio         Decimal   @db.Decimal(10, 2)
-  ubicacion      String
+  anio           Int
   fotos          String[]
   estado         EstadoVehiculo @default(Disponible)
+  
 
   propietario    Propietario @relation(fields: [id_propietario], references: [id_propietario])
   reservas       Reserva[]
@@ -64,4 +65,9 @@ enum EstadoReserva {
   Pendiente
   Aceptada
   Rechazada
+  Coordinada
+  Pagada
+  Finalizada
+  Entregada
+  Cancelada
 }
