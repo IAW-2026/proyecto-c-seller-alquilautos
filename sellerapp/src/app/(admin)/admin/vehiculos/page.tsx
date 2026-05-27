@@ -102,6 +102,7 @@ export default async function AdminVehiculosPage({
                     </td>
                     <td>{v.propietario.nombre} {v.propietario.apellido}</td>
                     <td><strong className="text-primary-c">${Number(v.precio)}</strong></td>
+                    <td>{v.anio}</td>
                   </tr>
                 ))}
               </tbody>
