@@ -15,8 +15,8 @@ export interface Vehiculo {
   id_propietario: string;
   marca: string;
   modelo: string;
+  anio: number;
   precio: number | string | { toNumber: () => number };
-  ubicacion: string;
   fotos: string[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -30,7 +30,7 @@ export interface Reserva {
   id_alquilador: string;
   fecha_inicio: Date;
   fecha_final: Date;
-  estado: "Pendiente" | "Aceptada" | "Rechazada";
+  estado: "Pendiente" | "Aceptada" | "Rechazada" | "Coordinada" | "Pagada" | "Finalizada" | "Entregada" | "Cancelada";
 }
 
 export interface Alquilador {
