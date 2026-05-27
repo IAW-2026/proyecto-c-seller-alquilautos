@@ -17,7 +17,7 @@ export async function createReserva(data: {
   return db.reserva.create({ data });
 }
 
-export async function updateReservaEstado(id: string, estado: "Aceptada" | "Rechazada") {
+export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   return db.reserva.update({
     where: { id_reserva: id },
     data: { estado },
@@ -27,6 +27,13 @@ export async function updateReservaEstado(id: string, estado: "Aceptada" | "Rech
 export async function findReservasByPropietario(id_propietario: string) {
   return db.reserva.findMany({
     where: { id_propietario },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function findReservasByAlquilador(id_alquilador: string) {
+  return db.reserva.findMany({
+    where: { id_alquilador },
     orderBy: { createdAt: "desc" },
   });
 }

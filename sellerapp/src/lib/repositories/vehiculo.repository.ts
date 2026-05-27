@@ -20,8 +20,8 @@ export async function createVehiculo(data: {
   id_propietario: string;
   marca: string;
   modelo: string;
+  anio: number;
   precio: number;
-  ubicacion: string;
   fotos: string[];
   estado?: "Disponible" | "Alquilado";
 }) {
@@ -31,8 +31,8 @@ export async function createVehiculo(data: {
 export async function updateVehiculo(id: string, data: {
   marca?: string;
   modelo?: string;
+  anio?: number;
   precio?: number;
-  ubicacion?: string;
   fotos?: string[];
   estado?: "Disponible" | "Alquilado";
 }) {
