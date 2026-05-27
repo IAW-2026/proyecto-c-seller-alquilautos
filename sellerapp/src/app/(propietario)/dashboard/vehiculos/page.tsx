@@ -27,7 +27,7 @@ export default async function VehiculosPage({
 
   const filtered = todos.filter(v => {
     const s = q.toLowerCase();
-    return !s || `${v.marca} ${v.modelo}`.toLowerCase().includes(s) || v.ubicacion.toLowerCase().includes(s);
+    return !s || `${v.marca} ${v.modelo}`.toLowerCase().includes(s);
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
