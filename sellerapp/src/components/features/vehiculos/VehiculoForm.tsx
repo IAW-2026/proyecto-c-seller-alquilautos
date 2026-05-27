@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { crearVehiculoAction, actualizarVehiculoAction } from "@/lib/actions/vehiculo.actions";
 import type { Vehiculo } from "@/lib/types";
 
 interface VehiculoFormProps {
@@ -19,7 +20,7 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
     precio: vehiculo?.precio?.toString() ?? "",
     ubicacion: vehiculo?.ubicacion ?? "",
     fotos: vehiculo?.fotos?.join(", ") ?? "",
-    estado: vehiculo?.estado ?? "Disponible",
+    estado: (vehiculo?.estado ?? "Disponible") as "Disponible" | "Alquilado",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -40,24 +41,19 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
       precio: Number(form.precio),
       ubicacion: form.ubicacion,
       fotos: form.fotos.split(",").map(f => f.trim()).filter(Boolean),
+      estado: form.estado,
     };
 
-    const url = isEditing ? `/api/vehiculo/${vehiculo.id_vehiculo}` : "/api/vehiculo";
-    const method = isEditing ? "PATCH" : "POST";
+    const result = isEditing
+      ? await actualizarVehiculoAction(vehiculo.id_vehiculo, body)
+      : await crearVehiculoAction(body);
 
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const data = await res.json();
     setLoading(false);
 
-    if (data.error) {
-      if (typeof data.error === "object") {
+    if (result.error) {
+      if (typeof result.error === "object") {
         const fieldErrors: Record<string, string> = {};
-        Object.entries(data.error).forEach(([k, v]) => {
+        Object.entries(result.error).forEach(([k, v]) => {
           fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
         });
         setErrors(fieldErrors);
@@ -66,52 +62,25 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
     }
 
     router.push("/dashboard/vehiculos");
-    router.refresh();
   };
 
   return (
     <form onSubmit={handleSubmit} className="card-surface">
       <div className="form-grid">
         <Field label="Marca" error={errors.marca} htmlFor="marca">
-          <input
-            id="marca"
-            name="marca"
-            value={form.marca}
-            onChange={handleChange}
-            placeholder="Toyota"
-          />
+          <input id="marca" name="marca" value={form.marca} onChange={handleChange} placeholder="Toyota" />
         </Field>
 
         <Field label="Modelo" error={errors.modelo} htmlFor="modelo">
-          <input
-            id="modelo"
-            name="modelo"
-            value={form.modelo}
-            onChange={handleChange}
-            placeholder="Corolla"
-          />
+          <input id="modelo" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Corolla" />
         </Field>
 
         <Field label="Precio por día ($)" error={errors.precio} htmlFor="precio">
-          <input
-            id="precio"
-            name="precio"
-            type="number"
-            min="0"
-            value={form.precio}
-            onChange={handleChange}
-            placeholder="15000"
-          />
+          <input id="precio" name="precio" type="number" min="0" value={form.precio} onChange={handleChange} placeholder="15000" />
         </Field>
 
         <Field label="Ubicación" error={errors.ubicacion} htmlFor="ubicacion">
-          <input
-            id="ubicacion"
-            name="ubicacion"
-            value={form.ubicacion}
-            onChange={handleChange}
-            placeholder="Buenos Aires, Argentina"
-          />
+          <input id="ubicacion" name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Buenos Aires, Argentina" />
         </Field>
 
         <Field
@@ -125,8 +94,7 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
             name="fotos"
             value={form.fotos}
             onChange={handleChange}
-            placeholder="https://ejemplo.com/foto1.jpg, https://ejemplo.com/foto2.jpg"
-            className="span-2"
+            placeholder="https://ejemplo.com/foto1.jpg"
           />
         </Field>
 
@@ -145,14 +113,8 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
         </Field>
       </div>
 
-
-
       <div className="form-actions">
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => router.back()}
-        >
+        <Button type="button" variant="secondary" onClick={() => router.back()}>
           Cancelar
         </Button>
         <Button type="submit" variant="primary" disabled={loading}>

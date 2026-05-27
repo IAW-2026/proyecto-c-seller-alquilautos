@@ -26,3 +26,36 @@ export function ConfirmModal({ open, title, message, confirmLabel = "Confirmar",
     </div>
   );
 }
+
+interface DetalleModalProps {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}
+
+export function DetalleModal({ open, onClose, title, children }: DetalleModalProps) {
+  if (!open) return null;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        style={{ maxWidth: 560 }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h4 style={{ margin: 0 }}>{title}</h4>
+          <button
+            onClick={onClose}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", fontSize: 18 }}
+          >
+            ✕
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}

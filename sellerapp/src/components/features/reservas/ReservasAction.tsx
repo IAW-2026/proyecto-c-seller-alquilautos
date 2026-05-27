@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { ConfirmModal } from "@/components/ui/Modal";
 import { useToast } from "@/components/ui/Toast";
+import { aceptarReservaAction, rechazarReservaAction } from "@/lib/actions/reserva.actions";
 import type { Reserva } from "@/lib/types";
 
 interface ReservasActionsProps {
@@ -11,7 +11,6 @@ interface ReservasActionsProps {
 }
 
 export default function ReservasActions({ reserva }: ReservasActionsProps) {
-  const router = useRouter();
   const [confirm, setConfirm] = useState<"Aceptada" | "Rechazada" | null>(null);
   const [loading, setLoading] = useState(false);
   const [toast, showToast] = useToast();
@@ -19,20 +18,19 @@ export default function ReservasActions({ reserva }: ReservasActionsProps) {
   const handleConfirm = async () => {
     if (!confirm) return;
     setLoading(true);
-
-    const res = await fetch(`/api/reserva/${reserva.id_reserva}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: confirm }),
-    });
-
+    try {
+      if (confirm === "Aceptada") {
+        await aceptarReservaAction(reserva.id_reserva);
+        showToast("✓ Reserva aceptada");
+      } else {
+        await rechazarReservaAction(reserva.id_reserva);
+        showToast("Reserva rechazada");
+      }
+    } catch (e) {
+      showToast("Error al actualizar la reserva");
+    }
     setLoading(false);
     setConfirm(null);
-
-    if (res.ok) {
-      showToast(confirm === "Aceptada" ? "✓ Reserva aceptada" : "Reserva rechazada");
-      router.refresh();
-    }
   };
 
   return (
