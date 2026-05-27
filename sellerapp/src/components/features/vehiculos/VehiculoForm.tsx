@@ -17,8 +17,8 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
   const [form, setForm] = useState({
     marca: vehiculo?.marca ?? "",
     modelo: vehiculo?.modelo ?? "",
+    anio: vehiculo?.anio?.toString() ?? new Date().getFullYear().toString(),
     precio: vehiculo?.precio?.toString() ?? "",
-    ubicacion: vehiculo?.ubicacion ?? "",
     fotos: vehiculo?.fotos?.join(", ") ?? "",
     estado: (vehiculo?.estado ?? "Disponible") as "Disponible" | "Alquilado",
   });
@@ -38,8 +38,8 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
     const body = {
       marca: form.marca,
       modelo: form.modelo,
+      anio: Number(form.anio),
       precio: Number(form.precio),
-      ubicacion: form.ubicacion,
       fotos: form.fotos.split(",").map(f => f.trim()).filter(Boolean),
       estado: form.estado,
     };
@@ -75,16 +75,24 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
           <input id="modelo" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Corolla" />
         </Field>
 
+        <Field label="Año" error={errors.anio} htmlFor="anio">
+          <input
+            id="anio"
+            name="anio"
+            type="number"
+            min="1990"
+            max={new Date().getFullYear() + 1}
+            value={form.anio}
+            onChange={handleChange}
+          />
+        </Field>
+
         <Field label="Precio por día ($)" error={errors.precio} htmlFor="precio">
           <input id="precio" name="precio" type="number" min="0" value={form.precio} onChange={handleChange} placeholder="15000" />
         </Field>
 
-        <Field label="Ubicación" error={errors.ubicacion} htmlFor="ubicacion">
-          <input id="ubicacion" name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="Buenos Aires, Argentina" />
-        </Field>
-
         <Field
-          label="URLs de fotos (separadas por coma)"
+          label="Fotos (URLs separadas por coma)"
           error={errors.fotos}
           htmlFor="fotos"
           hint="Ingresá las URLs de las fotos separadas por coma"
@@ -94,7 +102,7 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
             name="fotos"
             value={form.fotos}
             onChange={handleChange}
-            placeholder="https://ejemplo.com/foto1.jpg"
+            placeholder="https://ejemplo.com/foto1.jpg, https://ejemplo.com/foto2.jpg"
           />
         </Field>
 

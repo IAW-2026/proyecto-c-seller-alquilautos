@@ -7,8 +7,8 @@ import { revalidatePath } from "next/cache";
 export async function crearVehiculoAction(formData: {
   marca: string;
   modelo: string;
+  anio: number;
   precio: number;
-  ubicacion: string;
   fotos: string[];
   estado: "Disponible" | "Alquilado";
 }) {
@@ -35,8 +35,8 @@ export async function crearVehiculoAction(formData: {
 export async function actualizarVehiculoAction(id: string, formData: {
   marca?: string;
   modelo?: string;
+  anio?: number;
   precio?: number;
-  ubicacion?: string;
   fotos?: string[];
   estado?: "Disponible" | "Alquilado";
 }) {
