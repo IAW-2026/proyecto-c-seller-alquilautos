@@ -18,3 +18,11 @@ export async function getEntrega(id: string) {
     direccion_entrega: "Av. Corrientes 1234, Buenos Aires",
   };
 }
+
+export async function getHorarioSeleccionado(id_reserva: string) {
+  return {
+    id_reserva,
+    hora_inicio: "10:00",
+    hora_fin: "18:00",
+  };
+}
