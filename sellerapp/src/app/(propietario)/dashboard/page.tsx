@@ -21,7 +21,10 @@ export default async function DashboardPage() {
     getReservasByPropietario(id_propietario),
   ]);
 
-  const vehiculos = vehiculosResult.data?.vehiculos ?? [];
+  const vehiculos = (vehiculosResult.data?.vehiculos ?? []).map(v => ({
+    ...v,
+    precio: Number(v.precio),
+  }));
   const reservas = reservasResult.data?.reservas ?? [];
   const pendientes = reservas.filter(r => r.estado === "Pendiente");
   const aceptadas = reservas.filter(r => r.estado === "Aceptada");

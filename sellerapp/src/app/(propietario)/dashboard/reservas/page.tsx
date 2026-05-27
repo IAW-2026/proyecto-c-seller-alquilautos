@@ -7,6 +7,9 @@ import { fmtDate, daysBetween } from "@/lib/utils";
 import { getAlquilador } from "@/lib/mocks/buyerApp";
 import ReservasActions from "@/components/features/reservas/ReservasAction";
 import Link from "next/link";
+import { ReservaDetalleModal } from "@/components/features/reservas/ReservaDetalleModal";
+import { getVehiculo } from "@/lib/services/vehiculo.service";
+import { getHorarioSeleccionado } from "@/lib/mocks/shippingApp";
 
 const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada"];
 const PAGE_SIZE = 8;
@@ -37,6 +40,32 @@ export default async function ReservasPage({
       alquiladoresMap[r.id_alquilador] = await getAlquilador(r.id_alquilador);
     })
   );
+
+  const estadosConHorario = ["Coordinada", "Pagada", "Finalizada", "Entregada"];
+
+const vehiculosMap: Record<string, { id_vehiculo: string; marca: string; modelo: string; precio: number }> = {};
+await Promise.all(
+  pageItems.map(async r => {
+    const result = await getVehiculo(r.id_vehiculo);
+    if (result.data) {
+      vehiculosMap[r.id_vehiculo] = {
+        ...result.data,
+        precio: Number(result.data.precio),
+      };
+    }
+  })
+);
+
+const horariosMap: Record<string, { hora_inicio: string; hora_fin: string } | null> = {};
+await Promise.all(
+  pageItems.map(async r => {
+    if (estadosConHorario.includes(r.estado)) {
+      horariosMap[r.id_reserva] = await getHorarioSeleccionado(r.id_reserva);
+    } else {
+      horariosMap[r.id_reserva] = null;
+    }
+  })
+);
 
   return (
     <div>
@@ -112,9 +141,12 @@ export default async function ReservasPage({
                     <td>{dias}</td>
                     <td><StatusBadge estado={r.estado} /></td>
                     <td style={{ textAlign: "right" }}>
-                      {r.estado === "Pendiente" && (
-                        <ReservasActions reserva={r} />
-                      )}
+                      <ReservaDetalleModal
+                        reserva={r}
+                        alquilador={alquiladoresMap[r.id_alquilador]}
+                        vehiculo={vehiculosMap[r.id_vehiculo]}
+                        horario={horariosMap[r.id_reserva]}
+                      />
                     </td>
                   </tr>
                 );
