@@ -11,7 +11,7 @@ import { ReservaDetalleModal } from "@/components/features/reservas/ReservaDetal
 import { getVehiculo } from "@/lib/services/vehiculo.service";
 import { getHorarioSeleccionado } from "@/lib/mocks/shippingApp";
 
-const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada"];
+const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada", "Coordinada", "Pagada", "Entregada", "Finalizada", "Cancelada"];
 const PAGE_SIZE = 8;
 
 export default async function ReservasPage({
@@ -56,7 +56,13 @@ await Promise.all(
   })
 );
 
-const horariosMap: Record<string, { hora_inicio: string; hora_fin: string } | null> = {};
+const horariosMap: Record<string, {
+  hora_inicio_entrega: string;
+  hora_fin_entrega: string;
+  hora_inicio_devolucion: string;
+  hora_fin_devolucion: string;
+} | null> = {};
+
 await Promise.all(
   pageItems.map(async r => {
     if (estadosConHorario.includes(r.estado)) {
