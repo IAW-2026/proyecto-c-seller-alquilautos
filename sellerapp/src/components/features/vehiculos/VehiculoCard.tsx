@@ -6,10 +6,9 @@ import type { Vehiculo } from "@/lib/types";
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
-  readOnly?: boolean;
 }
 
-export function VehiculoCard({ vehiculo, readOnly = false }: VehiculoCardProps) {
+export function VehiculoCard({ vehiculo }: VehiculoCardProps) {
   return (
     <article className="veh-card">
       <div className="veh-photo">
@@ -36,11 +35,9 @@ export function VehiculoCard({ vehiculo, readOnly = false }: VehiculoCardProps) 
         <span className="loc">
           <Icon name="car" size={14} /> {vehiculo.anio}
         </span>
-        {!readOnly && (
-          <Link href={`/dashboard/vehiculos/${vehiculo.id_vehiculo}/editar`}>
-            Ver detalles
-          </Link>
-        )}
+        <Link href={`/dashboard/vehiculos/${vehiculo.id_vehiculo}`} className="btn secondary sm">
+          Visitar
+        </Link>
       </div>
     </article>
   );

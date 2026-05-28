@@ -8,9 +8,10 @@ import type { Vehiculo } from "@/lib/types";
 
 interface VehiculoFormProps {
   vehiculo?: Vehiculo;
+  onSuccess?: () => void;
 }
 
-export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
+export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
   const router = useRouter();
   const isEditing = !!vehiculo;
 
@@ -61,7 +62,11 @@ export function VehiculoForm({ vehiculo }: VehiculoFormProps) {
       return;
     }
 
-    router.push("/dashboard/vehiculos");
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      router.push("/dashboard/vehiculos");
+    }
   };
 
   return (
