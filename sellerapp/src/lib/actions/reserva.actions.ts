@@ -2,8 +2,21 @@
 import { auth } from "@clerk/nextjs/server";
 import { actualizarEstadoReserva } from "@/lib/services/reserva.service";
 import { revalidatePath } from "next/cache";
+import { createEntrega  } from "@/lib/mocks/shippingApp";
 
-export async function aceptarReservaAction(id_reserva: string) {
+export async function aceptarReservaAction(
+  id_reserva: string,
+  horario: {
+    hora_inicio_entrega: string;
+    hora_fin_entrega: string;
+    hora_inicio_devolucion: string;
+    hora_fin_devolucion: string;
+  },
+  monto_pagar: number,
+  id_alquilador: string,
+  id_propietario: string,
+  id_vehiculo: string
+) {
   const { userId, sessionClaims } = await auth();
   if (!userId) throw new Error("No autorizado");
 
@@ -12,6 +25,14 @@ export async function aceptarReservaAction(id_reserva: string) {
 
   const result = await actualizarEstadoReserva(id_reserva, "Aceptada");
   if (result.error) throw new Error(result.error);
+
+  await createEntrega({
+    id_reserva,
+    id_vehiculo,
+    id_propietario,
+    id_alquilador,
+    ...horario,
+  });
 
   revalidatePath("/dashboard/reservas");
   revalidatePath("/dashboard");

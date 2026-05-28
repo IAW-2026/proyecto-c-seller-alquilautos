@@ -3,7 +3,6 @@ import { useState } from "react";
 import { DetalleModal } from "@/components/ui/Modal";
 import { StatusBadge } from "@/components/ui/Badge";
 import { fmtDate, daysBetween, fmtMoney } from "@/lib/utils";
-import { getHorarioSeleccionado } from "@/lib/mocks/shippingApp";
 import ReservasActions from "./ReservasAction";
 import type { Reserva } from "@/lib/types";
 
@@ -22,8 +21,11 @@ interface Vehiculo {
 }
 
 interface Horario {
-  hora_inicio: string;
-  hora_fin: string;
+  hora_inicio_entrega: string;
+  hora_fin_entrega: string;
+  hora_inicio_devolucion: string;
+  hora_fin_devolucion: string;
+
 }
 
 interface ReservaDetalleModalProps {
@@ -85,16 +87,24 @@ export function ReservaDetalleModal({ reserva, alquilador, vehiculo, horario }: 
           </div>
 
           {horario && (
-            <div style={{ borderTop: "1px solid var(--border-default)", paddingTop: 16 }}>
+             <div style={{ borderTop: "1px solid var(--border-default)", paddingTop: 16 }}>
               <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Horarios seleccionados</div>
               <div className="form-grid">
+                 <div className="field">
+                   <label>Entrega — desde</label>
+                   <div>{horario.hora_inicio_entrega}</div>
+                 </div>
                 <div className="field">
-                  <label>Hora de entrega</label>
-                  <div>{horario.hora_inicio}</div>
-                </div>
-                <div className="field">
-                  <label>Hora de devolución</label>
-                  <div>{horario.hora_fin}</div>
+                  <label>Entrega — hasta</label>
+                  <div>{horario.hora_fin_entrega}</div>
+                 </div>
+                 <div className="field">
+                  <label>Devolución — desde</label>
+                   <div>{horario.hora_inicio_devolucion}</div>
+                 </div>
+                 <div className="field">
+                   <label>Devolución — hasta</label>
+                   <div>{horario.hora_fin_devolucion}</div>
                 </div>
               </div>
             </div>
@@ -102,7 +112,7 @@ export function ReservaDetalleModal({ reserva, alquilador, vehiculo, horario }: 
 
           {reserva.estado === "Pendiente" && (
             <div style={{ borderTop: "1px solid var(--border-default)", paddingTop: 16 }}>
-              <ReservasActions reserva={reserva} />
+              <ReservasActions reserva={reserva} monto_pagar={total} />
             </div>
           )}
         </div>
