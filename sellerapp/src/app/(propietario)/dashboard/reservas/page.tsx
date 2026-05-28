@@ -10,6 +10,7 @@ import Link from "next/link";
 import { ReservaDetalleModal } from "@/components/features/reservas/ReservaDetalleModal";
 import { getVehiculo } from "@/lib/services/vehiculo.service";
 import { getHorarioSeleccionado } from "@/lib/mocks/shippingApp";
+import { ResenasModal } from "@/components/features/reservas/ResenasModal";
 
 const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada", "Coordinada", "Pagada", "Entregada", "Finalizada", "Cancelada"];
 const PAGE_SIZE = 8;
@@ -152,6 +153,13 @@ await Promise.all(
                           <ReservasActions
                             reserva={r}
                             monto_pagar={Number(vehiculosMap[r.id_vehiculo]?.precio ?? 0) * daysBetween(r.fecha_inicio, r.fecha_final)}
+                          />
+                        )}
+                        {r.estado === "Finalizada" && (
+                          <ResenasModal
+                            reserva={r}
+                            alquilador={alquiladoresMap[r.id_alquilador]}
+                            id_propietario={id_propietario}
                           />
                         )}
                         <ReservaDetalleModal
