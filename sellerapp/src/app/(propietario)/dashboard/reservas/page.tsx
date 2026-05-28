@@ -147,12 +147,20 @@ await Promise.all(
                     <td>{dias}</td>
                     <td><StatusBadge estado={r.estado} /></td>
                     <td style={{ textAlign: "right" }}>
-                      <ReservaDetalleModal
-                        reserva={r}
-                        alquilador={alquiladoresMap[r.id_alquilador]}
-                        vehiculo={vehiculosMap[r.id_vehiculo]}
-                        horario={horariosMap[r.id_reserva]}
-                      />
+                      <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", alignItems: "center" }}>
+                        {r.estado === "Pendiente" && (
+                          <ReservasActions
+                            reserva={r}
+                            monto_pagar={Number(vehiculosMap[r.id_vehiculo]?.precio ?? 0) * daysBetween(r.fecha_inicio, r.fecha_final)}
+                          />
+                        )}
+                        <ReservaDetalleModal
+                          reserva={r}
+                          alquilador={alquiladoresMap[r.id_alquilador]}
+                          vehiculo={vehiculosMap[r.id_vehiculo]}
+                          horario={horariosMap[r.id_reserva]}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );

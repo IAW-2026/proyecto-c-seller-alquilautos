@@ -110,11 +110,6 @@ export function ReservaDetalleModal({ reserva, alquilador, vehiculo, horario }: 
             </div>
           )}
 
-          {reserva.estado === "Pendiente" && (
-            <div style={{ borderTop: "1px solid var(--border-default)", paddingTop: 16 }}>
-              <ReservasActions reserva={reserva} monto_pagar={total} />
-            </div>
-          )}
         </div>
       </DetalleModal>
     </>
