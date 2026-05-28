@@ -55,6 +55,6 @@ export async function actualizarVehiculoAction(id: string, formData: {
   if (result.error) return { error: result.error };
 
   revalidatePath("/dashboard/vehiculos");
-  revalidatePath(`/dashboard/vehiculos/${id}/editar`);
+  revalidatePath(`/dashboard/vehiculos/${id}`);
   return { data: result.data };
 }
