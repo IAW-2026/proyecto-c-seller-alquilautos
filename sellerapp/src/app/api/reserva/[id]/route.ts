@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getReserva, actualizarEstadoReserva   } from "@/lib/services/reserva.service";
+import { getReserva, actualizarEstadoReserva, cancelarReserva, coordinarReserva    } from "@/lib/services/reserva.service";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { EstadoReserva } from "@prisma/client";
@@ -22,6 +22,10 @@ export async function GET(
   }
 }
 
+const patchSchema = z.object({
+  estado: z.nativeEnum(EstadoReserva),
+});
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -30,20 +34,43 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const schema = z.nativeEnum(EstadoReserva).exclude(["Pendiente"]);
-
-    const validation = schema.safeParse(body);
+    const validation = patchSchema.safeParse(body);
     if (!validation.success) {
-      return NextResponse.json({ data: null, error: validation.error.flatten().fieldErrors }, { status: 400 });
+      return NextResponse.json(
+        { data: null, error: validation.error.flatten().fieldErrors },
+        { status: 400 }
+      );
     }
 
-    const result = await actualizarEstadoReserva(id, validation.data);
+    const { estado } = validation.data;
+
+    if (estado === EstadoReserva.Cancelada) {
+      const result = await cancelarReserva(id);
+      if (result.error) {
+        return NextResponse.json({ data: null, error: result.error }, { status: 400 });
+      }
+      return NextResponse.json({ data: result.data, error: null }, { status: 200 });
+    }
+
+    if (estado === EstadoReserva.Coordinada) {
+      const result = await coordinarReserva(id);
+      if (result.error) {
+        return NextResponse.json({ data: null, error: result.error }, { status: 400 });
+      }
+      return NextResponse.json({ data: result.data, error: null }, { status: 200 });
+    }
+    
+
+    const result = await actualizarEstadoReserva(id, estado);
     if (result.error) {
       return NextResponse.json({ data: null, error: result.error }, { status: 404 });
     }
 
     return NextResponse.json({ data: result.data, error: null }, { status: 200 });
   } catch {
-    return NextResponse.json({ data: null, error: "Error interno del servidor" }, { status: 500 });
+    return NextResponse.json(
+      { data: null, error: "Error interno del servidor" },
+      { status: 500 }
+    );
   }
 }
