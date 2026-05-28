@@ -4,6 +4,8 @@ import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
 import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario } from "@/lib/repositories/reserva.repository";
 import { EstadoReserva } from "@prisma/client";
+import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
+import { iniciarPago } from "@/lib/mocks/paymentsApp";
 
 function parseFecha(fecha: string): Date {
   const [dia, mes, anio] = fecha.split("-");
@@ -67,4 +69,51 @@ export async function getReservasByPropietario(id_propietario: string) {
 export async function getReservasByAlquilador(id_alquilador: string) {
   const reservas = await findReservasByAlquilador(id_alquilador);
   return { data: { reservas }, error: null };
+}
+
+export async function cancelarReserva(id: string) {
+  const reserva = await findReservaById(id);
+  if (!reserva) return { data: null, error: "Reserva no encontrada" };
+
+  const estadosCancelables: EstadoReserva[] = [
+    EstadoReserva.Pendiente,
+    EstadoReserva.Aceptada,
+    EstadoReserva.Coordinada,
+  ];
+
+  if (!estadosCancelables.includes(reserva.estado)) {
+    return { data: null, error: "La reserva no puede cancelarse en su estado actual" };
+  }
+
+  await updateReservaEstado(id, EstadoReserva.Cancelada);
+
+  if (reserva.estado === EstadoReserva.Coordinada) {
+    await cancelarEntrega(id);
+  }
+
+  return { data: { id_reserva: id, estado: "Cancelada" }, error: null };
+}
+
+export async function coordinarReserva(id: string) {
+  const reserva = await findReservaById(id);
+  if (!reserva) return { data: null, error: "Reserva no encontrada" };
+
+  const vehiculo = await findVehiculoById(reserva.id_vehiculo);
+  if (!vehiculo) return { data: null, error: "Vehículo no encontrado" };
+
+  const dias = Math.ceil(
+    (reserva.fecha_final.getTime() - reserva.fecha_inicio.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const monto_pagar = Number(vehiculo.precio) * dias;
+
+  await updateReservaEstado(id, EstadoReserva.Coordinada);
+
+  await iniciarPago({
+    id_reserva: id,
+    id_alquilador: reserva.id_alquilador,
+    id_propietario: reserva.id_propietario,
+    monto_pagar,
+  });
+
+  return { data: { id_reserva: id, estado: "Coordinada" }, error: null };
 }
