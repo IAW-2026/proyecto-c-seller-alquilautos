@@ -2,56 +2,83 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ConfirmModal } from "@/components/ui/Modal";
+import { HorarioModal } from "./HorarioModal";
 import { useToast } from "@/components/ui/Toast";
 import { aceptarReservaAction, rechazarReservaAction } from "@/lib/actions/reserva.actions";
 import type { Reserva } from "@/lib/types";
 
 interface ReservasActionsProps {
   reserva: Reserva;
+  monto_pagar: number;
 }
 
-export default function ReservasActions({ reserva }: ReservasActionsProps) {
-  const [confirm, setConfirm] = useState<"Aceptada" | "Rechazada" | null>(null);
+export default function ReservasActions({ reserva, monto_pagar }: ReservasActionsProps) {
+  const [step, setStep] = useState<"idle" | "horario" | "rechazar">("idle");
   const [loading, setLoading] = useState(false);
   const [toast, showToast] = useToast();
 
-  const handleConfirm = async () => {
-    if (!confirm) return;
+  const handleAceptar = async (horario: {
+    hora_inicio_entrega: string;
+    hora_fin_entrega: string;
+    hora_inicio_devolucion: string;
+    hora_fin_devolucion: string;
+  }) => {
     setLoading(true);
     try {
-      if (confirm === "Aceptada") {
-        await aceptarReservaAction(reserva.id_reserva);
-        showToast("✓ Reserva aceptada");
-      } else {
-        await rechazarReservaAction(reserva.id_reserva);
-        showToast("Reserva rechazada");
-      }
-    } catch (e) {
-      showToast("Error al actualizar la reserva");
+      await aceptarReservaAction(
+        reserva.id_reserva,
+        horario,
+        monto_pagar,
+        reserva.id_alquilador,
+        reserva.id_propietario,
+        reserva.id_vehiculo
+      );
+      showToast("✓ Reserva aceptada");
+    } catch {
+      showToast("Error al aceptar la reserva");
     }
     setLoading(false);
-    setConfirm(null);
+    setStep("idle");
+  };
+
+  const handleRechazar = async () => {
+    setLoading(true);
+    try {
+      await rechazarReservaAction(reserva.id_reserva);
+      showToast("Reserva rechazada");
+    } catch {
+      showToast("Error al rechazar la reserva");
+    }
+    setLoading(false);
+    setStep("idle");
   };
 
   return (
     <>
       {toast}
       <div className="row" style={{ justifyContent: "flex-end" }}>
-        <Button variant="secondary" size="sm" onClick={() => setConfirm("Rechazada")}>
+        <Button variant="secondary" size="sm" onClick={() => setStep("rechazar")}>
           Rechazar
         </Button>
-        <Button variant="primary" size="sm" onClick={() => setConfirm("Aceptada")}>
+        <Button variant="primary" size="sm" onClick={() => setStep("horario")}>
           Aceptar
         </Button>
       </div>
+
+      <HorarioModal
+        open={step === "horario"}
+        onCancel={() => setStep("idle")}
+        onConfirm={handleAceptar}
+      />
+
       <ConfirmModal
-        open={!!confirm}
-        title={confirm === "Aceptada" ? "¿Aceptar esta reserva?" : "¿Rechazar esta reserva?"}
+        open={step === "rechazar"}
+        title="¿Rechazar esta reserva?"
         message={`Reserva del vehículo ${reserva.id_vehiculo}`}
-        confirmLabel={confirm === "Aceptada" ? "Aceptar" : "Rechazar"}
-        confirmVariant={confirm === "Aceptada" ? "primary" : "danger"}
-        onConfirm={handleConfirm}
-        onCancel={() => setConfirm(null)}
+        confirmLabel="Rechazar"
+        confirmVariant="danger"
+        onConfirm={handleRechazar}
+        onCancel={() => setStep("idle")}
       />
     </>
   );
