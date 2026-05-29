@@ -49,10 +49,7 @@ await Promise.all(
   pageItems.map(async r => {
     const result = await getVehiculo(r.id_vehiculo);
     if (result.data) {
-      vehiculosMap[r.id_vehiculo] = {
-        ...result.data,
-        precio: Number(result.data.precio),
-      };
+      vehiculosMap[r.id_vehiculo] = result.data;
     }
   })
 );

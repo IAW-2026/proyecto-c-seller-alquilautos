@@ -27,7 +27,7 @@ export default async function VehiculoDetallePage({
   const result = await getVehiculo(id);
   if (result.error || !result.data) notFound();
 
-  const vehiculo = { ...result.data, precio: Number(result.data.precio) };
+  const vehiculo = result.data;
 
   const [promedio, resumen, resenas] = await Promise.all([
     getPromedioVehiculo(id),
