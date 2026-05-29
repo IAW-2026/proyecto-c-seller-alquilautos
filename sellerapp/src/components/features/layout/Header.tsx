@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
+import { UserButton } from "@clerk/nextjs";
 
 const SECTION_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard del Propietario",
@@ -12,6 +13,7 @@ const SECTION_TITLES: Record<string, string> = {
   "/admin/propietarios": "Propietarios",
   "/admin/vehiculos": "Vehículos",
   "/admin/reservas": "Reservas",
+  "/dashboard/perfil": "Mi Perfil",
 };
 
 function titleFor(path: string): string {
@@ -78,7 +80,15 @@ export function Header({ onMenu }: HeaderProps) {
           <Icon name="help" />
         </button>
         <div className="divider" />
-        <div className="section-title">{title}</div>
+        <UserButton>
+          <UserButton.MenuItems>
+            <UserButton.Link
+              label="Mi perfil"
+              labelIcon={<Icon name="user" size={14} />}
+              href="/dashboard/perfil"
+            />
+          </UserButton.MenuItems>
+        </UserButton>
       </header>
     </>
   );

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import type { IconName } from "@/components/ui/Icon";
-import { useClerk } from "@clerk/nextjs";
 
 interface NavItem {
   to: string;
@@ -17,7 +16,6 @@ const NAV_PROPIETARIO: NavItem[] = [
   { to: "/dashboard/vehiculos", label: "Mi Flota", icon: "car" },
   { to: "/dashboard/reservas", label: "Reservas", icon: "calendar" },
   { to: "/dashboard/ingresos", label: "Ingresos", icon: "money" },
-  { to: "/dashboard/configuracion", label: "Configuración", icon: "settings" },
 ];
 
 const NAV_ADMIN: NavItem[] = [
@@ -38,7 +36,6 @@ interface SidebarProps {
 export function Sidebar({ open = false, onClose, isAdmin = false, userName, userRole }: SidebarProps) {
   const pathname = usePathname();
   const navItems = isAdmin ? NAV_ADMIN : NAV_PROPIETARIO;
-  const { signOut } = useClerk();
 
 
   const isActive = (to: string) =>
@@ -66,20 +63,6 @@ export function Sidebar({ open = false, onClose, isAdmin = false, userName, user
           ))}
           <div style={{ flex: 1 }} />
         </nav>
-        <div className="sidebar-user">
-          <div style={{ flex: 1 }}>
-            <div className="name">{userName ?? "Usuario"}</div>
-            <div className="role">{userRole ?? (isAdmin ? "Administrador" : "Propietario")}</div>
-          </div>
-          <button
-            className="icon-btn"
-            onClick={() => signOut({ redirectUrl: "/sign-in" })}
-            aria-label="Cerrar sesión"
-            title="Cerrar sesión"
-          >
-            <Icon name="x" size={16} />
-          </button>
-        </div>
       </aside>
     </>
   );
