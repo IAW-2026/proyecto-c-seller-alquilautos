@@ -7,9 +7,11 @@ import type { Propietario } from "@/lib/types";
 
 interface ConfiguracionFormProps {
   propietario: Propietario;
+  onSuccess?: () => void;
+  
 }
 
-export function ConfiguracionForm({ propietario }: ConfiguracionFormProps) {
+export function ConfiguracionForm({ propietario, onSuccess  }: ConfiguracionFormProps) {
   const router = useRouter();
   const [form, setForm] = useState({
     nombre: propietario.nombre,
@@ -55,6 +57,7 @@ export function ConfiguracionForm({ propietario }: ConfiguracionFormProps) {
 
     setSuccess(true);
     router.refresh();
+    if (onSuccess) onSuccess();
   };
 
   return (
