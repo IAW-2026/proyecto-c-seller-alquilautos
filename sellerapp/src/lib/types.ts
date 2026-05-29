@@ -16,10 +16,8 @@ export interface Vehiculo {
   marca: string;
   modelo: string;
   anio: number;
-  precio: number | string | { toNumber: () => number };
+  precio: number;
   fotos: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
   estado?: "Disponible" | "Alquilado";
 }
 
