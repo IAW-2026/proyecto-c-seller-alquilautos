@@ -56,7 +56,7 @@ export default async function VehiculoDetallePage({
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 24 }}>
+      <div className="vehiculo-detalle-grid">
         {/* COLUMNA IZQUIERDA */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", aspectRatio: "16/9", background: "var(--surface-raised)" }}>
@@ -115,10 +115,10 @@ export default async function VehiculoDetallePage({
                 <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>Página {page} de {totalPages}</span>
                    <div style={{ display: "flex", gap: 8 }}>
                    {page > 1 && (
-                       <Link href={`?page=${page - 1}`} className="btn secondary sm">Anterior</Link>
+                       <Link href={`?page=${page - 1}`} className="btn secondary sm" scroll={false}>Anterior</Link>
                   )}
                   {page < totalPages && (
-                       <Link href={`?page=${page + 1}`} className="btn secondary sm">Siguiente</Link>
+                        <Link href={`?page=${page + 1}`} className="btn secondary sm" scroll={false}>Siguiente</Link>
                   )}
                   </div>
             </div>
