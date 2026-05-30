@@ -35,7 +35,7 @@ export function VehiculoCard({ vehiculo }: VehiculoCardProps) {
         <span className="loc">
           <Icon name="car" size={14} /> {vehiculo.anio}
         </span>
-        <Link href={`/dashboard/vehiculos/${vehiculo.id_vehiculo}`} className="btn secondary sm">
+        <Link href={`/dashboard/vehiculos/${vehiculo.id_vehiculo}`} className="btn primary sm">
           Visitar
         </Link>
       </div>
