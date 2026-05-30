@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "./Button";
+import { useEffect } from "react";
 
 interface ConfirmModalProps {
   open: boolean;
@@ -12,7 +13,19 @@ interface ConfirmModalProps {
 }
 
 export function ConfirmModal({ open, title, message, confirmLabel = "Confirmar", confirmVariant = "primary", onConfirm, onCancel }: ConfirmModalProps) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   if (!open) return null;
+
   return (
     <div className="modal-backdrop" onClick={onCancel}>
       <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="modal-t">
@@ -35,7 +48,19 @@ interface DetalleModalProps {
 }
 
 export function DetalleModal({ open, onClose, title, children }: DetalleModalProps) {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+  
   if (!open) return null;
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div
