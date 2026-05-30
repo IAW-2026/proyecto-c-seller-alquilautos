@@ -20,23 +20,23 @@ export default async function IngresosPage() {
   const reservas = reservasResult.data?.reservas ?? [];
   const vehiculos = vehiculosResult.data?.vehiculos ?? [];
 
-  const aceptadas = reservas.filter(r => r.estado === "Aceptada");
+  const finalizadas = reservas.filter(r => r.estado === "Finalizada");
 
   const vehiculosMap = Object.fromEntries(
     vehiculos.map(v => [v.id_vehiculo, v])
   );
 
-  const totalMes = aceptadas.reduce((sum, r) => {
+  const totalMes = finalizadas.reduce((sum, r) => {
     const v = vehiculosMap[r.id_vehiculo];
     const dias = daysBetween(r.fecha_inicio, r.fecha_final);
     return sum + (v ? Number(v.precio) * dias : 0);
   }, 0);
 
-  const ticketPromedio = aceptadas.length > 0 ? totalMes / aceptadas.length : 0;
+  const ticketPromedio = finalizadas.length > 0 ? totalMes / finalizadas.length : 0;
 
   const alquiladoresMap: Record<string, Awaited<ReturnType<typeof getAlquilador>>> = {};
   await Promise.all(
-    aceptadas.map(async r => {
+    finalizadas.map(async r => {
       alquiladoresMap[r.id_alquilador] = await getAlquilador(r.id_alquilador);
     })
   );
@@ -54,14 +54,13 @@ export default async function IngresosPage() {
         <div className="kpi">
           <div className="label">Total del mes</div>
           <div className="value">{fmtMoney(totalMes)}</div>
-          <div className="delta">+12.5% vs mes anterior</div>
         </div>
         <div className="kpi">
-          <div className="label">Reservas pagas</div>
-          <div className="value">{aceptadas.length}</div>
+          <div className="label">Reservas finalizadas</div>
+          <div className="value">{finalizadas.length}</div>
         </div>
         <div className="kpi">
-          <div className="label">Ticket promedio</div>
+          <div className="label">Precio promedio</div>
           <div className="value">{fmtMoney(ticketPromedio)}</div>
         </div>
       </div>
@@ -82,7 +81,7 @@ export default async function IngresosPage() {
             </tr>
           </thead>
           <tbody>
-            {aceptadas.map(r => {
+            {finalizadas.map(r => {
               const v = vehiculosMap[r.id_vehiculo];
               const al = alquiladoresMap[r.id_alquilador];
               const dias = daysBetween(r.fecha_inicio, r.fecha_final);
@@ -97,7 +96,7 @@ export default async function IngresosPage() {
                 </tr>
               );
             })}
-            {aceptadas.length === 0 && (
+            {finalizadas.length === 0 && (
               <tr>
                 <td colSpan={5} style={{ textAlign: "center", color: "var(--text-secondary)", padding: 32 }}>
                   No hay ingresos registrados todavía.
