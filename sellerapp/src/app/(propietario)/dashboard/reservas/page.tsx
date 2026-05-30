@@ -11,6 +11,7 @@ import { ReservaDetalleModal } from "@/components/features/reservas/ReservaDetal
 import { getVehiculo } from "@/lib/services/vehiculo.service";
 import { getHorarioSeleccionado } from "@/lib/mocks/shippingApp";
 import { ResenasModal } from "@/components/features/reservas/ResenasModal";
+import { EstadoFiltro } from "@/components/features/reservas/EstadoFiltro";
 
 const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada", "Coordinada", "Pagada", "Entregada", "Finalizada", "Cancelada"];
 const PAGE_SIZE = 8;
@@ -78,33 +79,7 @@ await Promise.all(
           <h2>Reservas</h2>
           <div className="sub">Gestioná las reservas de todos tus vehículos.</div>
         </div>
-        <div className="tabs" role="tablist">
-          {ESTADOS.map(e => {
-            const isActive = estado === e || (e === "Todos" && !estado);
-            return (
-              <Link
-                key={e}
-                href={`?estado=${e === "Todos" ? "" : e}&page=1`}
-                role="tab"
-                style={{
-                  border: "none",
-                  background: isActive ? "var(--btn-primary-bg)" : "transparent",
-                  padding: "7px 14px",
-                  borderRadius: "var(--radius-full)",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  color: isActive ? "var(--btn-primary-text)" : "var(--text-secondary)",
-                  cursor: "pointer",
-                  textDecoration: "none",
-                  display: "inline-flex",
-                  alignItems: "center",
-                }}
-              >
-                {e}
-              </Link>
-            );
-          })}
-        </div>
+        <EstadoFiltro estadoActual={estado} />
       </div>
 
       <div className="table-wrap">
