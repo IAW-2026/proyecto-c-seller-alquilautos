@@ -115,7 +115,11 @@ await Promise.all(
                         </div>
                       </div>
                     </td>
-                    <td>{r.id_vehiculo}</td>
+                    <td>
+                      {vehiculosMap[r.id_vehiculo]
+                        ? `${vehiculosMap[r.id_vehiculo].marca} ${vehiculosMap[r.id_vehiculo].modelo}`
+                        : r.id_vehiculo}
+                    </td>
                     <td>{fmtDate(r.fecha_inicio)} → {fmtDate(r.fecha_final)}</td>
                     <td>{dias}</td>
                     <td><StatusBadge estado={r.estado} /></td>
