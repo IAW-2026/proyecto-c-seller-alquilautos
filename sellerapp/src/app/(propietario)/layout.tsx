@@ -17,7 +17,7 @@ export default function PropietarioLayout({
         onClose={() => setSidebarOpen(false)}
         isAdmin={false}
       />
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", minWidth: 0 }}>
         <Header onMenu={() => setSidebarOpen(true)} />
         <main className="page">{children}</main>
       </div>
