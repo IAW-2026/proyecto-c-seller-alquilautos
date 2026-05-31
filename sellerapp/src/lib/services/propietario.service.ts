@@ -8,7 +8,13 @@ export async function getPropietario(id: string) {
     return { data: null, error: "Propietario no encontrado" };
   }
 
-  return { data: propietario, error: null };
+  return { 
+    data: { 
+      ...propietario, 
+      telefono: propietario.telefono ?? undefined 
+    }, 
+    error: null 
+  };
 }
 
 export async function registrarPropietario(email: string, input: OnboardingInput) {
