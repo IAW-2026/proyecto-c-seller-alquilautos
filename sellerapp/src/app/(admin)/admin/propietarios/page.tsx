@@ -5,6 +5,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 
 const PAGE_SIZE = 8;
+const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
+const tdClass   = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle last:border-b-0";
+const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms]";
 
 export default async function AdminPropietariosPage({
   searchParams,
@@ -22,10 +25,10 @@ export default async function AdminPropietariosPage({
 
   const where = q ? {
     OR: [
-      { nombre: { contains: q, mode: "insensitive" as const } },
+      { nombre:   { contains: q, mode: "insensitive" as const } },
       { apellido: { contains: q, mode: "insensitive" as const } },
-      { email: { contains: q, mode: "insensitive" as const } },
-      { dni: { contains: q, mode: "insensitive" as const } },
+      { email:    { contains: q, mode: "insensitive" as const } },
+      { dni:      { contains: q, mode: "insensitive" as const } },
     ]
   } : {};
 
@@ -44,74 +47,65 @@ export default async function AdminPropietariosPage({
 
   return (
     <div>
-      <div className="page-header">
+      {/* Page header */}
+      <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>
-          <h2>Propietarios</h2>
-          <div className="sub">{total} registro{total === 1 ? "" : "s"} en total</div>
+          <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Propietarios</h2>
+          <div className="text-[13px] text-[var(--text-secondary)] mt-1">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
       </div>
-        <div className="table-toolbar" style={{ background: "var(--bg-surface)", border: "1px solid var(--border-default)", borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",borderBottom: "none"}}>
+
+      {/* Toolbar + table */}
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)]">
+        <div className="flex gap-3 items-center px-4 py-[14px] border-b border-[var(--border-default)] flex-wrap">
           <form>
             <input
-              type="search"
-              name="q"
-              defaultValue={q}
+              type="search" name="q" defaultValue={q}
               placeholder="Buscar por nombre, email o DNI..."
               aria-label="Buscar propietarios"
+              className="border border-[var(--border-default)] bg-[var(--bg-page)] text-[var(--text-primary)] px-3 py-2 rounded-[var(--radius-md)] text-[13px] font-[inherit] outline-none min-w-[240px]"
             />
           </form>
-          <div className="right">
-            <span className="text-secondary">{total} resultados</span>
+          <div className="ml-auto">
+            <span className="text-[var(--text-secondary)] text-[13px]">{total} resultados</span>
           </div>
         </div>
-      <div className="table-wrap" style={{ borderRadius: "0 0 var(--radius-lg) var(--radius-lg)" }}>
+
         {propietarios.length === 0 ? (
-          <EmptyState
-            icon="user"
-            title="Sin resultados"
-            message="No encontramos propietarios con ese criterio."
-          />
+          <EmptyState icon="user" title="Sin resultados" message="No encontramos propietarios con ese criterio." />
         ) : (
           <>
-            <table className="data">
-              <thead>
-                <tr>
-                  <th>Propietario</th>
-                  <th>Email</th>
-                  <th>DNI</th>
-                  <th>Dirección</th>
-                  <th>Vehículos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {propietarios.map(o => (
-                  <tr key={o.id_propietario}>
-                    <td>
-                      <div className="cell-user">
-                        <div>
-                          <div className="name">{o.nombre} {o.apellido}</div>
-                          <div className="sub text-secondary">ID {o.id_propietario}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td>{o.email}</td>
-                    <td>{o.dni}</td>
-                    <td>{o.direccion}</td>
-                    <td><strong>{o._count.vehiculos}</strong></td>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse max-[900px]:min-w-[700px]">
+                <thead>
+                  <tr>
+                    {["Propietario", "Email", "DNI", "Dirección", "Vehículos"].map(h => (
+                      <th key={h} className={thClass}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {propietarios.map(o => (
+                    <tr key={o.id_propietario} className="hover:[&>td]:bg-[color-mix(in_srgb,var(--color-primary-400)_4%,transparent)]">
+                      <td className={tdClass}>
+                        <div className="font-semibold text-[var(--text-primary)]">{o.nombre} {o.apellido}</div>
+                        <div className="text-[11px] text-[var(--text-secondary)]">ID {o.id_propietario}</div>
+                      </td>
+                      <td className={tdClass}>{o.email}</td>
+                      <td className={tdClass}>{o.dni}</td>
+                      <td className={tdClass}>{o.direccion}</td>
+                      <td className={tdClass}><strong>{o._count.vehiculos}</strong></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {totalPages > 1 && (
-              <div className="pagination">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-default)] text-[12px] text-[var(--text-secondary)] bg-[var(--bg-page)]">
                 <span>Página {page} de {totalPages}</span>
-                <div className="pages">
-                  {page > 1 && (
-                    <Link href={`?q=${q}&page=${page - 1}`} className="btn secondary sm">Anterior</Link>
-                  )}
-                  {page < totalPages && (
-                    <Link href={`?q=${q}&page=${page + 1}`} className="btn secondary sm">Siguiente</Link>
-                  )}
+                <div className="flex gap-2">
+                  {page > 1        && <Link href={`?q=${q}&page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
+                  {page < totalPages && <Link href={`?q=${q}&page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
                 </div>
               </div>
             )}

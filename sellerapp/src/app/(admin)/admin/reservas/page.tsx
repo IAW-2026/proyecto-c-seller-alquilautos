@@ -8,8 +8,10 @@ import Link from "next/link";
 import { EstadoFiltro } from "@/components/features/reservas/EstadoFiltro";
 import { EstadoReserva } from "@prisma/client";
 
-const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada"];
 const PAGE_SIZE = 8;
+const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
+const tdClass   = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle last:border-b-0";
+const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms]";
 
 export default async function AdminReservasPage({
   searchParams,
@@ -33,10 +35,7 @@ export default async function AdminReservasPage({
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
       orderBy: { createdAt: "desc" },
-      include: {
-        vehiculo: true,
-        propietario: true,
-      },
+      include: { vehiculo: true, propietario: true },
     }),
     db.reserva.count({ where }),
   ]);
@@ -45,15 +44,17 @@ export default async function AdminReservasPage({
 
   return (
     <div>
-      <div className="page-header">
+      {/* Page header */}
+      <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>
-          <h2>Reservas</h2>
-          <div className="sub">{total} registro{total === 1 ? "" : "s"} en total</div>
+          <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Reservas</h2>
+          <div className="text-[13px] text-[var(--text-secondary)] mt-1">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
         <EstadoFiltro estadoActual={estado} />
       </div>
 
-      <div className="table-wrap">
+      {/* Table */}
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)]">
         {reservas.length === 0 ? (
           <EmptyState
             icon="calendar"
@@ -62,40 +63,35 @@ export default async function AdminReservasPage({
           />
         ) : (
           <>
-            <table className="data">
-              <thead>
-                <tr>
-                  <th>ID Alquilador</th>
-                  <th>Vehículo</th>
-                  <th>Propietario</th>
-                  <th>Fechas</th>
-                  <th>Días</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reservas.map(r => (
-                  <tr key={r.id_reserva}>
-                    <td>{r.id_alquilador}</td>
-                    <td>{r.vehiculo.marca} {r.vehiculo.modelo}</td>
-                    <td>{r.propietario.nombre} {r.propietario.apellido}</td>
-                    <td>{fmtDate(r.fecha_inicio)} → {fmtDate(r.fecha_final)}</td>
-                    <td>{daysBetween(r.fecha_inicio, r.fecha_final)}</td>
-                    <td><StatusBadge estado={r.estado} /></td>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse max-[900px]:min-w-[700px]">
+                <thead>
+                  <tr>
+                    {["ID Alquilador", "Vehículo", "Propietario", "Fechas", "Días", "Estado"].map(h => (
+                      <th key={h} className={thClass}>{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {reservas.map(r => (
+                    <tr key={r.id_reserva} className="hover:[&>td]:bg-[color-mix(in_srgb,var(--color-primary-400)_4%,transparent)]">
+                      <td className={tdClass}>{r.id_alquilador}</td>
+                      <td className={tdClass}>{r.vehiculo.marca} {r.vehiculo.modelo}</td>
+                      <td className={tdClass}>{r.propietario.nombre} {r.propietario.apellido}</td>
+                      <td className={tdClass}>{fmtDate(r.fecha_inicio)} → {fmtDate(r.fecha_final)}</td>
+                      <td className={tdClass}>{daysBetween(r.fecha_inicio, r.fecha_final)}</td>
+                      <td className={tdClass}><StatusBadge estado={r.estado} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {totalPages > 1 && (
-              <div className="pagination">
+              <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-default)] text-[12px] text-[var(--text-secondary)] bg-[var(--bg-page)]">
                 <span>Página {page} de {totalPages}</span>
-                <div className="pages">
-                  {page > 1 && (
-                    <Link href={`?estado=${estado}&page=${page - 1}`} className="btn secondary sm">Anterior</Link>
-                  )}
-                  {page < totalPages && (
-                    <Link href={`?estado=${estado}&page=${page + 1}`} className="btn secondary sm">Siguiente</Link>
-                  )}
+                <div className="flex gap-2">
+                  {page > 1          && <Link href={`?estado=${estado}&page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
+                  {page < totalPages && <Link href={`?estado=${estado}&page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
                 </div>
               </div>
             )}
