@@ -5,6 +5,10 @@ import { getResumenPropietario, getResenasPropietario, getPromedioPropietario } 
 import { EditarPerfilModal } from "@/components/features/configuracion/EditarPerfilModal";
 import { fmtDate } from "@/lib/utils";
 
+const cardClass  = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-6 shadow-[var(--shadow-sm)]";
+const labelClass = "text-[12px] font-semibold text-[var(--text-secondary)]";
+const fieldClass = "flex flex-col gap-[4px]";
+
 export default async function ConfiguracionPage() {
   const { userId, sessionClaims } = await auth();
   if (!userId) redirect("/sign-in");
@@ -14,7 +18,6 @@ export default async function ConfiguracionPage() {
 
   const result = await getPropietario(id_propietario);
   if (result.error || !result.data) redirect("/dashboard");
-
   const propietario = result.data;
 
   const [promedio, resumen, resenas] = await Promise.all([
@@ -24,58 +27,66 @@ export default async function ConfiguracionPage() {
   ]);
 
   return (
-    <div style={{ maxWidth: 1100 }}>
-      <div className="page-header">
+    <div className="max-w-[1100px]">
+      {/* Page header */}
+      <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>
-          <h2>Mi perfil</h2>
-          <div className="sub">Tus datos personales en AlquilAutos</div>
+          <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Mi perfil</h2>
+          <div className="text-[13px] text-[var(--text-secondary)] mt-1">Tus datos personales en AlquilAutos</div>
         </div>
         <EditarPerfilModal propietario={propietario} />
       </div>
 
-      <div className="vehiculo-detalle-grid">
-        {/* COLUMNA IZQUIERDA */}
-        <div className="card-surface">
-          <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 16 }}>Información personal</div>
-          <div className="form-grid">
-            <div className="field"><label>Nombre</label><div>{propietario.nombre}</div></div>
-            <div className="field"><label>Apellido</label><div>{propietario.apellido}</div></div>
-            <div className="field"><label>Email</label><div>{propietario.email}</div></div>
-            <div className="field"><label>DNI</label><div>{propietario.dni}</div></div>
-            <div className="field"><label>Fecha de nacimiento</label><div>{fmtDate(propietario.fecha_nacimiento)}</div></div>
-            <div className="field"><label>Dirección</label><div>{propietario.direccion}</div></div>
-            <div className="field"><label>Teléfono</label><div>{propietario.telefono ?? "No especificado"}</div></div>
+      {/* Detail grid */}
+      <div className="grid grid-cols-[1fr_380px] gap-6 max-[900px]:grid-cols-1">
+
+        {/* Columna izquierda */}
+        <div className={cardClass}>
+          <div className="text-[13px] font-bold mb-4 text-[var(--text-primary)]">Información personal</div>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-[700px]:grid-cols-1">
+            {[
+              { label: "Nombre",             value: propietario.nombre },
+              { label: "Apellido",           value: propietario.apellido },
+              { label: "Email",              value: propietario.email },
+              { label: "DNI",                value: propietario.dni },
+              { label: "Fecha de nacimiento",value: fmtDate(propietario.fecha_nacimiento) },
+              { label: "Dirección",          value: propietario.direccion },
+              { label: "Teléfono",           value: propietario.telefono ?? "No especificado" },
+            ].map(({ label, value }) => (
+              <div key={label} className={fieldClass}>
+                <span className={labelClass}>{label}</span>
+                <span className="text-[14px] text-[var(--text-primary)]">{value}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* COLUMNA DERECHA — RESEÑAS */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div className="card-surface">
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 16 }}>Calificación general</div>
-            <div style={{ fontSize: 32, fontWeight: 800, color: "var(--color-primary-400)" }}>
+        {/* Columna derecha */}
+        <div className="flex flex-col gap-4">
+          <div className={cardClass}>
+            <div className="text-[13px] font-bold mb-4 text-[var(--text-primary)]">Calificación general</div>
+            <div className="text-[32px] font-extrabold text-[var(--color-primary-400)]">
               {promedio.calificacion_promedio}
             </div>
-            <div style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 16 }}>
+            <div className="text-[12px] text-[var(--text-secondary)] mb-4">
               Basado en {promedio.cantidad_resenas} reseñas
             </div>
-            <div style={{ fontSize: 13, color: "var(--text-secondary)", fontStyle: "italic" }}>
-              {resumen.resumen}
-            </div>
+            <div className="text-[13px] text-[var(--text-secondary)] italic">{resumen.resumen}</div>
           </div>
 
-          <div className="card-surface">
-            <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 16 }}>Reseñas recientes</div>
+          <div className={cardClass}>
+            <div className="text-[13px] font-bold mb-4 text-[var(--text-primary)]">Reseñas recientes</div>
             {resenas.resenas.length === 0 ? (
-              <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>Sin reseñas aún.</div>
+              <div className="text-[13px] text-[var(--text-secondary)]">Sin reseñas aún.</div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div className="flex flex-col gap-4">
                 {resenas.resenas.map(r => (
-                  <div key={r.id_resena} style={{ borderBottom: "1px solid var(--border-default)", paddingBottom: 12 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{r.fecha_creacion}</span>
-                      <span style={{ fontSize: 13, fontWeight: 700, color: "#f59e0b" }}>{"★".repeat(r.calificacion_general)}</span>
+                  <div key={r.id_resena} className="border-b border-[var(--border-default)] pb-3">
+                    <div className="flex justify-between mb-1">
+                      <span className="text-[11px] text-[var(--text-secondary)]">{r.fecha_creacion}</span>
+                      <span className="text-[13px] font-bold text-[#f59e0b]">{"★".repeat(r.calificacion_general)}</span>
                     </div>
-                    <div style={{ fontSize: 13 }}>{r.descripcion}</div>
+                    <div className="text-[13px] text-[var(--text-primary)]">{r.descripcion}</div>
                   </div>
                 ))}
               </div>
