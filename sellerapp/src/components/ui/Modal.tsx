@@ -32,9 +32,9 @@ export function ConfirmModal({ open, title, message, confirmLabel = "Confirmar",
         aria-modal="true"
         aria-labelledby="modal-t"
       >
-        <h4 className="m-0 mb-[6px] text-[17px] font-bold text-[var(--text-primary)]" id="modal-t">{title}</h4>
-        <p className="m-0 mb-[18px] text-[var(--text-secondary)] text-[13px]">{message}</p>
-        <div className="flex justify-end gap-[10px]">
+        <h4 className="m-0 mb-[6px] text-[17px] font-bold text-[var(--text-primary)] text-center" id="modal-t">{title}</h4>
+        <p className="m-0 mb-[18px] text-[var(--text-secondary)] text-[13px] text-center">{message}</p>
+        <div className="flex justify-center gap-[10px]">
           <Button variant="secondary" onClick={onCancel}>Cancelar</Button>
           <Button variant={confirmVariant} onClick={onConfirm}>{confirmLabel}</Button>
         </div>

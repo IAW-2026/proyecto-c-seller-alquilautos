@@ -10,9 +10,10 @@ import type { Reserva } from "@/lib/types";
 interface ReservasActionsProps {
   reserva: Reserva;
   monto_pagar: number;
+  vehiculo?: { marca: string; modelo: string };
 }
 
-export default function ReservasActions({ reserva, monto_pagar }: ReservasActionsProps) {
+export default function ReservasActions({ reserva, monto_pagar, vehiculo }: ReservasActionsProps) {
   const [step, setStep]       = useState<"idle" | "horario" | "rechazar">("idle");
   const [loading, setLoading] = useState(false);
   const [toast, showToast]    = useToast();
@@ -57,9 +58,12 @@ export default function ReservasActions({ reserva, monto_pagar }: ReservasAction
     <>
       {toast}
       <div className="flex items-center justify-end gap-[10px]">
-        <Button variant="secondary" size="sm" onClick={() => setStep("rechazar")}>
+        <button
+          onClick={() => setStep("rechazar")}
+          className="inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-transparent text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms] cursor-pointer"
+        >
           Rechazar
-        </Button>
+        </button>
         <Button variant="primary" size="sm" onClick={() => setStep("horario")}>
           Aceptar
         </Button>
@@ -74,7 +78,7 @@ export default function ReservasActions({ reserva, monto_pagar }: ReservasAction
       <ConfirmModal
         open={step === "rechazar"}
         title="¿Rechazar esta reserva?"
-        message={`Reserva del vehículo ${reserva.id_vehiculo}`}
+        message={`Reserva del vehículo ${vehiculo ? `${vehiculo.marca} ${vehiculo.modelo}` : reserva.id_vehiculo}`}
         confirmLabel="Rechazar"
         confirmVariant="danger"
         onConfirm={handleRechazar}

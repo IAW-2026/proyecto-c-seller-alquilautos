@@ -129,6 +129,7 @@ export default async function ReservasPage({
                             <ReservasActions
                               reserva={r}
                               monto_pagar={Number(vehiculosMap[r.id_vehiculo]?.precio ?? 0) * dias}
+                              vehiculo={vehiculosMap[r.id_vehiculo]}
                             />
                           )}
                           {r.estado === "Finalizada" && (
