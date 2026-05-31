@@ -27,7 +27,7 @@ export default async function ConfiguracionPage() {
   ]);
 
   return (
-    <div className="max-w-[1100px]">
+    <div className="max-w-[1100px] mx-auto">
       {/* Page header */}
       <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>

@@ -44,7 +44,7 @@ export default async function VehiculoDetallePage({
   const pageItems  = resenas.resenas.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="max-w-[1100px]">
+    <div className="max-w-[1100px] mx-auto">
       {/* Page header */}
       <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>
