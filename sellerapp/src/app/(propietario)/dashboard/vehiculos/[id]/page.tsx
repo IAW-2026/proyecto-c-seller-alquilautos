@@ -60,8 +60,8 @@ export default async function VehiculoDetallePage({
         {/* COLUMNA IZQUIERDA */}
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ borderRadius: "var(--radius-lg)", overflow: "hidden", aspectRatio: "16/9", background: "var(--surface-raised)" }}>
-            {vehiculo.fotos?.[0]
-              ? <img src={vehiculo.fotos[0]} alt={`${vehiculo.marca} ${vehiculo.modelo}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            {vehiculo.fotos
+              ? <img src={vehiculo.fotos} alt={`${vehiculo.marca} ${vehiculo.modelo}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               : <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-secondary)" }}>Sin foto</div>
             }
           </div>
