@@ -47,7 +47,7 @@ export function VehiculoCard({ vehiculo }: VehiculoCardProps) {
       {/* Footer */}
       <div className="px-4 py-3 border-t border-[var(--border-default)] flex justify-between items-center mt-2 text-[13px]">
         <span className="text-[var(--text-secondary)] inline-flex items-center gap-[6px]">
-          <Icon name="car" size={14} /> {vehiculo.anio}
+          <Icon name="car" size={14} aria-hidden="true" /> {vehiculo.anio}
         </span>
         <Link
           href={`/dashboard/vehiculos/${vehiculo.id_vehiculo}`}

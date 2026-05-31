@@ -102,7 +102,7 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
 
         <Field label="Foto (URL)" error={errors.fotos} htmlFor="fotos" hint="Ingresá la URL de la foto del vehículo">
           <input
-            id="fotos" name="fotos"
+            id="fotos" name="fotos" type="url"
             value={form.fotos} onChange={handleChange}
             placeholder="https://ejemplo.com/foto.jpg"
             className={inputClass}
