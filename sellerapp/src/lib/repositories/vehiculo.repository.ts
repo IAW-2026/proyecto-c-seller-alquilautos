@@ -35,7 +35,7 @@ export async function createVehiculo(data: {
   modelo: string;
   anio: number;
   precio: number;
-  fotos: string[];
+  fotos: string;
   estado?: "Disponible" | "Alquilado";
 }) {
   return db.vehiculo.create({ data, select: VEHICULO_SELECT });
@@ -46,7 +46,7 @@ export async function updateVehiculo(id: string, data: {
   modelo?: string;
   anio?: number;
   precio?: number;
-  fotos?: string[];
+  fotos?: string;
   estado?: "Disponible" | "Alquilado";
 }) {
   return db.vehiculo.update({

@@ -8,6 +8,7 @@ const PROPIETARIO_SELECT = {
   fecha_nacimiento: true,
   dni: true,
   direccion: true,
+  telefono: true,
 };
 
 export async function findPropietarioById(id: string) {
@@ -24,6 +25,7 @@ export async function createPropietario(data: {
   fecha_nacimiento: Date;
   dni: string;
   direccion: string;
+  telefono: string;
 }) {
   return db.propietario.create({ data, select: PROPIETARIO_SELECT });
 }
@@ -35,6 +37,7 @@ export async function updatePropietario(id: string, data: {
   dni?: string;
   direccion?: string;
   email?: string;
+  telefono?: string;
 }) {
   return db.propietario.update({
     where: { id_propietario: id },
