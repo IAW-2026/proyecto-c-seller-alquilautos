@@ -85,7 +85,7 @@ export function Header({ onMenu }: HeaderProps) {
             type="search"
             placeholder="Buscar vehículos o reservas..."
             aria-label="Buscar"
-            className="w-full border-none bg-[var(--color-neutral-100)] text-[var(--text-primary)] pl-[40px] pr-[14px] py-[10px] rounded-[var(--radius-full)] text-[13px] outline-none transition-[box-shadow] duration-[180ms] focus:shadow-[0_0_0_2px_var(--border-focus)]"
+            className="w-full border-none bg-[var(--color-neutral-100)] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] pl-[40px] pr-[14px] py-[10px] rounded-[var(--radius-full)] text-[13px] outline-none transition-[box-shadow] duration-[180ms] focus:shadow-[0_0_0_2px_var(--border-focus)]"
           />
         </div>
 
