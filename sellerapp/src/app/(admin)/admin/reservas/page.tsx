@@ -5,6 +5,8 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { fmtDate, daysBetween } from "@/lib/utils";
 import Link from "next/link";
+import { EstadoFiltro } from "@/components/features/reservas/EstadoFiltro";
+import { EstadoReserva } from "@prisma/client";
 
 const ESTADOS = ["Todos", "Pendiente", "Aceptada", "Rechazada"];
 const PAGE_SIZE = 8;
@@ -23,7 +25,7 @@ export default async function AdminReservasPage({
   const { estado = "Todos", page: pageParam = "1" } = await searchParams;
   const page = parseInt(pageParam, 10);
 
-  const where = estado !== "Todos" ? { estado: estado as "Pendiente" | "Aceptada" | "Rechazada" } : {};
+  const where = estado !== "Todos" ? { estado: estado as EstadoReserva } : {};
 
   const [reservas, total] = await Promise.all([
     db.reserva.findMany({
@@ -48,18 +50,7 @@ export default async function AdminReservasPage({
           <h2>Reservas</h2>
           <div className="sub">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
-        <div className="tabs" role="tablist">
-          {ESTADOS.map(e => (
-            <Link
-              key={e}
-              href={`?estado=${e}&page=1`}
-              className={estado === e || (e === "Todos" && !estado) ? "active" : ""}
-              role="tab"
-            >
-              {e}
-            </Link>
-          ))}
-        </div>
+        <EstadoFiltro estadoActual={estado} />
       </div>
 
       <div className="table-wrap">
