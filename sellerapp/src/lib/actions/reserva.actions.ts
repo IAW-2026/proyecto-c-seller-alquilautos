@@ -1,6 +1,6 @@
 "use server";
 import { auth } from "@clerk/nextjs/server";
-import { actualizarEstadoReserva } from "@/lib/services/reserva.service";
+import { actualizarEstadoReserva, getReserva  } from "@/lib/services/reserva.service";
 import { revalidatePath } from "next/cache";
 import { createEntrega  } from "@/lib/mocks/shippingApp";
 
@@ -23,6 +23,9 @@ export async function aceptarReservaAction(
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
   if (role !== "propietario") throw new Error("No autorizado");
 
+  const reservaResult = await getReserva(id_reserva);
+  if (reservaResult.error || !reservaResult.data) throw new Error("Reserva no encontrada");
+
   const result = await actualizarEstadoReserva(id_reserva, "Aceptada");
   if (result.error) throw new Error(result.error);
 
@@ -32,6 +35,8 @@ export async function aceptarReservaAction(
     id_propietario,
     id_alquilador,
     ...horario,
+    fecha_inicio: reservaResult.data.fecha_inicio,
+    fecha_fin: reservaResult.data.fecha_final,
   });
 
   revalidatePath("/dashboard/reservas");
