@@ -17,14 +17,6 @@ export async function createEntrega(data: {
   };
 }
 
-export async function getEntrega(id: string) {
-  return {
-    id_entrega: id,
-    estado: "Pendiente",
-    direccion_entrega: "Av. Corrientes 1234, Buenos Aires",
-  };
-}
-
 export async function getHorarioSeleccionado(id_reserva: string) {
   return {
     id_reserva,

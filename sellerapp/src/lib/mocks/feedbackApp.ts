@@ -189,13 +189,6 @@ export async function getResumenPropietario(id_propietario: string) {
   };
 }
 
-export async function getResumenAlquilador(id_alquilador: string) {
-  return {
-    id_alquilador,
-    resumen: "Resumen generado a partir de reseñas",
-  };
-}
-
 export async function getResumenVehiculo(id_vehiculo: string) {
   return {
     id_vehiculo,
@@ -216,13 +209,5 @@ export async function getPromedioVehiculo(id_vehiculo: string) {
     id_vehiculo,
     calificacion_promedio: 4.8,
     cantidad_resenas: 15,
-  };
-}
-
-export async function getPromedioAlquilador(id_alquilador: string) {
-  return {
-    id_alquilador,
-    calificacion_promedio: 4.5,
-    cantidad_resenas: 10,
   };
 }
