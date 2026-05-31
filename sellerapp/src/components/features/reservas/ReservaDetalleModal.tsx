@@ -25,7 +25,6 @@ interface Horario {
   hora_fin_entrega: string;
   hora_inicio_devolucion: string;
   hora_fin_devolucion: string;
-
 }
 
 interface ReservaDetalleModalProps {
@@ -35,76 +34,88 @@ interface ReservaDetalleModalProps {
   horario?: Horario | null;
 }
 
+const fieldClass = "flex flex-col gap-[4px]";
+const labelClass = "text-[12px] font-semibold text-[var(--text-secondary)]";
+const valueClass = "text-[14px] text-[var(--text-primary)]";
+
 export function ReservaDetalleModal({ reserva, alquilador, vehiculo, horario }: ReservaDetalleModalProps) {
   const [open, setOpen] = useState(false);
-  const dias = daysBetween(reserva.fecha_inicio, reserva.fecha_final);
+  const dias  = daysBetween(reserva.fecha_inicio, reserva.fecha_final);
   const total = vehiculo ? vehiculo.precio * dias : 0;
 
   return (
     <>
-      <button className="btn secondary sm" onClick={() => setOpen(true)}>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center justify-center gap-2 px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms] cursor-pointer"
+      >
         Ver
       </button>
-      <DetalleModal
-        open={open}
-        onClose={() => setOpen(false)}
-        title="Detalle de reserva"
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>ID: {reserva.id_reserva}</span>
+
+      <DetalleModal open={open} onClose={() => setOpen(false)} title="Detalle de reserva">
+        <div className="flex flex-col gap-4">
+
+          {/* Header */}
+          <div className="flex justify-between items-center">
+            <span className="text-[12px] text-[var(--text-secondary)]">ID: {reserva.id_reserva}</span>
             <StatusBadge estado={reserva.estado} />
           </div>
 
-          <div className="form-grid">
-            <div className="field">
-              <label>Alquilador</label>
-              <div>{alquilador ? `${alquilador.nombre} ${alquilador.apellido}` : reserva.id_alquilador}</div>
+          {/* Grid principal */}
+          <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-[700px]:grid-cols-1">
+            <div className={fieldClass}>
+              <span className={labelClass}>Alquilador</span>
+              <span className={valueClass}>
+                {alquilador ? `${alquilador.nombre} ${alquilador.apellido}` : reserva.id_alquilador}
+              </span>
               {alquilador?.email && (
-                <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>{alquilador.email}</div>
+                <span className="text-[12px] text-[var(--text-secondary)]">{alquilador.email}</span>
               )}
             </div>
-            <div className="field">
-              <label>Vehículo</label>
-              <div>{vehiculo ? `${vehiculo.marca} ${vehiculo.modelo}` : reserva.id_vehiculo}</div>
+            <div className={fieldClass}>
+              <span className={labelClass}>Vehículo</span>
+              <span className={valueClass}>
+                {vehiculo ? `${vehiculo.marca} ${vehiculo.modelo}` : reserva.id_vehiculo}
+              </span>
             </div>
-            <div className="field">
-              <label>Fecha inicio</label>
-              <div>{fmtDate(reserva.fecha_inicio)}</div>
+            <div className={fieldClass}>
+              <span className={labelClass}>Fecha inicio</span>
+              <span className={valueClass}>{fmtDate(reserva.fecha_inicio)}</span>
             </div>
-            <div className="field">
-              <label>Fecha fin</label>
-              <div>{fmtDate(reserva.fecha_final)}</div>
+            <div className={fieldClass}>
+              <span className={labelClass}>Fecha fin</span>
+              <span className={valueClass}>{fmtDate(reserva.fecha_final)}</span>
             </div>
-            <div className="field">
-              <label>Días</label>
-              <div>{dias}</div>
+            <div className={fieldClass}>
+              <span className={labelClass}>Días</span>
+              <span className={valueClass}>{dias}</span>
             </div>
-            <div className="field">
-              <label>Total</label>
-              <div style={{ color: "var(--color-primary-400)", fontWeight: 700 }}>{fmtMoney(total)}</div>
+            <div className={fieldClass}>
+              <span className={labelClass}>Total</span>
+              <span className="text-[14px] font-bold text-[var(--color-primary-400)]">{fmtMoney(total)}</span>
             </div>
           </div>
 
+          {/* Horarios */}
           {horario && (
-             <div style={{ borderTop: "1px solid var(--border-default)", paddingTop: 16 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12 }}>Horarios seleccionados</div>
-              <div className="form-grid">
-                 <div className="field">
-                   <label>Entrega — desde</label>
-                   <div>{horario.hora_inicio_entrega}</div>
-                 </div>
-                <div className="field">
-                  <label>Entrega — hasta</label>
-                  <div>{horario.hora_fin_entrega}</div>
-                 </div>
-                 <div className="field">
-                  <label>Devolución — desde</label>
-                   <div>{horario.hora_inicio_devolucion}</div>
-                 </div>
-                 <div className="field">
-                   <label>Devolución — hasta</label>
-                   <div>{horario.hora_fin_devolucion}</div>
+            <div className="border-t border-[var(--border-default)] pt-4">
+              <div className="text-[13px] font-bold mb-3 text-[var(--text-primary)]">Horarios seleccionados</div>
+              <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-[700px]:grid-cols-1">
+                <div className={fieldClass}>
+                  <span className={labelClass}>Entrega — desde</span>
+                  <span className={valueClass}>{horario.hora_inicio_entrega}</span>
+                </div>
+                <div className={fieldClass}>
+                  <span className={labelClass}>Entrega — hasta</span>
+                  <span className={valueClass}>{horario.hora_fin_entrega}</span>
+                </div>
+                <div className={fieldClass}>
+                  <span className={labelClass}>Devolución — desde</span>
+                  <span className={valueClass}>{horario.hora_inicio_devolucion}</span>
+                </div>
+                <div className={fieldClass}>
+                  <span className={labelClass}>Devolución — hasta</span>
+                  <span className={valueClass}>{horario.hora_fin_devolucion}</span>
                 </div>
               </div>
             </div>

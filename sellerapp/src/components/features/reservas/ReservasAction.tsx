@@ -13,9 +13,9 @@ interface ReservasActionsProps {
 }
 
 export default function ReservasActions({ reserva, monto_pagar }: ReservasActionsProps) {
-  const [step, setStep] = useState<"idle" | "horario" | "rechazar">("idle");
+  const [step, setStep]       = useState<"idle" | "horario" | "rechazar">("idle");
   const [loading, setLoading] = useState(false);
-  const [toast, showToast] = useToast();
+  const [toast, showToast]    = useToast();
 
   const handleAceptar = async (horario: {
     hora_inicio_entrega: string;
@@ -56,7 +56,7 @@ export default function ReservasActions({ reserva, monto_pagar }: ReservasAction
   return (
     <>
       {toast}
-      <div className="row" style={{ justifyContent: "flex-end" }}>
+      <div className="flex items-center justify-end gap-[10px]">
         <Button variant="secondary" size="sm" onClick={() => setStep("rechazar")}>
           Rechazar
         </Button>

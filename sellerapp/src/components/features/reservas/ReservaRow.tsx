@@ -14,28 +14,37 @@ interface ReservaRowProps {
 
 export function ReservaRow({ reserva, alquilador, vehiculo, onAccept, onReject }: ReservaRowProps) {
   const dias = daysBetween(reserva.fecha_inicio, reserva.fecha_final);
+
   return (
-    <div className="res-row">
-      <div className="top">
-        <div>
-          <div className="name">
+    <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] px-4 py-[14px] shadow-[var(--shadow-sm)]">
+
+      {/* Top row */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-[14px] text-[var(--text-primary)]">
             {alquilador ? `${alquilador.nombre} ${alquilador.apellido}` : reserva.id_alquilador}
           </div>
-          <div className="meta">
+          <div className="text-[12px] text-[var(--text-secondary)] mt-[2px]">
             {vehiculo ? `${vehiculo.marca} ${vehiculo.modelo}` : reserva.id_vehiculo} • {dias} días
           </div>
-          <div className="meta">
+          <div className="text-[12px] text-[var(--text-secondary)]">
             {fmtDate(reserva.fecha_inicio)} → {fmtDate(reserva.fecha_final)}
           </div>
         </div>
-        <div style={{ marginLeft: "auto" }}>
+        <div className="ml-auto shrink-0">
           <StatusBadge estado={reserva.estado} />
         </div>
       </div>
+
+      {/* Actions */}
       {reserva.estado === "Pendiente" && onAccept && onReject && (
-        <div className="actions">
-          <Button variant="secondary" size="sm" onClick={() => onReject(reserva)}>Rechazar</Button>
-          <Button variant="primary" size="sm" onClick={() => onAccept(reserva)}>Aceptar</Button>
+        <div className="flex gap-2 mt-3">
+          <Button variant="secondary" size="sm" className="flex-1" onClick={() => onReject(reserva)}>
+            Rechazar
+          </Button>
+          <Button variant="primary" size="sm" className="flex-1" onClick={() => onAccept(reserva)}>
+            Aceptar
+          </Button>
         </div>
       )}
     </div>

@@ -17,39 +17,36 @@ export function EstadoFiltro({ estadoActual }: EstadoFiltroProps) {
     router.push(`?estado=${e === "Todos" ? "" : e}&page=1`);
   };
 
+  const isActive = (e: string) =>
+    estadoActual === e || (!estadoActual && e === "Todos");
+
   return (
-    <div style={{ position: "relative" }}>
+    <div className="relative">
       <button
-        className="btn secondary"
         onClick={() => setOpen(prev => !prev)}
-        style={{ display: "flex", alignItems: "center", gap: 8 }}
+        className="inline-flex items-center gap-2 px-[16px] py-[9px] rounded-[var(--radius-md)] text-[13px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms] cursor-pointer"
       >
         {estadoActual || "Todos"}
-        <span style={{ fontSize: 10 }}>▼</span>
+        <span className="text-[10px]">▼</span>
       </button>
+
       {open && (
         <>
           <div
-            style={{ position: "fixed", inset: 0, zIndex: 10 }}
+            className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}
           />
-          <div style={{
-            position: "absolute", top: "calc(100% + 6px)", right: 0,
-            background: "var(--bg-surface)", border: "1px solid var(--border-default)",
-            borderRadius: "var(--radius-lg)", boxShadow: "var(--shadow-lg)",
-            zIndex: 20, minWidth: 160, overflow: "hidden",
-          }}>
+          <div className="absolute top-[calc(100%+6px)] right-0 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] z-20 min-w-[160px] overflow-hidden">
             {ESTADOS.map(e => (
               <button
                 key={e}
                 onClick={() => handleSelect(e)}
-                style={{
-                  display: "block", width: "100%", textAlign: "left",
-                  padding: "10px 14px", border: "none", cursor: "pointer",
-                  fontSize: 13, fontWeight: (estadoActual === e || (!estadoActual && e === "Todos")) ? 700 : 400,
-                  background: (estadoActual === e || (!estadoActual && e === "Todos")) ? "var(--color-primary-400)" : "transparent",
-                  color: (estadoActual === e || (!estadoActual && e === "Todos")) ? "white" : "var(--text-primary)",
-                }}
+                className={[
+                  "block w-full text-left px-[14px] py-[10px] border-none cursor-pointer text-[13px] transition-[background,color] duration-[180ms]",
+                  isActive(e)
+                    ? "bg-[var(--color-primary-400)] text-white font-bold"
+                    : "bg-transparent text-[var(--text-primary)] font-normal hover:bg-[var(--bg-hover)]",
+                ].join(" ")}
               >
                 {e}
               </button>
