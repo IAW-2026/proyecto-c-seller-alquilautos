@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 import type { Propietario } from "@/lib/types";
+import { actualizarPropietarioAction } from "@/lib/actions/propietario.actions";
 
 interface ConfiguracionFormProps {
   propietario: Propietario;
@@ -20,6 +21,7 @@ export function ConfiguracionForm({ propietario, onSuccess  }: ConfiguracionForm
     dni: propietario.dni,
     fecha_nacimiento: new Date(propietario.fecha_nacimiento).toISOString().split("T")[0],
     direccion: propietario.direccion,
+    telefono: propietario.telefono ?? "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -32,33 +34,27 @@ export function ConfiguracionForm({ propietario, onSuccess  }: ConfiguracionForm
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    const res = await fetch(`/api/propietario/${propietario.id_propietario}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+  const result = await actualizarPropietarioAction(form);
+  setLoading(false);
 
-    const data = await res.json();
-    setLoading(false);
-
-    if (data.error) {
-      if (typeof data.error === "object") {
-        const fieldErrors: Record<string, string> = {};
-        Object.entries(data.error).forEach(([k, v]) => {
-          fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
-        });
-        setErrors(fieldErrors);
-      }
-      return;
+  if (result.error) {
+    if (typeof result.error === "object") {
+      const fieldErrors: Record<string, string> = {};
+      Object.entries(result.error).forEach(([k, v]) => {
+        fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
+      });
+      setErrors(fieldErrors);
     }
+    return;
+  }
 
-    setSuccess(true);
-    router.refresh();
-    if (onSuccess) onSuccess();
-  };
+  setSuccess(true);
+  router.refresh();
+  if (onSuccess) onSuccess();
+};
 
   return (
     <form onSubmit={handleSubmit} className="card-surface">
@@ -94,7 +90,11 @@ export function ConfiguracionForm({ propietario, onSuccess  }: ConfiguracionForm
         <Field label="Dirección" error={errors.direccion} htmlFor="direccion">
           <input id="direccion" name="direccion" value={form.direccion} onChange={handleChange} />
         </Field>
+        <Field label="Teléfono" error={errors.telefono} htmlFor="telefono">
+          <input id="telefono" name="telefono" value={form.telefono} onChange={handleChange} placeholder="+54 9 11 1234 5678" />
+        </Field>
       </div>
+      
       <div className="form-actions">
         <Button type="button" variant="secondary" onClick={() => router.back()}>Cancelar</Button>
         <Button type="submit" variant="primary" disabled={loading}>
