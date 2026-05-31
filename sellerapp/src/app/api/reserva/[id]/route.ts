@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { getReserva, actualizarEstadoReserva, cancelarReserva, coordinarReserva    } from "@/lib/services/reserva.service";
-import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { EstadoReserva } from "@prisma/client";
 
