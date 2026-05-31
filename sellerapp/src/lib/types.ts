@@ -8,6 +8,7 @@ export interface Propietario {
   fecha_nacimiento: Date;
   dni: string;
   direccion: string;
+  telefono?: string;
 }
 
 export interface Vehiculo {
@@ -17,7 +18,7 @@ export interface Vehiculo {
   modelo: string;
   anio: number;
   precio: number;
-  fotos: string[];
+  fotos: string;
   estado?: "Disponible" | "Alquilado";
 }
 
