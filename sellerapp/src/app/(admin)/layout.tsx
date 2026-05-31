@@ -17,7 +17,7 @@ export default function AdminLayout({
         onClose={() => setSidebarOpen(false)}
         isAdmin={true}
       />
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh", minWidth: 0  }}>
         <Header onMenu={() => setSidebarOpen(true)} />
         <main className="page">{children}</main>
       </div>
