@@ -77,7 +77,7 @@ export function Sidebar({ open = false, onClose, isAdmin = false }: SidebarProps
                   "flex items-center gap-3 px-[14px] py-[10px] rounded-[var(--radius-md)] text-[14px] cursor-pointer relative transition-[background,color] duration-[180ms]",
                   active
                     ? "text-[var(--color-primary-400)] font-semibold after:content-[''] after:absolute after:right-[-12px] after:top-2 after:bottom-2 after:w-[3px] after:rounded-[3px] after:bg-[var(--color-primary-400)]"
-                    : "text-[var(--color-neutral-800)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
+                    : "text-[var(--color-neutral-700)] [[data-theme='dark']_&]:text-[var(--color-neutral-400)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
                 ].join(" ")}
               >
                 <Icon name={item.icon} className="w-[18px] h-[18px] shrink-0" />
