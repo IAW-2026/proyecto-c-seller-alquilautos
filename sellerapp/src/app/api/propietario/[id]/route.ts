@@ -1,11 +1,18 @@
 import { NextResponse } from "next/server";
 import { getPropietario  } from "@/lib/services/propietario.service";
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ data: null, error: "No autorizado" }, { status: 401 });
+    }
+
     const { id } = await params;
     const result = await getPropietario(id);
 

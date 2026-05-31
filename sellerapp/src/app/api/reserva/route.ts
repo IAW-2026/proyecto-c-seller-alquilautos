@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { crearReserva } from "@/lib/services/reserva.service";
 import { crearReservaSchema } from "@/lib/validators/reserva";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: Request) {
   try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ data: null, error: "No autorizado" }, { status: 401 });
+    }
+
     const body = await req.json();
     const validation = crearReservaSchema.safeParse(body);
 
