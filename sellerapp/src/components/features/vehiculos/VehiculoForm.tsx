@@ -20,7 +20,7 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
     modelo: vehiculo?.modelo ?? "",
     anio: vehiculo?.anio?.toString() ?? new Date().getFullYear().toString(),
     precio: vehiculo?.precio?.toString() ?? "",
-    fotos: vehiculo?.fotos?.join(", ") ?? "",
+    fotos: vehiculo?.fotos ?? "",
     estado: (vehiculo?.estado ?? "Disponible") as "Disponible" | "Alquilado",
   });
 
@@ -41,7 +41,7 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
       modelo: form.modelo,
       anio: Number(form.anio),
       precio: Number(form.precio),
-      fotos: form.fotos.split(",").map(f => f.trim()).filter(Boolean),
+      fotos: form.fotos,
       estado: form.estado,
     };
 
@@ -96,18 +96,13 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
           <input id="precio" name="precio" type="number" min="0" value={form.precio} onChange={handleChange} placeholder="15000" />
         </Field>
 
-        <Field
-          label="Fotos (URLs separadas por coma)"
-          error={errors.fotos}
-          htmlFor="fotos"
-          hint="Ingresá las URLs de las fotos separadas por coma"
-        >
+        <Field label="Foto (URL)" error={errors.fotos} htmlFor="fotos" hint="Ingresá la URL de la foto del vehículo">
           <input
             id="fotos"
             name="fotos"
             value={form.fotos}
             onChange={handleChange}
-            placeholder="https://ejemplo.com/foto1.jpg, https://ejemplo.com/foto2.jpg"
+            placeholder="https://ejemplo.com/foto.jpg"
           />
         </Field>
 

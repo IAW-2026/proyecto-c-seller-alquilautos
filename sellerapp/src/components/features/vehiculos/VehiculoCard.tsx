@@ -12,8 +12,8 @@ export function VehiculoCard({ vehiculo }: VehiculoCardProps) {
   return (
     <article className="veh-card">
       <div className="veh-photo">
-        {vehiculo.fotos && vehiculo.fotos[0]
-          ? <img src={vehiculo.fotos[0]} alt={`${vehiculo.marca} ${vehiculo.modelo}`} />
+        {vehiculo.fotos
+          ? <img src={vehiculo.fotos} alt={`${vehiculo.marca} ${vehiculo.modelo}`} />
           : <div className="photo-ph">[ foto del vehículo ]</div>}
         {vehiculo.estado && (
           <div className="status">
