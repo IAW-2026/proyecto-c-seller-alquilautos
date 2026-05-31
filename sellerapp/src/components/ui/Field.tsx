@@ -8,11 +8,19 @@ interface FieldProps {
 
 export function Field({ label, error, hint, htmlFor, children }: FieldProps) {
   return (
-    <div className="field">
-      {label && <label htmlFor={htmlFor}>{label}</label>}
+    <div className="flex flex-col gap-[6px]">
+      {label && (
+        <label htmlFor={htmlFor} className="text-[12px] font-semibold text-[var(--text-secondary)]">
+          {label}
+        </label>
+      )}
       {children}
-      {hint && !error && <div className="hint">{hint}</div>}
-      {error && <div className="error">{error}</div>}
+      {hint && !error && (
+        <div className="text-[12px] text-[var(--text-tertiary)]">{hint}</div>
+      )}
+      {error && (
+        <div className="text-[12px] text-[var(--color-danger-500)]">{error}</div>
+      )}
     </div>
   );
 }
