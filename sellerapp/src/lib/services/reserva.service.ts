@@ -57,8 +57,8 @@ export async function crearReserva(input: CrearReservaInput) {
 export async function actualizarEstadoReserva(id: string, estado: EstadoReserva) {
   const reserva = await findReservaById(id);
   if (!reserva) return { data: null, error: "Reserva no encontrada" };
-  const updated = await updateReservaEstado(id, estado);
-  return { data: updated, error: null };
+  await updateReservaEstado(id, estado);
+  return { data: { id_reserva: id, estado }, error: null };
 }
 
 export async function getReservasByPropietario(id_propietario: string) {
