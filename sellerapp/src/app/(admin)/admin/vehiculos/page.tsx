@@ -49,9 +49,7 @@ export default async function AdminVehiculosPage({
           <div className="sub">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
       </div>
-
-      <div className="table-wrap">
-        <div className="table-toolbar">
+        <div className="table-toolbar" style={{ background: "var(--bg-surface)", border: "1px solid var(--border-default)", borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",borderBottom: "none"}}>
           <form>
             <input
               type="search"
@@ -65,7 +63,7 @@ export default async function AdminVehiculosPage({
             <span className="text-secondary">{total} resultados</span>
           </div>
         </div>
-
+      <div className="table-wrap" style={{ borderRadius: "0 0 var(--radius-lg) var(--radius-lg)" }}>
         {vehiculos.length === 0 ? (
           <EmptyState
             icon="car"
@@ -88,9 +86,9 @@ export default async function AdminVehiculosPage({
                   <tr key={v.id_vehiculo}>
                     <td>
                       <div className="cell-user">
-                        {v.fotos?.[0] && (
+                        {v.fotos && (
                           <img
-                            src={v.fotos[0]}
+                            src={v.fotos}
                             alt=""
                             style={{ borderRadius: "var(--radius-md)", width: 48, height: 32, objectFit: "cover" }}
                           />
