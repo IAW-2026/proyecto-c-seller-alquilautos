@@ -9,7 +9,7 @@ export async function crearVehiculoAction(formData: {
   modelo: string;
   anio: number;
   precio: number;
-  fotos: string[];
+  fotos: string;
   estado: "Disponible" | "Alquilado";
 }) {
   const { userId, sessionClaims } = await auth();
@@ -37,7 +37,7 @@ export async function actualizarVehiculoAction(id: string, formData: {
   modelo?: string;
   anio?: number;
   precio?: number;
-  fotos?: string[];
+  fotos?: string;
   estado?: "Disponible" | "Alquilado";
 }) {
   const { userId, sessionClaims } = await auth();
