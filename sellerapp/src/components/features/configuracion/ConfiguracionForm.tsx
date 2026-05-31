@@ -89,7 +89,7 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
           <input id="direccion" name="direccion" value={form.direccion} onChange={handleChange} className={inputClass} />
         </Field>
         <Field label="Teléfono" error={errors.telefono} htmlFor="telefono">
-          <input id="telefono" name="telefono" value={form.telefono} onChange={handleChange} placeholder="+54 9 11 1234 5678" className={inputClass} />
+          <input id="telefono" name="telefono" type="tel" value={form.telefono} onChange={handleChange} placeholder="+54 9 11 1234 5678" className={inputClass} />
         </Field>
       </div>
 

@@ -83,7 +83,7 @@ export default function OnboardingForm() {
           <input id="fecha_nacimiento" name="fecha_nacimiento" type="date" value={form.fecha_nacimiento} onChange={handleChange} className={inputClass} />
         </Field>
         <Field label="Teléfono" error={errors.telefono} htmlFor="telefono">
-          <input id="telefono" name="telefono" value={form.telefono} onChange={handleChange} placeholder="+54 9 11 1234 5678" className={inputClass} />
+          <input id="telefono" name="telefono" type="tel" value={form.telefono} onChange={handleChange} placeholder="+54 9 11 1234 5678" className={inputClass} />
         </Field>
         <Field label="Dirección" error={errors.direccion} htmlFor="direccion" hint="Barrio o zona donde vivís">
           <input id="direccion" name="direccion" value={form.direccion} onChange={handleChange} placeholder="Av. Corrientes 1234, Buenos Aires" className={inputClass} />
