@@ -19,6 +19,7 @@ export async function registrarPropietario(email: string, input: OnboardingInput
     fecha_nacimiento: new Date(input.fecha_nacimiento),
     dni: input.dni,
     direccion: input.direccion,
+    telefono: input.telefono,
   });
   return { data: propietario, error: null };
 }
