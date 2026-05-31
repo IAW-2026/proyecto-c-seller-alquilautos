@@ -28,10 +28,40 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string>(vehiculo?.fotos ?? "");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setErrors(prev => ({ ...prev, [e.target.name]: "" }));
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setErrors(prev => ({ ...prev, fotos: "" }));
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+
+      if (data.error) {
+        setErrors(prev => ({ ...prev, fotos: data.error }));
+        return;
+      }
+
+      setPreview(data.url);
+      setForm(prev => ({ ...prev, fotos: data.url }));
+    } catch {
+      setErrors(prev => ({ ...prev, fotos: "Error al subir la imagen" }));
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,13 +130,40 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
           />
         </Field>
 
-        <Field label="Foto (URL)" error={errors.fotos} htmlFor="fotos" hint="Ingresá la URL de la foto del vehículo">
-          <input
-            id="fotos" name="fotos" type="url"
-            value={form.fotos} onChange={handleChange}
-            placeholder="https://ejemplo.com/foto.jpg"
-            className={inputClass}
-          />
+        <Field label="Foto" error={errors.fotos} htmlFor="fotos">
+          <label
+            htmlFor="fotos"
+            className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed border-[var(--border-default)] rounded-[var(--radius-md)] p-4 cursor-pointer hover:border-[var(--border-focus)] transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}
+          >
+            {preview ? (
+              <img src={preview} alt="Preview" className="w-full h-32 object-cover rounded-[var(--radius-md)]" />
+            ) : (
+              <>
+                <span className="text-[var(--text-secondary)] text-[13px]">
+                  {uploading ? "Subiendo..." : "Arrastrá o hacé click para subir una foto"}
+                </span>
+                <span className="text-[var(--text-tertiary)] text-[11px]">PNG, JPG, WEBP</span>
+              </>
+            )}
+            <input
+              id="fotos"
+              name="fotos"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              aria-label="Subir foto del vehículo"
+            />
+          </label>
+          {preview && (
+            <button
+              type="button"
+              onClick={() => { setPreview(""); setForm(prev => ({ ...prev, fotos: "" })); }}
+              className="text-[12px] text-[var(--color-danger-500)] hover:underline mt-1 self-start"
+            >
+              Quitar foto
+            </button>
+          )}
         </Field>
 
         <Field label="Estado" htmlFor="estado">
