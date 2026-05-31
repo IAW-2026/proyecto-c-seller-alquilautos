@@ -15,10 +15,10 @@ export function VehiculosGrid({ vehiculos }: VehiculosGridProps) {
   const [filtro, setFiltro] = useState<"Todos" | "Disponible" | "Alquilado">("Todos");
 
   const disponibles = vehiculos.filter(v => v.estado === "Disponible");
-  const alquilados = vehiculos.filter(v => v.estado === "Alquilado");
+  const alquilados  = vehiculos.filter(v => v.estado === "Alquilado");
   const filtered =
     filtro === "Disponible" ? disponibles :
-    filtro === "Alquilado" ? alquilados :
+    filtro === "Alquilado"  ? alquilados  :
     vehiculos;
 
   const opciones = [
@@ -28,21 +28,24 @@ export function VehiculosGrid({ vehiculos }: VehiculosGridProps) {
   ];
 
   const activoLabel =
-    filtro === "Todos" ? opciones[0] :
-    filtro === "Disponible" ? opciones[1] :
+    filtro === "Todos"       ? opciones[0] :
+    filtro === "Disponible"  ? opciones[1] :
     opciones[2];
 
   const handleChange = (op: string) => {
-    if (op.startsWith("Todos")) setFiltro("Todos");
-    else if (op.startsWith("Disponibles")) setFiltro("Disponible");
-    else setFiltro("Alquilado");
+    if (op.startsWith("Todos"))       setFiltro("Todos");
+    else if (op.startsWith("Disp"))   setFiltro("Disponible");
+    else                              setFiltro("Alquilado");
   };
 
   return (
     <>
-      <div className="section-head">
-        <h3>Mis Vehículos</h3>
-        <span className="spacer" />
+      {/* Section head */}
+      <div className="flex items-center gap-[10px] mt-7 mb-[14px] flex-wrap">
+        <h3 className="m-0 text-[17px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">
+          Mis Vehículos
+        </h3>
+        <span className="flex-1" />
         <Tabs opciones={opciones} activo={activoLabel} onChange={handleChange} />
       </div>
 
@@ -53,14 +56,17 @@ export function VehiculosGrid({ vehiculos }: VehiculosGridProps) {
           message={filtro === "Todos" ? "Publicá tu primer vehículo" : "Cambiá el filtro para ver el resto de tu flota."}
           action={
             filtro === "Todos" ? (
-              <Link href="/dashboard/vehiculos/nuevo" className="btn primary">
+              <Link
+                href="/dashboard/vehiculos/nuevo"
+                className="inline-flex items-center gap-2 px-[16px] py-[9px] rounded-[var(--radius-md)] text-[13px] font-semibold bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:bg-[var(--btn-primary-bg-hover)] transition-[background] duration-[180ms]"
+              >
                 <Icon name="plus" size={14} /> Publicar vehículo
               </Link>
             ) : undefined
           }
         />
       ) : (
-        <div className="veh-grid">
+        <div className="grid gap-[18px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
           {filtered.map(v => (
             <VehiculoCard key={v.id_vehiculo} vehiculo={v} />
           ))}

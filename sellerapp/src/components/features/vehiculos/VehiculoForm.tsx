@@ -11,16 +11,18 @@ interface VehiculoFormProps {
   onSuccess?: () => void;
 }
 
+const inputClass = "border border-[var(--border-default)] bg-[var(--bg-surface)] text-[var(--text-primary)] px-3 py-[10px] rounded-[var(--radius-md)] text-[14px] font-[inherit] outline-none transition-[border-color,box-shadow] duration-[180ms] focus:border-[var(--border-focus)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-primary-400)_18%,transparent)]";
+
 export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
-  const router = useRouter();
+  const router    = useRouter();
   const isEditing = !!vehiculo;
 
   const [form, setForm] = useState({
-    marca: vehiculo?.marca ?? "",
-    modelo: vehiculo?.modelo ?? "",
-    anio: vehiculo?.anio?.toString() ?? new Date().getFullYear().toString(),
-    precio: vehiculo?.precio?.toString() ?? "",
-    fotos: vehiculo?.fotos ?? "",
+    marca:  vehiculo?.marca   ?? "",
+    modelo: vehiculo?.modelo  ?? "",
+    anio:   vehiculo?.anio?.toString()    ?? new Date().getFullYear().toString(),
+    precio: vehiculo?.precio?.toString()  ?? "",
+    fotos:  vehiculo?.fotos   ?? "",
     estado: (vehiculo?.estado ?? "Disponible") as "Disponible" | "Alquilado",
   });
 
@@ -37,11 +39,11 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
     setLoading(true);
 
     const body = {
-      marca: form.marca,
+      marca:  form.marca,
       modelo: form.modelo,
-      anio: Number(form.anio),
+      anio:   Number(form.anio),
       precio: Number(form.precio),
-      fotos: form.fotos,
+      fotos:  form.fotos,
       estado: form.estado,
     };
 
@@ -62,58 +64,59 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
       return;
     }
 
-    if (onSuccess) {
-      onSuccess();
-    } else {
-      router.push("/dashboard/vehiculos");
-    }
+    if (onSuccess) onSuccess();
+    else router.push("/dashboard/vehiculos");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card-surface">
-      <div className="form-grid">
+    <form
+      onSubmit={handleSubmit}
+      className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-6 shadow-[var(--shadow-sm)]"
+    >
+      {/* Grid de campos */}
+      <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-[700px]:grid-cols-1">
         <Field label="Marca" error={errors.marca} htmlFor="marca">
-          <input id="marca" name="marca" value={form.marca} onChange={handleChange} placeholder="Toyota" />
+          <input id="marca" name="marca" value={form.marca} onChange={handleChange} placeholder="Toyota" className={inputClass} />
         </Field>
 
         <Field label="Modelo" error={errors.modelo} htmlFor="modelo">
-          <input id="modelo" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Corolla" />
+          <input id="modelo" name="modelo" value={form.modelo} onChange={handleChange} placeholder="Corolla" className={inputClass} />
         </Field>
 
         <Field label="Año" error={errors.anio} htmlFor="anio">
           <input
-            id="anio"
-            name="anio"
-            type="number"
-            min="1990"
-            max={new Date().getFullYear() + 1}
-            value={form.anio}
-            onChange={handleChange}
+            id="anio" name="anio" type="number"
+            min="1990" max={new Date().getFullYear() + 1}
+            value={form.anio} onChange={handleChange}
+            className={inputClass}
           />
         </Field>
 
         <Field label="Precio por día ($)" error={errors.precio} htmlFor="precio">
-          <input id="precio" name="precio" type="number" min="0" value={form.precio} onChange={handleChange} placeholder="15000" />
+          <input
+            id="precio" name="precio" type="number" min="0"
+            value={form.precio} onChange={handleChange} placeholder="15000"
+            className={inputClass}
+          />
         </Field>
 
         <Field label="Foto (URL)" error={errors.fotos} htmlFor="fotos" hint="Ingresá la URL de la foto del vehículo">
           <input
-            id="fotos"
-            name="fotos"
-            value={form.fotos}
-            onChange={handleChange}
+            id="fotos" name="fotos"
+            value={form.fotos} onChange={handleChange}
             placeholder="https://ejemplo.com/foto.jpg"
+            className={inputClass}
           />
         </Field>
 
         <Field label="Estado" htmlFor="estado">
           <select
-            id="estado"
-            name="estado"
+            id="estado" name="estado"
             value={form.estado}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
               setForm(prev => ({ ...prev, estado: e.target.value as "Disponible" | "Alquilado" }))
             }
+            className={inputClass}
           >
             <option value="Disponible">Disponible</option>
             <option value="Alquilado">Alquilado</option>
@@ -121,7 +124,8 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
         </Field>
       </div>
 
-      <div className="form-actions">
+      {/* Actions */}
+      <div className="flex justify-end gap-[10px] mt-5">
         <Button type="button" variant="secondary" onClick={() => router.back()}>
           Cancelar
         </Button>

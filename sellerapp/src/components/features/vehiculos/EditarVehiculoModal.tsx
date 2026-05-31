@@ -13,7 +13,10 @@ export function EditarVehiculoModal({ vehiculo }: EditarVehiculoModalProps) {
 
   return (
     <>
-      <button className="btn primary" onClick={() => setOpen(true)}>
+      <button
+        onClick={() => setOpen(true)}
+        className="inline-flex items-center justify-center gap-2 px-[16px] py-[9px] rounded-[var(--radius-md)] text-[13px] font-semibold bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:bg-[var(--btn-primary-bg-hover)] transition-[background] duration-[180ms] cursor-pointer"
+      >
         Editar vehículo
       </button>
       <DetalleModal
