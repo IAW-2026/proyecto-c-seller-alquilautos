@@ -50,9 +50,7 @@ export default async function AdminPropietariosPage({
           <div className="sub">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
       </div>
-
-      <div className="table-wrap">
-        <div className="table-toolbar">
+        <div className="table-toolbar" style={{ background: "var(--bg-surface)", border: "1px solid var(--border-default)", borderRadius: "var(--radius-lg) var(--radius-lg) 0 0",borderBottom: "none"}}>
           <form>
             <input
               type="search"
@@ -66,7 +64,7 @@ export default async function AdminPropietariosPage({
             <span className="text-secondary">{total} resultados</span>
           </div>
         </div>
-
+      <div className="table-wrap" style={{ borderRadius: "0 0 var(--radius-lg) var(--radius-lg)" }}>
         {propietarios.length === 0 ? (
           <EmptyState
             icon="user"
