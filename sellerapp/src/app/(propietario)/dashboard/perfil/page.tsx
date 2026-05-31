@@ -33,7 +33,7 @@ export default async function ConfiguracionPage() {
         <EditarPerfilModal propietario={propietario} />
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: 24 }}>
+      <div className="vehiculo-detalle-grid">
         {/* COLUMNA IZQUIERDA */}
         <div className="card-surface">
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 16 }}>Información personal</div>
@@ -44,6 +44,7 @@ export default async function ConfiguracionPage() {
             <div className="field"><label>DNI</label><div>{propietario.dni}</div></div>
             <div className="field"><label>Fecha de nacimiento</label><div>{fmtDate(propietario.fecha_nacimiento)}</div></div>
             <div className="field"><label>Dirección</label><div>{propietario.direccion}</div></div>
+            <div className="field"><label>Teléfono</label><div>{propietario.telefono ?? "No especificado"}</div></div>
           </div>
         </div>
 
