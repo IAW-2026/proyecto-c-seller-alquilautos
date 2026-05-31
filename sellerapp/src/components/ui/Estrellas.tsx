@@ -13,10 +13,10 @@ export function Estrellas({ valor, onChange }: EstrellasProps) {
           style={{
             cursor: onChange ? "pointer" : "default",
             fontSize: 18,
-            color: i <= valor ? "#f59e0b" : "var(--border-default)",
+            color: i <= valor ? "#f59e0b" : "var(--color-neutral-200)",
           }}
         >
-          ★
+          {i <= valor ? "★" : "☆"}
         </span>
       ))}
     </div>
