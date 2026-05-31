@@ -14,6 +14,7 @@ async function main() {
       fecha_nacimiento: new Date("1985-03-15"),
       dni: "28456789",
       direccion: "Av. Corrientes 1234, Buenos Aires",
+      telefono: "+54 9 11 1234 5678",
     },
   });
 
@@ -25,6 +26,7 @@ async function main() {
       fecha_nacimiento: new Date("1990-07-22"),
       dni: "32156478",
       direccion: "Av. Santa Fe 567, Buenos Aires",
+      telefono: "+54 9 11 8765 4321",
     },
   });
 
@@ -36,7 +38,7 @@ async function main() {
       modelo: "Corolla",
       anio: 2023,
       precio: 15000,
-      fotos: ["https://images.unsplash.com/photo-1623869675781-80aa31012a5a?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1623869675781-80aa31012a5a?w=900&q=80",
     },
   });
 
@@ -47,7 +49,7 @@ async function main() {
       modelo: "Focus",
       anio: 2022,
       precio: 12000,
-      fotos: ["https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=900&q=80",
     },
   });
 
@@ -58,7 +60,7 @@ async function main() {
       modelo: "Civic",
       anio: 2023,
       precio: 16500,
-      fotos: ["https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=900&q=80",
     },
   });
 
@@ -70,7 +72,7 @@ async function main() {
       modelo: "Cruze",
       anio: 2022,
       precio: 13500,
-      fotos: ["https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?w=900&q=80",
     },
   });
 
@@ -81,7 +83,7 @@ async function main() {
       modelo: "Golf",
       anio: 2021,
       precio: 18000,
-      fotos: ["https://images.unsplash.com/photo-1502877338535-766e1452684a?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1502877338535-766e1452684a?w=900&q=80",
     },
   });
 
@@ -93,7 +95,7 @@ async function main() {
       anio: 2024,
       precio: 35000,
       estado: "Alquilado",
-      fotos: ["https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=900&q=80",
     },
   });
 
@@ -104,7 +106,7 @@ async function main() {
       modelo: "Renegade",
       anio: 2023,
       precio: 22000,
-      fotos: ["https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=900&q=80",
     },
   });
 
@@ -115,7 +117,7 @@ async function main() {
       modelo: "Sandero",
       anio: 2022,
       precio: 9000,
-      fotos: ["https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=900&q=80"],
+      fotos: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=900&q=80",
     },
   });
 
