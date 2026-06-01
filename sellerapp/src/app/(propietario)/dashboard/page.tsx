@@ -7,6 +7,7 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { VehiculosGrid } from "@/components/features/vehiculos/VehiculosGrid";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
+import { getDolarBlue } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const { userId, sessionClaims } = await auth();
@@ -15,11 +16,14 @@ export default async function DashboardPage() {
   const id_propietario = (sessionClaims?.publicMetadata as { id_propietario?: string })?.id_propietario;
   if (!id_propietario) redirect("/onboarding");
 
-  const [, vehiculosResult, reservasResult] = await Promise.all([
+  const [, vehiculosResult, reservasResult, tipoCambio] = await Promise.all([
     getPropietario(id_propietario),
     getVehiculosByPropietario(id_propietario),
     getReservasByPropietario(id_propietario),
+    getDolarBlue(),
   ]);
+
+  
 
   const vehiculos = (vehiculosResult.data?.vehiculos ?? []).map(v => ({ ...v, precio: Number(v.precio) }));
   const reservas   = reservasResult.data?.reservas ?? [];
@@ -76,7 +80,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <VehiculosGrid vehiculos={vehiculos} />
+      <VehiculosGrid vehiculos={vehiculos} tipoCambio={tipoCambio}/>
     </div>
   );
 }
