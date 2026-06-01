@@ -34,6 +34,7 @@ async function main() {
   });
 
   // ===== VEHÍCULOS DE MARIA =====
+
   // v1 Jeep Renegade → reserva Pendiente → Disponible
   const v1 = await prisma.vehiculo.create({
     data: {
@@ -79,7 +80,7 @@ async function main() {
     },
   });
 
-  // v6 BMW Serie 3 → reserva Finalizada (historica) → Disponible
+  // v6 BMW Serie 3 → reservas históricas + pendiente futura → Disponible
   const v6 = await prisma.vehiculo.create({
     data: {
       id_propietario: propietario1.id_propietario,
@@ -99,7 +100,7 @@ async function main() {
     },
   });
 
-  // v8 Honda Civic → reserva Finalizada (historica) → Disponible
+  // v8 Honda Civic → Disponible
   const v8 = await prisma.vehiculo.create({
     data: {
       id_propietario: propietario2.id_propietario,
@@ -108,7 +109,7 @@ async function main() {
     },
   });
 
-  // v9 Fiat Cronos → reserva Finalizada (historica) → Disponible
+  // v9 Fiat Cronos → Disponible
   const v9 = await prisma.vehiculo.create({
     data: {
       id_propietario: propietario2.id_propietario,
@@ -137,7 +138,7 @@ async function main() {
 
   // ===== RESERVAS DE MARIA =====
 
-  // v1 Jeep Renegade — Pendiente (disponible, esperando aceptar/rechazar)
+  // v1 Jeep Renegade — Pendiente
   await prisma.reserva.create({
     data: {
       id_vehiculo: v1.id_vehiculo,
@@ -149,7 +150,19 @@ async function main() {
     },
   });
 
-  // v2 Volkswagen Golf — Aceptada (alquilado, esperando coordinación de shipping)
+  // v6 BMW Serie 3 — Pendiente futura
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v6.id_vehiculo,
+      id_propietario: propietario1.id_propietario,
+      id_alquilador: "alquilador_002",
+      fecha_inicio: new Date("2026-07-01"),
+      fecha_final: new Date("2026-07-06"),
+      estado: "Pendiente",
+    },
+  });
+
+  // v2 Volkswagen Golf — Aceptada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v2.id_vehiculo,
@@ -161,7 +174,7 @@ async function main() {
     },
   });
 
-  // v3 Toyota Corolla — Coordinada (alquilado, esperando pago)
+  // v3 Toyota Corolla — Coordinada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v3.id_vehiculo,
@@ -173,7 +186,7 @@ async function main() {
     },
   });
 
-  // v4 Chevrolet Cruze — Pagada (alquilado, esperando entrega)
+  // v4 Chevrolet Cruze — Pagada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v4.id_vehiculo,
@@ -185,7 +198,7 @@ async function main() {
     },
   });
 
-  // v5 Renault Sandero — Entregada (alquilado, esperando finalización)
+  // v5 Renault Sandero — Entregada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v5.id_vehiculo,
@@ -197,7 +210,7 @@ async function main() {
     },
   });
 
-  // v6 BMW Serie 3 — historial de reservas finalizadas (disponible)
+  // v6 BMW Serie 3 — historial finalizadas
   await prisma.reserva.create({
     data: {
       id_vehiculo: v6.id_vehiculo,
@@ -231,7 +244,7 @@ async function main() {
     },
   });
 
-  // v3 Toyota Corolla — reservas históricas finalizadas
+  // v3 Toyota Corolla — historial finalizadas
   await prisma.reserva.create({
     data: {
       id_vehiculo: v3.id_vehiculo,
@@ -254,7 +267,7 @@ async function main() {
     },
   });
 
-  // Rechazada y Cancelada — para testear filtros
+  // v1 Jeep Renegade — Rechazada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v1.id_vehiculo,
@@ -266,6 +279,7 @@ async function main() {
     },
   });
 
+  // v4 Chevrolet Cruze — Cancelada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v4.id_vehiculo,
@@ -288,6 +302,54 @@ async function main() {
       fecha_inicio: new Date("2026-06-15"),
       fecha_final: new Date("2026-06-20"),
       estado: "Pendiente",
+    },
+  });
+
+  // v9 Fiat Cronos — Pendiente
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v9.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_003",
+      fecha_inicio: new Date("2026-06-22"),
+      fecha_final: new Date("2026-06-27"),
+      estado: "Pendiente",
+    },
+  });
+
+  // v8 Honda Civic — Pendiente
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v8.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_001",
+      fecha_inicio: new Date("2026-06-25"),
+      fecha_final: new Date("2026-06-30"),
+      estado: "Pendiente",
+    },
+  });
+
+  // v10 Peugeot 208 — Coordinada
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v10.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_001",
+      fecha_inicio: new Date("2026-06-12"),
+      fecha_final: new Date("2026-06-17"),
+      estado: "Coordinada",
+    },
+  });
+
+  // v11 Volkswagen Vento — Pagada
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v11.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_002",
+      fecha_inicio: new Date("2026-06-10"),
+      fecha_final: new Date("2026-06-14"),
+      estado: "Pagada",
     },
   });
 
@@ -315,7 +377,7 @@ async function main() {
     },
   });
 
-  // v7 Ford Focus — ya tiene Pendiente, agregamos Finalizada (historial)
+  // v7 Ford Focus — historial finalizado
   await prisma.reserva.create({
     data: {
       id_vehiculo: v7.id_vehiculo,
@@ -327,7 +389,7 @@ async function main() {
     },
   });
 
-  // v8 Honda Civic — Cancelada (para testear filtro)
+  // v8 Honda Civic — Cancelada
   await prisma.reserva.create({
     data: {
       id_vehiculo: v8.id_vehiculo,
@@ -339,31 +401,7 @@ async function main() {
     },
   });
 
-  // v10 Peugeot 208 — Coordinada (alquilado, esperando pago)
-  await prisma.reserva.create({
-    data: {
-      id_vehiculo: v10.id_vehiculo,
-      id_propietario: propietario2.id_propietario,
-      id_alquilador: "alquilador_001",
-      fecha_inicio: new Date("2026-06-12"),
-      fecha_final: new Date("2026-06-17"),
-      estado: "Coordinada",
-    },
-  });
-
-  // v11 Volkswagen Vento — Pagada (alquilado, esperando entrega)
-  await prisma.reserva.create({
-    data: {
-      id_vehiculo: v11.id_vehiculo,
-      id_propietario: propietario2.id_propietario,
-      id_alquilador: "alquilador_002",
-      fecha_inicio: new Date("2026-06-10"),
-      fecha_final: new Date("2026-06-14"),
-      estado: "Pagada",
-    },
-  });
-
-  console.log("✅ Seed completado: 2 propietarios, 9 vehículos, 15 reservas");
+  console.log("✅ Seed completado: 2 propietarios, 11 vehículos, 25 reservas");
 
   await prisma.$disconnect();
 }
