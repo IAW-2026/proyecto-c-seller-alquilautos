@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
+import { EditarVehiculoAdminModal } from "@/components/features/admin/EditarVehiculoAdminModal";
+import { EliminarVehiculoButton } from "@/components/features/admin/EliminarVehiculoButton";
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -78,7 +80,7 @@ export default async function AdminVehiculosPage({
               <table className="w-full border-collapse max-[900px]:min-w-[700px]">
                 <thead>
                   <tr>
-                    {["Vehículo", "Propietario", "Precio/día", "Año"].map(h => (
+                    {["Vehículo", "Propietario", "Precio/día", "Año", ""].map(h => (
                       <th key={h} className={thClass}>{h}</th>
                     ))}
                   </tr>
@@ -99,6 +101,12 @@ export default async function AdminVehiculosPage({
                         <strong className="text-[var(--color-primary-400)]">${Number(v.precio)}</strong>
                       </td>
                       <td className={tdClass}>{v.anio}</td>
+                      <td className={tdClass}>
+                        <div className="flex gap-2 justify-end">
+                          <EditarVehiculoAdminModal vehiculo={{ ...v, precio: Number(v.precio) }} />
+                          <EliminarVehiculoButton id_vehiculo={v.id_vehiculo} nombre={`${v.marca} ${v.modelo}`} />
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

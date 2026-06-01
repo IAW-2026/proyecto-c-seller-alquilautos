@@ -7,6 +7,7 @@ import { fmtDate, daysBetween } from "@/lib/utils";
 import Link from "next/link";
 import { EstadoFiltro } from "@/components/features/reservas/EstadoFiltro";
 import { EstadoReserva } from "@prisma/client";
+import { EliminarReservaButton } from "@/components/features/admin/EliminarReservaButton";
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -50,7 +51,11 @@ export default async function AdminReservasPage({
           <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Reservas</h2>
           <div className="text-[13px] text-[var(--text-secondary)] mt-1">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
-        <EstadoFiltro estadoActual={estado} />
+        <div className="self-end">
+          <EstadoFiltro estadoActual={estado} />
+        </div>
+       
+
       </div>
 
       {/* Table */}
@@ -67,7 +72,7 @@ export default async function AdminReservasPage({
               <table className="w-full border-collapse max-[900px]:min-w-[700px]">
                 <thead>
                   <tr>
-                    {["ID Alquilador", "Vehículo", "Propietario", "Fechas", "Días", "Estado"].map(h => (
+                    {["ID Alquilador", "Vehículo", "Propietario", "Fechas", "Días", "Estado", ""].map(h => (
                       <th key={h} className={thClass}>{h}</th>
                     ))}
                   </tr>
@@ -81,6 +86,11 @@ export default async function AdminReservasPage({
                       <td className={tdClass}>{fmtDate(r.fecha_inicio)} → {fmtDate(r.fecha_final)}</td>
                       <td className={tdClass}>{daysBetween(r.fecha_inicio, r.fecha_final)}</td>
                       <td className={tdClass}><StatusBadge estado={r.estado} /></td>
+                      <td className={tdClass}>
+                        <div className="flex justify-end">
+                          <EliminarReservaButton id_reserva={r.id_reserva} />
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

@@ -3,6 +3,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
+import { EditarPropietarioModal } from "@/components/features/admin/EditarPropietarioModal";
+import { EliminarPropietarioButton } from "@/components/features/admin/EliminarPropietarioButton";
+
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -79,7 +82,7 @@ export default async function AdminPropietariosPage({
               <table className="w-full border-collapse max-[900px]:min-w-[700px]">
                 <thead>
                   <tr>
-                    {["Propietario", "Email", "DNI", "Dirección", "Vehículos"].map(h => (
+                    {["Propietario", "Email", "DNI", "Dirección", "Vehículos", ""].map(h => (
                       <th key={h} className={thClass}>{h}</th>
                     ))}
                   </tr>
@@ -95,6 +98,12 @@ export default async function AdminPropietariosPage({
                       <td className={tdClass}>{o.dni}</td>
                       <td className={tdClass}>{o.direccion}</td>
                       <td className={tdClass}><strong>{o._count.vehiculos}</strong></td>
+                      <td className={tdClass}>
+                        <div className="flex gap-2 justify-end">
+                          <EditarPropietarioModal propietario={o} />
+                          <EliminarPropietarioButton id_propietario={o.id_propietario} nombre={`${o.nombre} ${o.apellido}`} />
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
