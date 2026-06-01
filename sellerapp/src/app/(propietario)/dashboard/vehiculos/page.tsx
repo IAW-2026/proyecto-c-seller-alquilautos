@@ -5,8 +5,9 @@ import { VehiculoCard } from "@/components/features/vehiculos/VehiculoCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
+import { getDolarBlue } from "@/lib/utils"
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 10;
 
 const linkBtnClass = "inline-flex items-center gap-2 px-[16px] py-[9px] rounded-[var(--radius-md)] text-[13px] font-semibold bg-[var(--btn-primary-bg)] text-[var(--btn-primary-text)] hover:bg-[var(--btn-primary-bg-hover)] transition-[background] duration-[180ms]";
 const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms]";
@@ -35,6 +36,7 @@ export default async function VehiculosPage({
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const tipoCambio = await getDolarBlue();
 
   return (
     <div>
@@ -90,7 +92,7 @@ export default async function VehiculosPage({
         <>
           <div className="grid gap-[18px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
             {pageItems.map(v => (
-              <VehiculoCard key={v.id_vehiculo} vehiculo={v} />
+              <VehiculoCard key={v.id_vehiculo} vehiculo={v} tipoCambio={tipoCambio} />
             ))}
           </div>
           {totalPages > 1 && (
