@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getReservasByPropietario } from "@/lib/services/reserva.service";
 import { getVehiculosByPropietario } from "@/lib/services/vehiculo.service";
 import { getAlquilador } from "@/lib/mocks/buyerApp";
-import { fmtDate, fmtMoney, daysBetween } from "@/lib/utils";
+import { fmtDate, fmtMoney, daysBetween, getDolarBlue, pesToDolar } from "@/lib/utils";
 
 export default async function IngresosPage() {
   const { userId, sessionClaims } = await auth();
@@ -12,9 +12,10 @@ export default async function IngresosPage() {
   const id_propietario = (sessionClaims?.publicMetadata as { id_propietario?: string })?.id_propietario;
   if (!id_propietario) redirect("/onboarding");
 
-  const [reservasResult, vehiculosResult] = await Promise.all([
+  const [reservasResult, vehiculosResult, tipoCambio] = await Promise.all([
     getReservasByPropietario(id_propietario),
     getVehiculosByPropietario(id_propietario),
+    getDolarBlue(),
   ]);
 
   const reservas  = reservasResult.data?.reservas  ?? [];
@@ -55,6 +56,9 @@ export default async function IngresosPage() {
         <div className={kpiClass}>
           <div className="text-[12px] text-[var(--text-secondary)]">Total del mes</div>
           <div className="text-[26px] font-bold tracking-[-0.01em] mt-1">{fmtMoney(totalMes)}</div>
+          {tipoCambio > 0 && (
+            <div className="text-[12px] text-[var(--text-tertiary)] mt-1">{pesToDolar(totalMes, tipoCambio)}</div>
+          )}
         </div>
         <div className={kpiClass}>
           <div className="text-[12px] text-[var(--text-secondary)]">Reservas finalizadas</div>
@@ -63,6 +67,9 @@ export default async function IngresosPage() {
         <div className={kpiClass}>
           <div className="text-[12px] text-[var(--text-secondary)]">Precio promedio</div>
           <div className="text-[26px] font-bold tracking-[-0.01em] mt-1">{fmtMoney(ticketPromedio)}</div>
+          {tipoCambio > 0 && (
+            <div className="text-[12px] text-[var(--text-tertiary)] mt-1">{pesToDolar(totalMes, tipoCambio)}</div>
+          )}
         </div>
       </div>
 
@@ -98,6 +105,9 @@ export default async function IngresosPage() {
                     <td className={tdClass}>{dias}</td>
                     <td className={tdClass}>
                       <strong className="text-[var(--color-primary-400)]">{fmtMoney(monto)}</strong>
+                      {tipoCambio > 0 && (
+                        <div className="text-[11px] text-[var(--text-tertiary)]">{pesToDolar(monto, tipoCambio)}</div>
+                      )}
                     </td>
                   </tr>
                 );
