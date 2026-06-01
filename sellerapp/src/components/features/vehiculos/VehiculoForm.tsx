@@ -23,7 +23,6 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
     anio:   vehiculo?.anio?.toString()    ?? new Date().getFullYear().toString(),
     precio: vehiculo?.precio?.toString()  ?? "",
     fotos:  vehiculo?.fotos   ?? "",
-    estado: (vehiculo?.estado ?? "Disponible") as "Disponible" | "Alquilado",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -74,7 +73,6 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
       anio:   Number(form.anio),
       precio: Number(form.precio),
       fotos:  form.fotos,
-      estado: form.estado,
     };
 
     const result = isEditing
@@ -164,20 +162,6 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
               Quitar foto
             </button>
           )}
-        </Field>
-
-        <Field label="Estado" htmlFor="estado">
-          <select
-            id="estado" name="estado"
-            value={form.estado}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setForm(prev => ({ ...prev, estado: e.target.value as "Disponible" | "Alquilado" }))
-            }
-            className={inputClass}
-          >
-            <option value="Disponible">Disponible</option>
-            <option value="Alquilado">Alquilado</option>
-          </select>
         </Field>
       </div>
 
