@@ -1,18 +1,14 @@
-"use client";
-import { useState } from "react";
-import { Sidebar } from "@/components/features/layout/Sidebar";
-import { Header } from "@/components/features/layout/Header";
+import { auth } from "@clerk/nextjs/server";
+import { PropietarioLayoutClient } from "@/components/features/layout/PropietarioLayoutClient";
 
-export default function PropietarioLayout({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+export default async function PropietarioLayout({ children }: { children: React.ReactNode }) {
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
+  const isAdminSeller = role === "adminSeller";
 
   return (
-    <div className="grid grid-cols-[240px_1fr] min-h-screen max-[900px]:grid-cols-1">
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} isAdmin={false} />
-      <div className="flex flex-col min-h-screen overflow-x-auto">
-        <Header onMenu={() => setSidebarOpen(true)} />
-        <main className="px-8 pt-7 pb-12 max-[900px]:p-[18px]">{children}</main>
-      </div>
-    </div>
+    <PropietarioLayoutClient isAdminSeller={isAdminSeller}>
+      {children}
+    </PropietarioLayoutClient>
   );
 }
