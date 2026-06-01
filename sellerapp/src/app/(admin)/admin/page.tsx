@@ -5,7 +5,7 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { fmtDate } from "@/lib/utils";
 
 const thClass = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
-const tdClass = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle last:border-b-0";
+const tdClass = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle";
 const kpiClass = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] px-5 py-[18px] shadow-[var(--shadow-sm)]";
 
 export default async function AdminDashboardPage() {
