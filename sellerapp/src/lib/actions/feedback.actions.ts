@@ -49,7 +49,7 @@ export async function crearResenaAction(data: {
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario") throw new Error("No autorizado");
+  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
 
   return crearResena(data);
 }
