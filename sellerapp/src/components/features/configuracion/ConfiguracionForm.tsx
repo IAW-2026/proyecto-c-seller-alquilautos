@@ -29,6 +29,7 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
   const [errors, setErrors]   = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -49,6 +50,8 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
           fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
         });
         setErrors(fieldErrors);
+      } else {
+        setFormError(String(result.error));
       }
       return;
     }
@@ -66,6 +69,11 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
       {success && (
         <div className="bg-[var(--color-success-50)] text-[var(--color-success-700)] px-[14px] py-[10px] rounded-[var(--radius-md)] mb-4 text-[13px] font-semibold">
           ✓ Cambios guardados correctamente
+        </div>
+      )}
+      {formError && (
+        <div className="bg-[var(--color-danger-50)] text-[var(--color-danger-700)] px-[14px] py-[10px] rounded-[var(--radius-md)] mb-4 text-[13px] font-semibold">
+          {formError}
         </div>
       )}
 
