@@ -98,14 +98,7 @@ export function Header({ onMenu }: HeaderProps) {
         <button className={iconBtnClass} onClick={toggleTheme} aria-label="Cambiar tema">
           <Icon name={resolved === "dark" ? "sun" : "moon"} />
         </button>
-        <button className={iconBtnClass} aria-label="Notificaciones">
-          <Icon name="bell" />
-          <span className="absolute top-2 right-[9px] w-[7px] h-[7px] rounded-full bg-[var(--color-danger-500)] border-2 border-[var(--bg-surface)]" />
-        </button>
-        <button className={iconBtnClass} aria-label="Ayuda">
-          <Icon name="help" />
-        </button>
-
+        
         <div className="w-px h-[22px] bg-[var(--border-default)]" />
 
         <UserButton>
