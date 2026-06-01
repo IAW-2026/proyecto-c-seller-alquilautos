@@ -9,11 +9,14 @@ import type { Vehiculo } from "@/lib/types";
 
 interface VehiculosGridProps {
   vehiculos: Vehiculo[];
+  tipoCambio?: number;
 }
 
-export function VehiculosGrid({ vehiculos }: VehiculosGridProps) {
-  const [filtro, setFiltro] = useState<"Todos" | "Disponible" | "Alquilado">("Todos");
+const PAGE_SIZE = 10;
 
+export function VehiculosGrid({ vehiculos, tipoCambio = 0 }: VehiculosGridProps) {
+  const [filtro, setFiltro] = useState<"Todos" | "Disponible" | "Alquilado">("Todos");
+  const [page, setPage] = useState(1);
   const disponibles = vehiculos.filter(v => v.estado === "Disponible");
   const alquilados  = vehiculos.filter(v => v.estado === "Alquilado");
   const filtered =
@@ -36,7 +39,11 @@ export function VehiculosGrid({ vehiculos }: VehiculosGridProps) {
     if (op.startsWith("Todos"))       setFiltro("Todos");
     else if (op.startsWith("Disp"))   setFiltro("Disponible");
     else                              setFiltro("Alquilado");
+    setPage(1);
   };
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <>
@@ -67,9 +74,22 @@ export function VehiculosGrid({ vehiculos }: VehiculosGridProps) {
         />
       ) : (
         <div className="grid gap-[18px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
-          {filtered.map(v => (
-            <VehiculoCard key={v.id_vehiculo} vehiculo={v} />
+          {pageItems.map(v => (
+            <VehiculoCard key={v.id_vehiculo} vehiculo={v} tipoCambio={tipoCambio} />
           ))}
+        </div>
+      )}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-5 text-[12px] text-[var(--text-secondary)]">
+          <span>Página {page} de {totalPages}</span>
+          <div className="flex gap-2">
+            {page > 1 && (
+              <button onClick={() => setPage(p => p - 1)} className="inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-colors duration-[180ms]">Anterior</button>
+            )}
+            {page < totalPages && (
+              <button onClick={() => setPage(p => p + 1)} className="inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-colors duration-[180ms]">Siguiente</button>
+            )}
+          </div>
         </div>
       )}
     </>
