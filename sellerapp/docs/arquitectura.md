@@ -30,7 +30,7 @@ La integración con las otras apps está pendiente. Los mocks se encuentran en `
 | `buyerApp.ts` | `getAlquilador(id)` | `GET /api/alquilador/{id}` | Buyer App |
 | `shippingApp.ts` | `createEntrega(data)` | `POST /api/entrega` | Shipping App |
 | `shippingApp.ts` | `getHorarioSeleccionado(id_reserva)` | `GET /api/horario/seleccionada/{id_reserva}` | Shipping App |
-| `shippingApp.ts` | `cancelarEntrega(id_reserva)` | `PATCH /api/entrega/{id_reserva}` (estado: Cancelada) | Shipping App |
+| `shippingApp.ts` | `cancelarEntrega(id_reserva)` | `PATCH /api/cancelar/{id_reserva}` (estado: Cancelada) | Shipping App |
 | `paymentsApp.ts` | `iniciarPago(data)` | `POST /api/pago` | Payments App |
 | `feedbackApp.ts` | `getResenaVehiculoReserva(id_reserva)` | `GET /api/resena/vehiculo/reserva/{id_reserva}` | Feedback App |
 | `feedbackApp.ts` | `getResenaPropietarioReserva(id_reserva)` | `GET /api/resena/propietario/reserva/{id_reserva}` | Feedback App |
