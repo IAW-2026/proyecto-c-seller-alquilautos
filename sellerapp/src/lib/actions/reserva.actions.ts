@@ -23,7 +23,7 @@ export async function aceptarReservaAction(
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario") throw new Error("No autorizado");
+  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
 
   const reservaResult = await getReserva(id_reserva);
   if (reservaResult.error || !reservaResult.data) throw new Error("Reserva no encontrada");
