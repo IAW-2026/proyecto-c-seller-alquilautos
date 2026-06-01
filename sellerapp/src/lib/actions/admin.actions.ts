@@ -19,6 +19,19 @@ const ESTADOS_ACTIVOS: EstadoReserva[] = [
   EstadoReserva.Entregada,
 ];
 
+const ESTADOS_ALQUILADO: EstadoReserva[] = [
+  EstadoReserva.Aceptada,
+  EstadoReserva.Coordinada,
+  EstadoReserva.Pagada,
+  EstadoReserva.Entregada,
+];
+
+const ESTADOS_DISPONIBLE: EstadoReserva[] = [
+  EstadoReserva.Finalizada,
+  EstadoReserva.Rechazada,
+  EstadoReserva.Cancelada,
+];
+
 // ===== PROPIETARIOS =====
 
 export async function eliminarPropietarioAction(id_propietario: string) {
@@ -123,11 +136,26 @@ export async function cambiarEstadoReservaAction(id_reserva: string, estado: Est
   await verificarAdmin();
 
   try {
-    await db.reserva.update({
+    const reserva = await db.reserva.update({
       where: { id_reserva },
       data: { estado },
     });
+
+    if (ESTADOS_ALQUILADO.includes(estado)) {
+      await db.vehiculo.update({
+        where: { id_vehiculo: reserva.id_vehiculo },
+        data: { estado: "Alquilado" },
+      });
+    } else if (ESTADOS_DISPONIBLE.includes(estado)) {
+      await db.vehiculo.update({
+        where: { id_vehiculo: reserva.id_vehiculo },
+        data: { estado: "Disponible" },
+      });
+    }
+
     revalidatePath("/admin/simulador");
+    revalidatePath("/dashboard/vehiculos");
+    revalidatePath("/dashboard");
     return { data: { id_reserva, estado } };
   } catch {
     return { error: "Error al cambiar el estado" };
