@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { StatusBadge } from "@/components/ui/Badge";
-import { fmtMoney } from "@/lib/utils";
+import { fmtMoney, pesToDolar  } from "@/lib/utils";
 import type { Vehiculo } from "@/lib/types";
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
+  tipoCambio?: number;
 }
 
-export function VehiculoCard({ vehiculo }: VehiculoCardProps) {
+export function VehiculoCard({ vehiculo, tipoCambio = 0 }: VehiculoCardProps) {
   return (
     <article className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)] flex flex-col transition-[transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]">
 
@@ -41,6 +42,11 @@ export function VehiculoCard({ vehiculo }: VehiculoCardProps) {
         <div className="font-bold text-[var(--color-primary-400)] text-[18px] text-right shrink-0">
           {fmtMoney(vehiculo.precio)}
           <small className="block text-[var(--text-secondary)] font-medium text-[11px]">/ día</small>
+          {tipoCambio > 0 && (
+            <small className="block text-[var(--text-tertiary)] font-medium text-[11px]">
+              {pesToDolar(vehiculo.precio, tipoCambio)}
+            </small>
+          )}
         </div>
       </div>
 
