@@ -10,7 +10,7 @@ async function main() {
 
   const propietario1 = await prisma.propietario.create({
     data: {
-      email: "maria.lopez@gmail.com",
+      email: "seller+clerktest@iaw.com",
       nombre: "Maria",
       apellido: "Lopez",
       fecha_nacimiento: new Date("1990-07-22"),
@@ -20,9 +20,10 @@ async function main() {
     },
   });
 
+  // ===== ADMIN =====
   const propietario2 = await prisma.propietario.create({
     data: {
-      email: "carlos.gomez@gmail.com",
+      email: "selleradmin+clerktest@iaw.com",
       nombre: "Carlos",
       apellido: "Gomez",
       fecha_nacimiento: new Date("1985-03-15"),
