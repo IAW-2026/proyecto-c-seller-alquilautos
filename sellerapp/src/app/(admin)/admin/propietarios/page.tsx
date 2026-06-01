@@ -9,7 +9,7 @@ import { EliminarPropietarioButton } from "@/components/features/admin/EliminarP
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
-const tdClass   = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle last:border-b-0";
+const tdClass   = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle";
 const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms]";
 
 export default async function AdminPropietariosPage({
