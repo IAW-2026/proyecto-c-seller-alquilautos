@@ -3,10 +3,12 @@ import { redirect, notFound } from "next/navigation";
 import { getVehiculo } from "@/lib/services/vehiculo.service";
 import { getResumenVehiculo, getResenasVehiculo, getPromedioVehiculo } from "@/lib/mocks/feedbackApp";
 import { StatusBadge } from "@/components/ui/Badge";
-import { fmtMoney } from "@/lib/utils";
+import { fmtMoney, getDolarBlue, pesToDolar } from "@/lib/utils";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
 import { EditarVehiculoModal } from "@/components/features/vehiculos/EditarVehiculoModal";
+import { EliminarVehiculoButton } from "@/components/features/vehiculos/EliminarVehiculoButton";
+
 
 const PAGE_SIZE = 5;
 const cardClass  = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] p-6 shadow-[var(--shadow-sm)]";
@@ -32,10 +34,11 @@ export default async function VehiculoDetallePage({
   if (result.error || !result.data) notFound();
   const vehiculo = result.data;
 
-  const [promedio, resumen, resenas] = await Promise.all([
+  const [promedio, resumen, resenas, tipoCambio] = await Promise.all([
     getPromedioVehiculo(id),
     getResumenVehiculo(id),
     getResenasVehiculo(id),
+    getDolarBlue(),
   ]);
 
   const { page: pageParam = "1" } = await searchParams;
@@ -61,6 +64,7 @@ export default async function VehiculoDetallePage({
             <Icon name="chevronLeft" size={14} /> Volver
           </Link>
           <EditarVehiculoModal vehiculo={vehiculo} />
+          <EliminarVehiculoButton id_vehiculo={vehiculo.id_vehiculo} nombre={`${vehiculo.marca} ${vehiculo.modelo}`} />
         </div>
       </div>
 
@@ -94,6 +98,9 @@ export default async function VehiculoDetallePage({
               <div className={fieldClass}>
                 <span className={labelClass}>Precio por día</span>
                 <span className="text-[14px] font-bold text-[var(--color-primary-400)]">{fmtMoney(vehiculo.precio)}</span>
+                {tipoCambio > 0 && (
+                  <span className="text-[12px] text-[var(--text-tertiary)]">{pesToDolar(vehiculo.precio, tipoCambio)}</span>
+                )}
               </div>
               <div className={fieldClass}>
                 <span className={labelClass}>Estado</span>
