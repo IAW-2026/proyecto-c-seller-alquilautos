@@ -117,6 +117,24 @@ async function main() {
     },
   });
 
+  // v10 Peugeot 208 → reserva Coordinada → Alquilado
+  const v10 = await prisma.vehiculo.create({
+    data: {
+      id_propietario: propietario2.id_propietario,
+      marca: "Peugeot", modelo: "208", anio: 2023, precio: 11000,
+      estado: "Alquilado", fotos: "",
+    },
+  });
+
+  // v11 Volkswagen Vento → reserva Pagada → Alquilado
+  const v11 = await prisma.vehiculo.create({
+    data: {
+      id_propietario: propietario2.id_propietario,
+      marca: "Volkswagen", modelo: "Vento", anio: 2022, precio: 14000,
+      estado: "Alquilado", fotos: "",
+    },
+  });
+
   // ===== RESERVAS DE MARIA =====
 
   // v1 Jeep Renegade — Pendiente (disponible, esperando aceptar/rechazar)
@@ -294,6 +312,54 @@ async function main() {
       fecha_inicio: new Date("2026-04-10"),
       fecha_final: new Date("2026-04-15"),
       estado: "Finalizada",
+    },
+  });
+
+  // v7 Ford Focus — ya tiene Pendiente, agregamos Finalizada (historial)
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v7.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_002",
+      fecha_inicio: new Date("2026-03-01"),
+      fecha_final: new Date("2026-03-05"),
+      estado: "Finalizada",
+    },
+  });
+
+  // v8 Honda Civic — Cancelada (para testear filtro)
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v8.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_003",
+      fecha_inicio: new Date("2026-02-10"),
+      fecha_final: new Date("2026-02-15"),
+      estado: "Cancelada",
+    },
+  });
+
+  // v10 Peugeot 208 — Coordinada (alquilado, esperando pago)
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v10.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_001",
+      fecha_inicio: new Date("2026-06-12"),
+      fecha_final: new Date("2026-06-17"),
+      estado: "Coordinada",
+    },
+  });
+
+  // v11 Volkswagen Vento — Pagada (alquilado, esperando entrega)
+  await prisma.reserva.create({
+    data: {
+      id_vehiculo: v11.id_vehiculo,
+      id_propietario: propietario2.id_propietario,
+      id_alquilador: "alquilador_002",
+      fecha_inicio: new Date("2026-06-10"),
+      fecha_final: new Date("2026-06-14"),
+      estado: "Pagada",
     },
   });
 
