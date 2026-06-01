@@ -37,14 +37,24 @@ export async function actualizarPropietario(id: string, data: {
   dni?: string;
   direccion?: string;
   email?: string;
+  telefono?: string;
 }) {
   const existente = await findPropietarioById(id);
   if (!existente) return { data: null, error: "Propietario no encontrado" };
 
-  const updated = await updatePropietario(id, {
-    ...data,
-    fecha_nacimiento: data.fecha_nacimiento ? new Date(data.fecha_nacimiento) : undefined,
-  });
-
-  return { data: updated, error: null };
+  try {
+    const updated = await updatePropietario(id, {
+      ...data,
+      fecha_nacimiento: data.fecha_nacimiento ? new Date(data.fecha_nacimiento) : undefined,
+    });
+    return { data: updated, error: null };
+  } catch (error: any) {
+    if (error?.code === "P2002") {
+      const campo = Array.isArray(error.meta?.target) ? error.meta.target[0] : "campo";
+      if (campo === "dni") return { data: null, error: "Ya existe un propietario con ese DNI" };
+      if (campo === "email") return { data: null, error: "Ya existe un propietario con ese email" };
+      return { data: null, error: `Ya existe un propietario con ese ${campo}` };
+    }
+    return { data: null, error: "Error al actualizar el propietario" };
+  }
 }
