@@ -1,11 +1,12 @@
 
-import { findVehiculoById } from "@/lib/repositories/vehiculo.repository";
+import { findVehiculoById, updateVehiculo  } from "@/lib/repositories/vehiculo.repository";
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
 import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario } from "@/lib/repositories/reserva.repository";
 import { EstadoReserva } from "@prisma/client";
 import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
 import { iniciarPago } from "@/lib/mocks/paymentsApp";
+
 
 function parseFecha(fecha: string): Date {
   const [dia, mes, anio] = fecha.split("-");
@@ -58,6 +59,9 @@ export async function actualizarEstadoReserva(id: string, estado: EstadoReserva)
   const reserva = await findReservaById(id);
   if (!reserva) return { data: null, error: "Reserva no encontrada" };
   await updateReservaEstado(id, estado);
+  if (estado === EstadoReserva.Finalizada || estado === EstadoReserva.Rechazada) {
+    await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
+  }
   return { data: { id_reserva: id, estado }, error: null };
 }
 
@@ -90,6 +94,12 @@ export async function cancelarReserva(id: string) {
   if (reserva.estado === EstadoReserva.Coordinada) {
     await cancelarEntrega(id);
   }
+
+  if (reserva.estado === EstadoReserva.Coordinada) {
+  await cancelarEntrega(id);
+  }
+
+  await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
 
   return { data: { id_reserva: id, estado: "Cancelada" }, error: null };
 }
