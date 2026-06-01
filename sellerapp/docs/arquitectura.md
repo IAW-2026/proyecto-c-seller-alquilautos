@@ -50,12 +50,12 @@ La integración con las otras apps está pendiente. Los mocks se encuentran en `
 
 | Endpoint | Método | Request | Response | Consumido por |
 |----------|--------|---------|----------|---------------|
-| `/api/vehiculo/disponible` | GET | — | `{ data: { vehiculos: [...] } }` | Buyer App |
-| `/api/vehiculo/[id]` | GET | — | `{ data: { vehiculo } }` | Buyer App |
+| `/api/vehiculo/disponible` | GET | — | `{ data: { vehiculos: [...] } }` | Buyer App, Feedback App |
+| `/api/vehiculo/[id]` | GET | — | `{ data: { vehiculo } }` | Feedback App |
 | `/api/propietario/[id]` | GET | — | `{ data: { propietario } }` | Buyer App, Feedback App |
 | `/api/reserva` | POST | `{ id_alquilador, id_vehiculo, id_propietario, fecha_inicio, fecha_final }` | `{ data: { id_reserva } }` | Buyer App |
-| `/api/reserva/[id]` | GET | — | `{ data: { reserva } }` | Buyer App, Shipping App, Feedback App |
-| `/api/reserva/[id]` | PATCH | `{ estado: EstadoReserva }` | `{ data: { id_reserva, estado } }` | Shipping App, Payments App, Feedback App |
+| `/api/reserva/[id]` | GET | — | `{ data: { reserva } }` | Buyer App, Shipping App|
+| `/api/reserva/[id]` | PATCH | `{ estado: EstadoReserva }` | `{ data: { id_reserva, estado } }` | Shipping App, Payments App, Feedback App, Buyer App |
 | `/api/reserva/alquilador/[id]` | GET | — | `{ data: { reservas: [...] } }` | Buyer App |
 | `/api/upload` | POST | `FormData` con `file` | `{ url: string }` | Seller App (interno) |
 

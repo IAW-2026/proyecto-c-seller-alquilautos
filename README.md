@@ -14,7 +14,7 @@ Enunciado completo: <https://iaw-2026.github.io/proyecto/>
 
 ## Deploy
 
-[_COMPLETAR_URL_VERCEL_](_COMPLETAR_URL_VERCEL_)
+[https://proyecto-c-seller-alquilautos.vercel.app/](https://proyecto-c-seller-alquilautos.vercel.app/)
 
 ---
 
@@ -22,8 +22,8 @@ Enunciado completo: <https://iaw-2026.github.io/proyecto/>
 
 | Rol | Email | Contraseña |
 |-----|-------|------------|
-| Propietario | seller+clerktest@iaw.com | iawuser# |
-| Administrador | selleradmin+clerktest@iaw.com | iawuser# |
+| Propietario | seller+clerk_test@iaw.com | iawuser# |
+| Administrador | selleradmin+clerk_test@iaw.com | iawuser# |
 
 ---
 
@@ -56,4 +56,4 @@ Incluye un panel de administración con CRUD completo de propietarios, vehículo
 - El usuario `selleradmin+clerktest@iaw.com` tiene rol `adminSeller` en Clerk y acceso tanto al dashboard de propietario como al panel de administración desde el mismo sidebar.
 - Las imágenes de vehículos se suben a Cloudinary automáticamente desde el formulario con drag & drop y se optimizan a WebP.
 - El tipo de cambio dólar blue se consume en tiempo real desde `dolarapi.com` y se muestra junto al precio en pesos en las cards de vehículos e ingresos.
-- La documentación técnica extensa (endpoints, mocks, arquitectura) se encuentra en [`docs/arquitectura.md`](docs/arquitectura.md).
+- La documentación técnica extensa (endpoints, mocks, arquitectura) se encuentra en `docs/arquitectura.md`.
