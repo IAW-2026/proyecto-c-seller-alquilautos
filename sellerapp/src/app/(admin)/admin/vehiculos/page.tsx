@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { EditarVehiculoAdminModal } from "@/components/features/admin/EditarVehiculoAdminModal";
 import { EliminarVehiculoButton } from "@/components/features/admin/EliminarVehiculoButton";
+import { getCloudinaryUrl } from "@/lib/utils";
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -91,7 +92,11 @@ export default async function AdminVehiculosPage({
                       <td className={tdClass}>
                         <div className="flex items-center gap-[10px]">
                           {v.fotos && (
-                            <img src={v.fotos} alt="" className="rounded-[var(--radius-md)] w-12 h-8 object-cover shrink-0 inline-block" />
+                            <img 
+                              src={getCloudinaryUrl(v.fotos, 96, 64)} 
+                              alt="" 
+                              className="rounded-[var(--radius-md)] w-12 h-8 object-cover shrink-0 inline-block" 
+                            />
                           )}
                           <div className="font-semibold text-[var(--text-primary)]">{v.marca} {v.modelo}</div>
                         </div>

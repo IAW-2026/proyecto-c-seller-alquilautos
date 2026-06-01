@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import { getVehiculo } from "@/lib/services/vehiculo.service";
 import { getResumenVehiculo, getResenasVehiculo, getPromedioVehiculo } from "@/lib/mocks/feedbackApp";
 import { StatusBadge } from "@/components/ui/Badge";
-import { fmtMoney, getDolarBlue, pesToDolar } from "@/lib/utils";
+import { fmtMoney, getDolarBlue, pesToDolar, getCloudinaryUrl } from "@/lib/utils";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
 import { EditarVehiculoModal } from "@/components/features/vehiculos/EditarVehiculoModal";
@@ -75,7 +75,12 @@ export default async function VehiculoDetallePage({
         <div className="flex flex-col gap-5">
           <div className="rounded-[var(--radius-lg)] overflow-hidden aspect-video bg-[var(--color-neutral-100)]">
             {vehiculo.fotos
-              ? <img src={vehiculo.fotos} alt={`${vehiculo.marca} ${vehiculo.modelo}`} className="w-full h-full object-cover" />
+              ? <img 
+                  src={getCloudinaryUrl(vehiculo.fotos, 800, 450)} 
+                  alt={`${vehiculo.marca} ${vehiculo.modelo}`} 
+                  className="w-full h-full object-cover"
+                  fetchPriority="high"
+                />
               : <div className="w-full h-full flex items-center justify-center text-[var(--text-secondary)]">Sin foto</div>
             }
           </div>

@@ -44,3 +44,8 @@ export function pesToDolar(pesos: number, tipoCambio: number): string {
   if (!tipoCambio) return "";
   return `U$D ${(pesos / tipoCambio).toFixed(0)}`;
 }
+
+export function getCloudinaryUrl(url: string, width: number, height: number): string {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  return url.replace("/upload/", `/upload/w_${width},h_${height},c_fill,f_auto,q_auto/`);
+}
