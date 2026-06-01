@@ -1,21 +1,3 @@
-export async function getResenasAlquilador(id_alquilador: string) {
-  return {
-    resenas: [
-      {
-        id_resena: 1,
-        id_reserva: 100,
-        id_emisor: 2,
-        calificacion_general: 5,
-        descripcion: "Muy buen cliente",
-        fecha_creacion: "01-06-2026",
-        calificacion_comunicacion: 4,
-        calificacion_puntualidad: 4,
-        calificacion_devolucion: 4,
-      },
-    ],
-  };
-}
-
 export async function getResenasPropietario(id_propietario: string) {
   return {
     resenas: [
