@@ -27,3 +27,20 @@ export function fmtMoney(n: MoneyInput): string {
     maximumFractionDigits: 2,
   })}`;
 }
+//api externa para obtener el dolar blue para convertir precios de pesos a dolares 
+export async function getDolarBlue(): Promise<number> {
+  try {
+    const res = await fetch("https://dolarapi.com/v1/dolares/blue", {
+      next: { revalidate: 3600 }, // cachea 1 hora
+    });
+    const data = await res.json();
+    return data.venta;
+  } catch {
+    return 0;
+  }
+}
+
+export function pesToDolar(pesos: number, tipoCambio: number): string {
+  if (!tipoCambio) return "";
+  return `U$D ${(pesos / tipoCambio).toFixed(0)}`;
+}
