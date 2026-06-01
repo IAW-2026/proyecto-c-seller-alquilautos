@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 import { StatusBadge } from "@/components/ui/Badge";
-import { fmtMoney, pesToDolar  } from "@/lib/utils";
+import { fmtMoney, pesToDolar, getCloudinaryUrl    } from "@/lib/utils";
 import type { Vehiculo } from "@/lib/types";
 
 interface VehiculoCardProps {
@@ -16,7 +16,11 @@ export function VehiculoCard({ vehiculo, tipoCambio = 0 }: VehiculoCardProps) {
       {/* Foto */}
       <div className="relative aspect-[16/10] bg-[var(--color-neutral-100)] overflow-hidden">
         {vehiculo.fotos
-          ? <img src={vehiculo.fotos} alt={`${vehiculo.marca} ${vehiculo.modelo}`} className="w-full h-full object-cover block" />
+          ? <img 
+              src={getCloudinaryUrl(vehiculo.fotos, 400, 250)} 
+              alt={`${vehiculo.marca} ${vehiculo.modelo}`} 
+              className="w-full h-full object-cover block" 
+            />
           : (
             <div className="w-full h-full grid place-items-center text-[var(--text-tertiary)] font-mono text-[12px]"
               style={{ background: "repeating-linear-gradient(45deg, var(--color-neutral-100) 0 10px, var(--color-neutral-200) 10px 20px)" }}>
