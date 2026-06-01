@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import type { IconName } from "@/components/ui/Icon";
+import { useEffect, useState } from "react";
 
 interface NavItem {
   to: string;
@@ -30,17 +31,21 @@ interface SidebarProps {
   open?: boolean;
   onClose?: () => void;
   isAdmin?: boolean;
-  userName?: string;
-  userRole?: string;
+  isAdminSeller?: boolean;
 }
 
-export function Sidebar({ open = false, onClose, isAdmin = false }: SidebarProps) {
+export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller = false }: SidebarProps) {
   const pathname = usePathname();
-  const navItems = isAdmin ? NAV_ADMIN : NAV_PROPIETARIO;
-
+  const navItems = isAdminSeller ? NAV_PROPIETARIO : (isAdmin ? NAV_ADMIN : NAV_PROPIETARIO);
+  const [adminOpen, setAdminOpen] = useState(false);
+ 
   const isActive = (to: string) =>
-    pathname === to || (to !== "/dashboard" && to !== "/admin" && pathname.startsWith(to));
-
+  pathname === to || (to !== "/dashboard" && to !== "/admin" && pathname.startsWith(to));
+  
+  useEffect(() => {
+    if (pathname.startsWith("/admin")) setAdminOpen(true);
+  }, [pathname]);
+  
   return (
     <>
       {open && (
@@ -62,7 +67,7 @@ export function Sidebar({ open = false, onClose, isAdmin = false }: SidebarProps
             AlquilAutos
           </h1>
           <p className="m-0 mt-[2px] text-[12px] text-[var(--text-secondary)]">
-            {isAdmin ? "Panel Admin" : "Gestión de Flota"}
+            {isAdmin && !isAdminSeller ? "Panel Admin" : "Gestión de Flota"}
           </p>
         </div>
 
@@ -88,6 +93,43 @@ export function Sidebar({ open = false, onClose, isAdmin = false }: SidebarProps
             );
           })}
           <div className="flex-1" />
+
+          {/* Botón Panel Admin — solo si es adminSeller en el dashboard */}
+          {isAdminSeller && (
+            <div>
+              <button
+                onClick={() => setAdminOpen(prev => !prev)}
+                className="w-full flex items-center gap-3 px-[14px] py-[10px] rounded-[var(--radius-md)] text-[14px] cursor-pointer transition-[background,color] duration-[180ms] text-[var(--color-neutral-700)] [[data-theme='dark']_&]:text-[var(--color-neutral-400)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+              >
+                <Icon name="shield" className="w-[18px] h-[18px] shrink-0" />
+                <span>Panel Admin</span>
+                <Icon name={adminOpen ? "chevronLeft" : "chevronRight"} size={14} className="ml-auto" />
+              </button>
+              {adminOpen && (
+                <div className="ml-4 flex flex-col gap-[2px] mt-[2px]">
+                  {NAV_ADMIN.map(item => {
+                    const active = isActive(item.to);
+                    return (
+                      <Link
+                        key={item.to}
+                        href={item.to}
+                        onClick={onClose}
+                        className={[
+                          "flex items-center gap-3 px-[14px] py-[9px] rounded-[var(--radius-md)] text-[13px] cursor-pointer transition-[background,color] duration-[180ms]",
+                          active
+                            ? "text-[var(--color-primary-400)] font-semibold"
+                            : "text-[var(--color-neutral-700)] [[data-theme='dark']_&]:text-[var(--color-neutral-400)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
+                        ].join(" ")}
+                      >
+                        <Icon name={item.icon} className="w-[16px] h-[16px] shrink-0" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
       </aside>
     </>
