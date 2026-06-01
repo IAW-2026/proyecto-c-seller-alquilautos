@@ -3,6 +3,8 @@ import { auth } from "@clerk/nextjs/server";
 import { actualizarEstadoReserva, getReserva  } from "@/lib/services/reserva.service";
 import { revalidatePath } from "next/cache";
 import { createEntrega  } from "@/lib/mocks/shippingApp";
+import { updateVehiculo } from "../repositories/vehiculo.repository";
+
 
 export async function aceptarReservaAction(
   id_reserva: string,
@@ -28,6 +30,8 @@ export async function aceptarReservaAction(
 
   const result = await actualizarEstadoReserva(id_reserva, "Aceptada");
   if (result.error) throw new Error(result.error);
+
+  await updateVehiculo(id_vehiculo, { estado: "Alquilado" });
 
   await createEntrega({
     id_reserva,

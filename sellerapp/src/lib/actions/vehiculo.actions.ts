@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { crearVehiculo, actualizarVehiculo } from "@/lib/services/vehiculo.service";
 import { crearVehiculoSchema, actualizarVehiculoSchema } from "@/lib/validators/vehiculo";
 import { revalidatePath } from "next/cache";
+import { db } from "@/lib/db";
 
 export async function crearVehiculoAction(formData: {
   marca: string;
@@ -10,7 +11,6 @@ export async function crearVehiculoAction(formData: {
   anio: number;
   precio: number;
   fotos: string;
-  estado: "Disponible" | "Alquilado";
 }) {
   const { userId, sessionClaims } = await auth();
   if (!userId) throw new Error("No autorizado");
@@ -38,7 +38,6 @@ export async function actualizarVehiculoAction(id: string, formData: {
   anio?: number;
   precio?: number;
   fotos?: string;
-  estado?: "Disponible" | "Alquilado";
 }) {
   const { userId, sessionClaims } = await auth();
   if (!userId) throw new Error("No autorizado");
@@ -57,4 +56,29 @@ export async function actualizarVehiculoAction(id: string, formData: {
   revalidatePath("/dashboard/vehiculos");
   revalidatePath(`/dashboard/vehiculos/${id}`);
   return { data: result.data };
+}
+
+export async function eliminarVehiculoAction(id_vehiculo: string) {
+  const { userId, sessionClaims } = await auth();
+  if (!userId) throw new Error("No autorizado");
+
+  const metadata = sessionClaims?.publicMetadata as { role?: string; id_propietario?: string };
+  if (metadata?.role !== "propietario") throw new Error("No autorizado");
+
+  const reservasActivas = await db.reserva.count({
+    where: {
+      id_vehiculo,
+      estado: { in: ["Pendiente", "Aceptada", "Coordinada", "Pagada", "Entregada"] },
+    },
+  });
+
+  if (reservasActivas > 0) {
+    return { error: "El vehículo tiene reservas activas. Esperá a que finalicen." };
+  }
+
+  await db.reserva.deleteMany({ where: { id_vehiculo } });
+  await db.vehiculo.delete({ where: { id_vehiculo } });
+
+  revalidatePath("/dashboard/vehiculos");
+  return { data: "Vehículo eliminado correctamente" };
 }
