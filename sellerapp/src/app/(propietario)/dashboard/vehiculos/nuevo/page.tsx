@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default function NuevoVehiculoPage() {
   return (
-    <div className="max-w-[880px]">
+    <div className="max-w-[880px] mx-auto">
       <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>
           <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Nuevo vehículo</h2>
