@@ -18,6 +18,12 @@ export async function findPropietarioById(id: string) {
   });
 }
 
+export async function findAllPropietarios() {
+  return db.propietario.findMany({
+    select: PROPIETARIO_SELECT,
+  });
+}
+
 export async function createPropietario(data: {
   email: string;
   nombre: string;

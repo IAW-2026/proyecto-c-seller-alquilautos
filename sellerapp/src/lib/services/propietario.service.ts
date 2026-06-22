@@ -1,4 +1,4 @@
-import { findPropietarioById, createPropietario, updatePropietario } from "@/lib/repositories/propietario.repository";
+import { findPropietarioById, findAllPropietarios, createPropietario, updatePropietario } from "@/lib/repositories/propietario.repository";
 import type { OnboardingInput } from "@/lib/validators/propietario";
 
 export async function getPropietario(id: string) {
@@ -8,12 +8,24 @@ export async function getPropietario(id: string) {
     return { data: null, error: "Propietario no encontrado" };
   }
 
-  return { 
-    data: { 
-      ...propietario, 
-      telefono: propietario.telefono ?? undefined 
-    }, 
-    error: null 
+  return {
+    data: {
+      ...propietario,
+      telefono: propietario.telefono ?? undefined
+    },
+    error: null
+  };
+}
+
+export async function getPropietarios() {
+  const propietarios = await findAllPropietarios();
+
+  return {
+    data: propietarios.map((propietario) => ({
+      ...propietario,
+      telefono: propietario.telefono ?? undefined,
+    })),
+    error: null,
   };
 }
 
