@@ -53,7 +53,7 @@ export async function rechazarReservaAction(id_reserva: string) {
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario") throw new Error("No autorizado");
+  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
 
   const result = await actualizarEstadoReserva(id_reserva, "Rechazada");
   if (result.error) throw new Error(result.error);
