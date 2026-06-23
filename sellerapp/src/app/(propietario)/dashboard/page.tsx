@@ -23,22 +23,43 @@ export default async function DashboardPage() {
     getDolarBlue(),
   ]);
 
-  
-
   const vehiculos = (vehiculosResult.data?.vehiculos ?? []).map(v => ({ ...v, precio: Number(v.precio) }));
   const reservas   = reservasResult.data?.reservas ?? [];
   const pendientes = reservas.filter(r => r.estado === "Pendiente");
   const aceptadas  = reservas.filter(r => r.estado === "Aceptada");
   const rechazadas = reservas.filter(r => r.estado === "Rechazada");
 
+  const vehiculosMap = Object.fromEntries(vehiculos.map(v => [v.id_vehiculo, v]));
+
+  const conteoPorVehiculo = new Map<string, number>();
+  for (const r of reservas) {
+    if (r.estado !== "Finalizada") continue;
+    conteoPorVehiculo.set(r.id_vehiculo, (conteoPorVehiculo.get(r.id_vehiculo) ?? 0) + 1);
+  }
+  let vehiculoTopId: string | null = null;
+  let vehiculoTopCantidad = 0;
+  for (const [id, cantidad] of conteoPorVehiculo) {
+    if (cantidad > vehiculoTopCantidad) {
+      vehiculoTopId = id;
+      vehiculoTopCantidad = cantidad;
+    }
+  }
+  const vehiculoTop = vehiculoTopId ? vehiculosMap[vehiculoTopId] : undefined;
+
   return (
     <div>
+      {/* Page header */}
+      <div className="mb-5">
+        <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Panel Principal</h2>
+        <div className="text-[13px] text-[var(--text-secondary)] mt-1">Resumen de tu actividad como propietario.</div>
+      </div>
+
       {/* Metrics row */}
       <div className="grid grid-cols-4 gap-4 max-[1200px]:grid-cols-2 max-[640px]:grid-cols-1 overflow-hidden">
         <MetricCard
-          label="Vehículos publicados"
-          value={vehiculos.length}
-          foot="Total en tu flota"
+          label="Vehículo más alquilado"
+          value={vehiculoTop ? `${vehiculoTop.marca} ${vehiculoTop.modelo}` : "—"}
+          foot={vehiculoTop ? `${vehiculoTopCantidad} alquiler${vehiculoTopCantidad === 1 ? "" : "es"} finalizados` : "Todavía sin alquileres finalizados"}
           variant="primary"
           icon={
             <svg className="absolute right-3 bottom-3 opacity-15 max-w-[80px]" width="96" height="72" viewBox="0 0 96 72" fill="none">
@@ -52,7 +73,7 @@ export default async function DashboardPage() {
 
         {/* Metric card clickeable — pendientes */}
         <Link
-          href="/dashboard/reservas?estado=Pendiente"
+          href="/dashboard/reservas?estados=Pendiente"
           aria-label={`${pendientes.length} reservas pendientes`}
           className={[
             "relative overflow-hidden min-h-[142px] flex flex-col gap-[6px] rounded-[var(--radius-lg)] p-[20px_22px] shadow-[var(--shadow-sm)] min-w-0 break-words no-underline text-inherit transition-[transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",

@@ -45,6 +45,39 @@ export function pesToDolar(pesos: number, tipoCambio: number): string {
   return `U$D ${(pesos / tipoCambio).toFixed(0)}`;
 }
 
+export function getRangoPeriodo(
+  periodo: string,
+  fechaDesde?: string,
+  fechaHasta?: string
+): { desde?: Date; hasta?: Date } {
+  const hoy = new Date();
+  const finDeHoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59, 999);
+
+  switch (periodo) {
+    case "7d":
+      return { desde: new Date(hoy.getTime() - 7 * 24 * 60 * 60 * 1000), hasta: finDeHoy };
+    case "30d":
+      return { desde: new Date(hoy.getTime() - 30 * 24 * 60 * 60 * 1000), hasta: finDeHoy };
+    case "90d":
+      return { desde: new Date(hoy.getTime() - 90 * 24 * 60 * 60 * 1000), hasta: finDeHoy };
+    case "esteAnio":
+      return { desde: new Date(hoy.getFullYear(), 0, 1), hasta: finDeHoy };
+    case "mesAnterior":
+      return {
+        desde: new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1),
+        hasta: new Date(hoy.getFullYear(), hoy.getMonth(), 0, 23, 59, 59, 999),
+      };
+    case "custom":
+      return {
+        desde: fechaDesde ? new Date(fechaDesde) : undefined,
+        hasta: fechaHasta ? new Date(`${fechaHasta}T23:59:59.999`) : undefined,
+      };
+    case "esteMes":
+    default:
+      return { desde: new Date(hoy.getFullYear(), hoy.getMonth(), 1), hasta: finDeHoy };
+  }
+}
+
 export function getCloudinaryUrl(url: string, width: number, height: number): string {
   if (!url || !url.includes("cloudinary.com")) return url;
   return url.replace("/upload/", `/upload/w_${width},h_${height},c_fill,f_auto,q_auto/`);
