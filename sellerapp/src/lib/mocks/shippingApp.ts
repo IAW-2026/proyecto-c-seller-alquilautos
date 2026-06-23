@@ -3,12 +3,12 @@ export async function createEntrega(data: {
   id_vehiculo: string;
   id_propietario: string;
   id_alquilador: string;
-  hora_inicio_entrega: string;
-  hora_fin_entrega: string;
-  hora_inicio_devolucion: string;
-  hora_fin_devolucion: string;
-  fecha_inicio: Date;
-  fecha_fin: Date;
+  coordinaciones: {
+    tipo: "entrega" | "devolucion";
+    fecha: string;
+    hora_inicio_disponible: string;
+    hora_fin_disponible: string;
+  }[];
 }): Promise<{ data: { id_entrega: string; id_reserva: string; estado: string } | null; error: string | null }> {
   try {
     const res = await fetch(`${process.env.SHIPPING_API_URL}/api/entrega`, {
@@ -62,7 +62,7 @@ export async function cancelarEntrega(id_reserva: string): Promise<{
 }> {
   try {
     const res = await fetch(
-      `${process.env.SHIPPING_API_URL}/api/cancelar/${id_reserva}`,
+      `${process.env.SHIPPING_API_URL}/api/entregas/${id_reserva}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
