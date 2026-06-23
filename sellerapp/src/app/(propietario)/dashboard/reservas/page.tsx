@@ -9,10 +9,11 @@ import type { Alquilador } from "@/lib/types";
 import ReservasActions from "@/components/features/reservas/ReservasAction";
 import Link from "next/link";
 import { ReservaDetalleModal } from "@/components/features/reservas/ReservaDetalleModal";
-import { getVehiculo } from "@/lib/services/vehiculo.service";
+import { getVehiculo, getVehiculosByPropietario } from "@/lib/services/vehiculo.service";
 import { getHorarioSeleccionado } from "@/lib/mocks/shippingApp";
 import { ResenasModal } from "@/components/features/reservas/ResenasModal";
-import { EstadoFiltro } from "@/components/features/reservas/EstadoFiltro";
+import { FilterBar } from "@/components/features/reservas/FilterBar";
+import type { EstadoReserva } from "@prisma/client";
 
 const PAGE_SIZE = 8;
 
@@ -21,7 +22,7 @@ const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6p
 export default async function ReservasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ estado?: string; page?: string }>;
+  searchParams: Promise<{ estados?: string; fechaDesde?: string; fechaHasta?: string; vehiculo?: string; page?: string }>;
 }) {
   const { userId, sessionClaims } = await auth();
   if (!userId) redirect("/sign-in");
@@ -29,14 +30,37 @@ export default async function ReservasPage({
   const id_propietario = (sessionClaims?.publicMetadata as { id_propietario?: string })?.id_propietario;
   if (!id_propietario) redirect("/onboarding");
 
-  const { estado = "Todos", page: pageParam = "1" } = await searchParams;
+  const {
+    estados: estadosParam,
+    fechaDesde,
+    fechaHasta,
+    vehiculo,
+    page: pageParam = "1",
+  } = await searchParams;
   const page = parseInt(pageParam, 10);
+  const estadosActuales = estadosParam ? estadosParam.split(",") : [];
 
-  const result   = await getReservasByPropietario(id_propietario);
-  const todas    = result.data?.reservas ?? [];
-  const filtered = estado === "Todos" ? todas : todas.filter(r => r.estado === estado);
+  const [result, vehiculosResult] = await Promise.all([
+    getReservasByPropietario(id_propietario, {
+      estados: estadosActuales as EstadoReserva[],
+      id_vehiculo: vehiculo,
+      fechaDesde: fechaDesde ? new Date(fechaDesde) : undefined,
+      fechaHasta: fechaHasta ? new Date(fechaHasta) : undefined,
+    }),
+    getVehiculosByPropietario(id_propietario),
+  ]);
+  const filtered  = result.data?.reservas ?? [];
+  const vehiculosPropietario = vehiculosResult.data?.vehiculos ?? [];
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const queryFiltros = new URLSearchParams();
+  if (estadosParam) queryFiltros.set("estados", estadosParam);
+  if (fechaDesde) queryFiltros.set("fechaDesde", fechaDesde);
+  if (fechaHasta) queryFiltros.set("fechaHasta", fechaHasta);
+  if (vehiculo) queryFiltros.set("vehiculo", vehiculo);
+  const filtrosQuery = queryFiltros.toString();
+  const hasFiltrosActivos = filtrosQuery.length > 0;
 
   const alquiladoresMap: Record<string, Alquilador | undefined> = {};
   await Promise.all(pageItems.map(async r => {
@@ -51,7 +75,10 @@ export default async function ReservasPage({
     if (res.data) vehiculosMap[r.id_vehiculo] = res.data;
   }));
 
-  const horariosMap: Record<string, { hora_inicio_entrega: string; hora_fin_entrega: string; hora_inicio_devolucion: string; hora_fin_devolucion: string; } | null> = {};
+  const horariosMap: Record<string, {
+    entrega: { fecha: string; hora_seleccionada: string } | null;
+    devolucion: { fecha: string; hora_seleccionada: string } | null;
+  } | null> = {};
   await Promise.all(pageItems.map(async r => {
     horariosMap[r.id_reserva] = estadosConHorario.includes(r.estado)
       ? (await getHorarioSeleccionado(r.id_reserva)).data
@@ -66,7 +93,13 @@ export default async function ReservasPage({
           <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Reservas</h2>
           <div className="text-[13px] text-[var(--text-secondary)] mt-1">Gestioná las reservas de todos tus vehículos.</div>
         </div>
-        <EstadoFiltro estadoActual={estado} />
+        <FilterBar
+          estadosActuales={estadosActuales}
+          fechaDesde={fechaDesde}
+          fechaHasta={fechaHasta}
+          vehiculoActual={vehiculo}
+          vehiculos={vehiculosPropietario}
+        />
       </div>
 
       {/* Table */}
@@ -75,8 +108,8 @@ export default async function ReservasPage({
           <EmptyState
             icon="calendar"
             title="Sin reservas"
-            message={estado !== "Todos"
-              ? `No tenés reservas en estado "${estado}".`
+            message={hasFiltrosActivos
+              ? "No hay reservas que coincidan con los filtros aplicados."
               : "Todavía no hay reservas para tus vehículos."}
           />
         ) : (
@@ -162,10 +195,10 @@ export default async function ReservasPage({
             <span>Página {page} de {totalPages}</span>
             <div className="flex gap-2">
               {page > 1 && (
-                <Link href={`?estado=${estado}&page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>
+                <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>
               )}
               {page < totalPages && (
-                <Link href={`?estado=${estado}&page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>
+                <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>
               )}
             </div>
           </div>

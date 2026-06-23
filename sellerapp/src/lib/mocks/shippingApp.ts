@@ -29,13 +29,17 @@ export async function createEntrega(data: {
   }
 }
 
+interface HorarioSeleccionadoEvento {
+  fecha: string;
+  hora_seleccionada: string;
+}
+
 export async function getHorarioSeleccionado(id_reserva: string): Promise<{
   data: {
     id_reserva: string;
-    hora_inicio_entrega: string;
-    hora_fin_entrega: string;
-    hora_inicio_devolucion: string;
-    hora_fin_devolucion: string;
+    id_entrega: string;
+    entrega: HorarioSeleccionadoEvento | null;
+    devolucion: HorarioSeleccionadoEvento | null;
   } | null;
   error: string | null;
 }> {
@@ -49,8 +53,24 @@ export async function getHorarioSeleccionado(id_reserva: string): Promise<{
       return { data: null, error: `Shipping App respondió ${res.status}` };
     }
 
-    const json = await res.json();
-    return { data: json, error: null };
+    const json: {
+      id_reserva: string;
+      id_entrega: string;
+      horarios: { tipo: "entrega" | "devolucion"; fecha: string; hora_seleccionada: string }[];
+    } = await res.json();
+
+    const entrega    = json.horarios.find(h => h.tipo === "entrega") ?? null;
+    const devolucion = json.horarios.find(h => h.tipo === "devolucion") ?? null;
+
+    return {
+      data: {
+        id_reserva: json.id_reserva,
+        id_entrega: json.id_entrega,
+        entrega: entrega ? { fecha: entrega.fecha, hora_seleccionada: entrega.hora_seleccionada } : null,
+        devolucion: devolucion ? { fecha: devolucion.fecha, hora_seleccionada: devolucion.hora_seleccionada } : null,
+      },
+      error: null,
+    };
   } catch {
     return { data: null, error: "No se pudo contactar a Shipping App" };
   }

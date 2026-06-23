@@ -20,10 +20,8 @@ interface Vehiculo {
 }
 
 interface Horario {
-  hora_inicio_entrega: string;
-  hora_fin_entrega: string;
-  hora_inicio_devolucion: string;
-  hora_fin_devolucion: string;
+  entrega: { fecha: string; hora_seleccionada: string } | null;
+  devolucion: { fecha: string; hora_seleccionada: string } | null;
 }
 
 interface ReservaDetalleModalProps {
@@ -95,25 +93,21 @@ export function ReservaDetalleModal({ reserva, alquilador, vehiculo, horario }: 
           </div>
 
           {/* Horarios */}
-          {horario && (
+          {horario && (horario.entrega || horario.devolucion) && (
             <div className="border-t border-[var(--border-default)] pt-4">
               <div className="text-[13px] font-bold mb-3 text-[var(--text-primary)]">Horarios seleccionados</div>
               <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-[700px]:grid-cols-1">
                 <div className={`${fieldClass} items-start`}>
-                  <span className={labelClass}>Entrega — desde</span>
-                  <span className={valueClass}>{horario.hora_inicio_entrega}</span>
+                  <span className={labelClass}>Entrega</span>
+                  <span className={valueClass}>
+                    {horario.entrega ? `${fmtDate(horario.entrega.fecha)} · ${horario.entrega.hora_seleccionada}` : "—"}
+                  </span>
                 </div>
                 <div className={`${fieldClass} items-end`}>
-                  <span className={labelClass}>Entrega — hasta</span>
-                  <span className={valueClass}>{horario.hora_fin_entrega}</span>
-                </div>
-                <div className={`${fieldClass} items-start`}>
-                  <span className={labelClass}>Devolución — desde</span>
-                  <span className={valueClass}>{horario.hora_inicio_devolucion}</span>
-                </div>
-                <div className={`${fieldClass} items-end`}>
-                  <span className={labelClass}>Devolución — hasta</span>
-                  <span className={valueClass}>{horario.hora_fin_devolucion}</span>
+                  <span className={labelClass}>Devolución</span>
+                  <span className={valueClass}>
+                    {horario.devolucion ? `${fmtDate(horario.devolucion.fecha)} · ${horario.devolucion.hora_seleccionada}` : "—"}
+                  </span>
                 </div>
               </div>
             </div>
