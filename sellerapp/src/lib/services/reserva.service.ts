@@ -2,7 +2,7 @@
 import { findVehiculoById, updateVehiculo  } from "@/lib/repositories/vehiculo.repository";
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
-import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario } from "@/lib/repositories/reserva.repository";
+import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario, countPendientesUrgentesByPropietario } from "@/lib/repositories/reserva.repository";
 import type { ReservaFiltros } from "@/lib/repositories/reserva.repository";
 import { EstadoReserva } from "@prisma/client";
 import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
@@ -74,6 +74,12 @@ export async function getReservasByPropietario(id_propietario: string, filtros?:
 export async function getReservasByAlquilador(id_alquilador: string) {
   const reservas = await findReservasByAlquilador(id_alquilador);
   return { data: { reservas }, error: null };
+}
+
+export async function getPendientesUrgentesCount(id_propietario: string) {
+  const antes = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const count = await countPendientesUrgentesByPropietario(id_propietario, antes);
+  return { data: { count }, error: null };
 }
 
 export async function cancelarReserva(id: string) {

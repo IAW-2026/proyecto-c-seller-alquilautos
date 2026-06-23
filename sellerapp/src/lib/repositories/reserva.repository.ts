@@ -69,3 +69,13 @@ export async function findReservasByAlquilador(id_alquilador: string) {
     select: RESERVA_SELECT,
   });
 }
+
+export async function countPendientesUrgentesByPropietario(id_propietario: string, antes: Date) {
+  return db.reserva.count({
+    where: {
+      id_propietario,
+      estado: EstadoReserva.Pendiente,
+      createdAt: { lt: antes },
+    },
+  });
+}

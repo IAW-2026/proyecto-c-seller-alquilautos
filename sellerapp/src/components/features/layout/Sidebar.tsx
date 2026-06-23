@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import type { IconName } from "@/components/ui/Icon";
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/Badge";
 
 interface NavItem {
   to: string;
@@ -32,9 +33,10 @@ interface SidebarProps {
   onClose?: () => void;
   isAdmin?: boolean;
   isAdminSeller?: boolean;
+  pendientesUrgentes?: number;
 }
 
-export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller = false }: SidebarProps) {
+export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller = false, pendientesUrgentes = 0 }: SidebarProps) {
   const pathname = usePathname();
   const navItems = isAdminSeller ? NAV_PROPIETARIO : (isAdmin ? NAV_ADMIN : NAV_PROPIETARIO);
   const [adminOpen, setAdminOpen] = useState(false);
@@ -89,6 +91,9 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
               >
                 <Icon name={item.icon} className="w-[18px] h-[18px] shrink-0" />
                 <span>{item.label}</span>
+                {item.to === "/dashboard/reservas" && pendientesUrgentes > 0 && (
+                  <Badge tone="danger">{pendientesUrgentes}</Badge>
+                )}
               </Link>
             );
           })}
