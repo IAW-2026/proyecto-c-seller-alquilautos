@@ -62,7 +62,7 @@ export async function PATCH(
       }
       return NextResponse.json({ data: result.data, error: null }, { status: 200 });
     }
-
+    console.log("Estado de la reserva:", estado);
     if (estado === EstadoReserva.Coordinada) {
       const result = await coordinarReserva(id);
       if (result.error) {
