@@ -1,5 +1,12 @@
 import { db } from "@/lib/db";
-import { EstadoReserva } from "@prisma/client";
+import { EstadoReserva, Prisma } from "@prisma/client";
+
+export interface ReservaFiltros {
+  estados?: EstadoReserva[];
+  id_vehiculo?: string;
+  fechaDesde?: Date;
+  fechaHasta?: Date;
+}
 
 const RESERVA_SELECT = {
   id_reserva: true,
@@ -36,9 +43,20 @@ export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   });
 }
 
-export async function findReservasByPropietario(id_propietario: string) {
+export async function findReservasByPropietario(id_propietario: string, filtros?: ReservaFiltros) {
+  const where: Prisma.ReservaWhereInput = { id_propietario };
+
+  if (filtros?.estados?.length) where.estado = { in: filtros.estados };
+  if (filtros?.id_vehiculo) where.id_vehiculo = filtros.id_vehiculo;
+  if (filtros?.fechaDesde || filtros?.fechaHasta) {
+    where.fecha_inicio = {
+      ...(filtros.fechaDesde && { gte: filtros.fechaDesde }),
+      ...(filtros.fechaHasta && { lte: filtros.fechaHasta }),
+    };
+  }
+
   return db.reserva.findMany({
-    where: { id_propietario },
+    where,
     orderBy: { createdAt: "desc" },
     select: RESERVA_SELECT,
   });

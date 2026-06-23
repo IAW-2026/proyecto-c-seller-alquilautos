@@ -3,6 +3,7 @@ import { findVehiculoById, updateVehiculo  } from "@/lib/repositories/vehiculo.r
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
 import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario } from "@/lib/repositories/reserva.repository";
+import type { ReservaFiltros } from "@/lib/repositories/reserva.repository";
 import { EstadoReserva } from "@prisma/client";
 import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
 import { iniciarPago } from "@/lib/mocks/paymentsApp";
@@ -65,8 +66,8 @@ export async function actualizarEstadoReserva(id: string, estado: EstadoReserva)
   return { data: { id_reserva: id, estado }, error: null };
 }
 
-export async function getReservasByPropietario(id_propietario: string) {
-  const reservas = await findReservasByPropietario(id_propietario);
+export async function getReservasByPropietario(id_propietario: string, filtros?: ReservaFiltros) {
+  const reservas = await findReservasByPropietario(id_propietario, filtros);
   return { data: { reservas }, error: null };
 }
 
