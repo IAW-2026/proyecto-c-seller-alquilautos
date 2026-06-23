@@ -114,22 +114,34 @@ export function ResenasModal({ reserva, alquilador, id_propietario }: ResenasMod
                 <span className={sectionLabelClass}>LO QUE DIJO EL ALQUILADOR</span>
               </div>
               <div className="flex flex-col">
-                <ResenaConRespuesta
-                  titulo="SOBRE EL VEHÍCULO"
-                  calificacion={data.resenaVehiculo.calificacion_general}
-                  descripcion={data.resenaVehiculo.descripcion}
-                  respuesta={data.resenaVehiculo.respuesta}
-                  respondido={respondido.vehiculo}
-                  onResponder={r => handleResponder("vehiculo", r)}
-                />
-                <ResenaConRespuesta
-                  titulo="SOBRE EL PROPIETARIO"
-                  calificacion={data.resenaPropietario.calificacion_general}
-                  descripcion={data.resenaPropietario.descripcion}
-                  respuesta={data.resenaPropietario.respuesta}
-                  respondido={respondido.propietario}
-                  onResponder={r => handleResponder("propietario", r)}
-                />
+                {data.resenaVehiculo.id_resena ? (
+                  <ResenaConRespuesta
+                    titulo="SOBRE EL VEHÍCULO"
+                    calificacion={data.resenaVehiculo.calificacion_general}
+                    descripcion={data.resenaVehiculo.descripcion}
+                    respuesta={data.resenaVehiculo.respuesta}
+                    respondido={respondido.vehiculo}
+                    onResponder={r => handleResponder("vehiculo", r)}
+                  />
+                ) : (
+                  <div className="py-3 text-[13px] text-[var(--text-secondary)] italic">
+                    El alquilador todavía no dejó una reseña sobre el vehículo.
+                  </div>
+                )}
+                {data.resenaPropietario.id_resena ? (
+                  <ResenaConRespuesta
+                    titulo="SOBRE EL PROPIETARIO"
+                    calificacion={data.resenaPropietario.calificacion_general}
+                    descripcion={data.resenaPropietario.descripcion}
+                    respuesta={data.resenaPropietario.respuesta}
+                    respondido={respondido.propietario}
+                    onResponder={r => handleResponder("propietario", r)}
+                  />
+                ) : (
+                  <div className="py-3 text-[13px] text-[var(--text-secondary)] italic">
+                    El alquilador todavía no dejó una reseña sobre el propietario.
+                  </div>
+                )}
               </div>
             </div>
 
