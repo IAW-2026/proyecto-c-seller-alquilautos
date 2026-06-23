@@ -19,6 +19,9 @@ export async function createEntrega(data: {
   }[];
 }): Promise<{ data: { id_entrega: string; id_reserva: string; estado: string } | null; error: string | null }> {
   try {
+    console.log("[createEntrega] URL:", `${process.env.SHIPPING_API_URL}/api/entrega`);
+    console.log("[createEntrega] body:", JSON.stringify(data));
+
     const res = await fetch(`${process.env.SHIPPING_API_URL}/api/entrega`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(await authHeaders()) },
@@ -27,6 +30,7 @@ export async function createEntrega(data: {
     });
 
     if (!res.ok) {
+      console.log("[createEntrega] status:", res.status, "body:", await res.text().catch(() => "<no se pudo leer>"));
       return { data: null, error: `Shipping App respondió ${res.status}` };
     }
 
