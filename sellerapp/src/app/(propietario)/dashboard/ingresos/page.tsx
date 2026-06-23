@@ -4,6 +4,7 @@ import { getReservasByPropietario } from "@/lib/services/reserva.service";
 import { getVehiculosByPropietario } from "@/lib/services/vehiculo.service";
 import { getAlquilador } from "@/lib/mocks/buyerApp";
 import { fmtDate, fmtMoney, daysBetween, getDolarBlue, pesToDolar } from "@/lib/utils";
+import type { Alquilador } from "@/lib/types";
 
 export default async function IngresosPage() {
   const { userId, sessionClaims } = await auth();
@@ -32,9 +33,9 @@ export default async function IngresosPage() {
 
   const ticketPromedio = finalizadas.length > 0 ? totalMes / finalizadas.length : 0;
 
-  const alquiladoresMap: Record<string, Awaited<ReturnType<typeof getAlquilador>>> = {};
+  const alquiladoresMap: Record<string, Alquilador | undefined> = {};
   await Promise.all(finalizadas.map(async r => {
-    alquiladoresMap[r.id_alquilador] = await getAlquilador(r.id_alquilador);
+    alquiladoresMap[r.id_alquilador] = (await getAlquilador(r.id_alquilador)).data ?? undefined;
   }));
 
   const kpiClass   = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] px-5 py-[18px] shadow-[var(--shadow-sm)]";

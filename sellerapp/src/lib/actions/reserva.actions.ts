@@ -28,12 +28,7 @@ export async function aceptarReservaAction(
   const reservaResult = await getReserva(id_reserva);
   if (reservaResult.error || !reservaResult.data) throw new Error("Reserva no encontrada");
 
-  const result = await actualizarEstadoReserva(id_reserva, "Aceptada");
-  if (result.error) throw new Error(result.error);
-
-  await updateVehiculo(id_vehiculo, { estado: "Alquilado" });
-
-  await createEntrega({
+  const entrega = await createEntrega({
     id_reserva,
     id_vehiculo,
     id_propietario,
@@ -42,6 +37,12 @@ export async function aceptarReservaAction(
     fecha_inicio: reservaResult.data.fecha_inicio,
     fecha_fin: reservaResult.data.fecha_final,
   });
+  if (entrega.error) throw new Error(`No se pudo coordinar la entrega: ${entrega.error}`);
+
+  const result = await actualizarEstadoReserva(id_reserva, "Aceptada");
+  if (result.error) throw new Error(result.error);
+
+  await updateVehiculo(id_vehiculo, { estado: "Alquilado" });
 
   revalidatePath("/dashboard/reservas");
   revalidatePath("/dashboard");

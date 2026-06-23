@@ -91,17 +91,17 @@ export async function cancelarReserva(id: string) {
 
   await updateReservaEstado(id, EstadoReserva.Cancelada);
 
+  let avisoEntrega: string | null = null;
   if (reserva.estado === EstadoReserva.Coordinada) {
-    await cancelarEntrega(id);
-  }
-
-  if (reserva.estado === EstadoReserva.Coordinada) {
-  await cancelarEntrega(id);
+    const entrega = await cancelarEntrega(id);
+    if (entrega.error) {
+      avisoEntrega = `La reserva se canceló, pero no se pudo avisar a Shipping App: ${entrega.error}`;
+    }
   }
 
   await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
 
-  return { data: { id_reserva: id, estado: "Cancelada" }, error: null };
+  return { data: { id_reserva: id, estado: "Cancelada", aviso: avisoEntrega }, error: null };
 }
 
 export async function coordinarReserva(id: string) {
@@ -116,14 +116,18 @@ export async function coordinarReserva(id: string) {
   );
   const monto_pagar = Number(vehiculo.precio) * dias;
 
-  await updateReservaEstado(id, EstadoReserva.Coordinada);
-
-  await iniciarPago({
+  const pago = await iniciarPago({
     id_reserva: id,
     id_alquilador: reserva.id_alquilador,
     id_propietario: reserva.id_propietario,
     monto_pagar,
   });
+
+  if (pago.error) {
+    return { data: null, error: `No se pudo iniciar el pago: ${pago.error}` };
+  }
+
+  await updateReservaEstado(id, EstadoReserva.Coordinada);
 
   return { data: { id_reserva: id, estado: "Coordinada" }, error: null };
 }

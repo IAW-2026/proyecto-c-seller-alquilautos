@@ -5,6 +5,7 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { fmtDate, daysBetween } from "@/lib/utils";
 import { getAlquilador } from "@/lib/mocks/buyerApp";
+import type { Alquilador } from "@/lib/types";
 import ReservasActions from "@/components/features/reservas/ReservasAction";
 import Link from "next/link";
 import { ReservaDetalleModal } from "@/components/features/reservas/ReservaDetalleModal";
@@ -37,9 +38,9 @@ export default async function ReservasPage({
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const alquiladoresMap: Record<string, Awaited<ReturnType<typeof getAlquilador>>> = {};
+  const alquiladoresMap: Record<string, Alquilador | undefined> = {};
   await Promise.all(pageItems.map(async r => {
-    alquiladoresMap[r.id_alquilador] = await getAlquilador(r.id_alquilador);
+    alquiladoresMap[r.id_alquilador] = (await getAlquilador(r.id_alquilador)).data ?? undefined;
   }));
 
   const estadosConHorario = ["Coordinada", "Pagada", "Finalizada", "Entregada"];
@@ -53,7 +54,7 @@ export default async function ReservasPage({
   const horariosMap: Record<string, { hora_inicio_entrega: string; hora_fin_entrega: string; hora_inicio_devolucion: string; hora_fin_devolucion: string; } | null> = {};
   await Promise.all(pageItems.map(async r => {
     horariosMap[r.id_reserva] = estadosConHorario.includes(r.estado)
-      ? await getHorarioSeleccionado(r.id_reserva)
+      ? (await getHorarioSeleccionado(r.id_reserva)).data
       : null;
   }));
 
