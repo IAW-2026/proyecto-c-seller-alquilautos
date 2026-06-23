@@ -1,3 +1,11 @@
+import { auth } from "@clerk/nextjs/server";
+
+async function authHeaders(): Promise<Record<string, string>> {
+  const { getToken } = await auth();
+  const token = await getToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 export async function createEntrega(data: {
   id_reserva: string;
   id_vehiculo: string;
@@ -13,7 +21,7 @@ export async function createEntrega(data: {
   try {
     const res = await fetch(`${process.env.SHIPPING_API_URL}/api/entrega`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(await authHeaders()) },
       body: JSON.stringify(data),
       cache: "no-store",
     });
@@ -46,7 +54,7 @@ export async function getHorarioSeleccionado(id_reserva: string): Promise<{
   try {
     const res = await fetch(
       `${process.env.SHIPPING_API_URL}/api/horario/seleccionada/${id_reserva}`,
-      { cache: "no-store" }
+      { cache: "no-store", headers: await authHeaders() }
     );
 
     if (!res.ok) {
@@ -85,7 +93,7 @@ export async function cancelarEntrega(id_reserva: string): Promise<{
       `${process.env.SHIPPING_API_URL}/api/entregas/${id_reserva}`,
       {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(await authHeaders()) },
         cache: "no-store",
       }
     );
