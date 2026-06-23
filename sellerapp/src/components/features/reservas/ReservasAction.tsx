@@ -35,7 +35,8 @@ export default function ReservasActions({ reserva, monto_pagar, vehiculo }: Rese
         reserva.id_vehiculo
       );
       showToast("✓ Reserva aceptada");
-    } catch {
+    } catch (error) {
+      console.error(error);
       showToast("Error al aceptar la reserva");
     }
     setLoading(false);
@@ -47,7 +48,8 @@ export default function ReservasActions({ reserva, monto_pagar, vehiculo }: Rese
     try {
       await rechazarReservaAction(reserva.id_reserva);
       showToast("Reserva rechazada");
-    } catch {
+    } catch (error) {
+      console.error(error);
       showToast("Error al rechazar la reserva");
     }
     setLoading(false);
