@@ -34,12 +34,16 @@ export default async function VehiculoDetallePage({
   if (result.error || !result.data) notFound();
   const vehiculo = result.data;
 
-  const [promedio, resumen, resenas, tipoCambio] = await Promise.all([
+  const [promedioRes, resumenRes, resenasRes, tipoCambio] = await Promise.all([
     getPromedioVehiculo(id),
     getResumenVehiculo(id),
     getResenasVehiculo(id),
     getDolarBlue(),
   ]);
+
+  const promedio = promedioRes.data ?? { id_vehiculo: id, calificacion_promedio: 0, cantidad_resenas: 0 };
+  const resumen  = resumenRes.data  ?? { id_vehiculo: id, resumen: "Sin reseñas aún." };
+  const resenas  = resenasRes.data  ?? { resenas: [] };
 
   const { page: pageParam = "1" } = await searchParams;
   const page       = parseInt(pageParam, 10);

@@ -113,15 +113,23 @@ export async function cancelarReserva(id: string) {
 
 export async function coordinarReserva(id: string) {
   const reserva = await findReservaById(id);
-  if (!reserva) return { data: null, error: "Reserva no encontrada" };
+  if (!reserva) {
+    console.log("[coordinarReserva] Reserva no encontrada:", id);
+    return { data: null, error: "Reserva no encontrada" };
+  }
 
   const vehiculo = await findVehiculoById(reserva.id_vehiculo);
-  if (!vehiculo) return { data: null, error: "Vehículo no encontrado" };
+  if (!vehiculo) {
+    console.log("[coordinarReserva] Vehículo no encontrado:", reserva.id_vehiculo);
+    return { data: null, error: "Vehículo no encontrado" };
+  }
 
   const dias = Math.ceil(
     (reserva.fecha_final.getTime() - reserva.fecha_inicio.getTime()) / (1000 * 60 * 60 * 24)
   );
   const monto_pagar = Number(vehiculo.precio) * dias;
+
+  await updateReservaEstado(id, EstadoReserva.Coordinada);
 
   const pago = await iniciarPago({
     id_reserva: id,
@@ -131,10 +139,9 @@ export async function coordinarReserva(id: string) {
   });
 
   if (pago.error) {
+    console.log("[coordinarReserva] Falló iniciarPago:", pago.error);
     return { data: null, error: `No se pudo iniciar el pago: ${pago.error}` };
   }
-
-  await updateReservaEstado(id, EstadoReserva.Coordinada);
 
   return { data: { id_reserva: id, estado: "Coordinada" }, error: null };
 }

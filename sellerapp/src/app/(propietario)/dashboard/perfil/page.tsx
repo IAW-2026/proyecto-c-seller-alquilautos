@@ -20,11 +20,15 @@ export default async function ConfiguracionPage() {
   if (result.error || !result.data) redirect("/dashboard");
   const propietario = result.data;
 
-  const [promedio, resumen, resenas] = await Promise.all([
+  const [promedioRes, resumenRes, resenasRes] = await Promise.all([
     getPromedioPropietario(id_propietario),
     getResumenPropietario(id_propietario),
     getResenasPropietario(id_propietario),
   ]);
+
+  const promedio = promedioRes.data ?? { id_propietario, calificacion_promedio: 0, cantidad_resenas: 0 };
+  const resumen  = resumenRes.data  ?? { id_propietario, resumen: "Sin reseñas aún." };
+  const resenas  = resenasRes.data  ?? { resenas: [] };
 
   return (
     <div className="max-w-[1100px] mx-auto">
