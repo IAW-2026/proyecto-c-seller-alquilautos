@@ -28,8 +28,6 @@ export async function aceptarReservaAction(
   const reservaResult = await getReserva(id_reserva);
   if (reservaResult.error || !reservaResult.data) throw new Error("Reserva no encontrada");
 
-  const isoDate = (d: Date) => d.toISOString().slice(0, 10);
-
   const entrega = await createEntrega({
     id_reserva,
     id_vehiculo,
@@ -38,13 +36,13 @@ export async function aceptarReservaAction(
     coordinaciones: [
       {
         tipo: "entrega",
-        fecha: isoDate(reservaResult.data.fecha_inicio),
+        fecha: reservaResult.data.fecha_inicio,
         hora_inicio_disponible: horario.hora_inicio_entrega,
         hora_fin_disponible: horario.hora_fin_entrega,
       },
       {
         tipo: "devolucion",
-        fecha: isoDate(reservaResult.data.fecha_final),
+        fecha: reservaResult.data.fecha_final,
         hora_inicio_disponible: horario.hora_inicio_devolucion,
         hora_fin_disponible: horario.hora_fin_devolucion,
       },

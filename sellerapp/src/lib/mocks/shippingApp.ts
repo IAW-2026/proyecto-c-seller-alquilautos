@@ -13,7 +13,7 @@ export async function createEntrega(data: {
   id_alquilador: string;
   coordinaciones: {
     tipo: "entrega" | "devolucion";
-    fecha: string;
+    fecha: Date;
     hora_inicio_disponible: string;
     hora_fin_disponible: string;
   }[];
