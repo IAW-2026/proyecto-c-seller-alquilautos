@@ -22,34 +22,34 @@ export interface ResenaItem {
 }
 
 interface RawResena {
-  idResena: string | number;
-  idReserva: string | number;
-  idEmisor: string | number;
-  calificacionGeneral: number;
+  id_resena: string | number;
+  id_reserva: string | number;
+  id_emisor: string | number;
+  calificacion_general: number;
   descripcion: string;
-  fechaCreacion: string;
-  calificacionComunicacion?: number;
-  calificacionPuntualidad?: number;
-  calificacionDevolucion?: number;
-  calificacionLimpieza?: number;
-  calificacionEstado?: number;
-  calificacionComodidad?: number;
+  fecha_creacion: string;
+  calificacion_comunicacion?: number;
+  calificacion_puntualidad?: number;
+  calificacion_devolucion?: number;
+  calificacion_limpieza?: number;
+  calificacion_estado?: number;
+  calificacion_comodidad?: number;
 }
 
 function mapResena(r: RawResena): ResenaItem {
   return {
-    id_resena: String(r.idResena),
-    id_reserva: String(r.idReserva),
-    id_emisor: String(r.idEmisor),
-    calificacion_general: r.calificacionGeneral,
+    id_resena: String(r.id_resena),
+    id_reserva: String(r.id_reserva),
+    id_emisor: String(r.id_emisor),
+    calificacion_general: r.calificacion_general,
     descripcion: r.descripcion,
-    fecha_creacion: r.fechaCreacion,
-    calificacion_comunicacion: r.calificacionComunicacion,
-    calificacion_puntualidad: r.calificacionPuntualidad,
-    calificacion_devolucion: r.calificacionDevolucion,
-    calificacion_limpieza: r.calificacionLimpieza,
-    calificacion_estado: r.calificacionEstado,
-    calificacion_comodidad: r.calificacionComodidad,
+    fecha_creacion: r.fecha_creacion,
+    calificacion_comunicacion: r.calificacion_comunicacion,
+    calificacion_puntualidad: r.calificacion_puntualidad,
+    calificacion_devolucion: r.calificacion_devolucion,
+    calificacion_limpieza: r.calificacion_limpieza,
+    calificacion_estado: r.calificacion_estado,
+    calificacion_comodidad: r.calificacion_comodidad,
   };
 }
 
@@ -124,19 +124,21 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
     }
 
     const json = await res.json();
+    const resena = json.resena;
+    const resenaVehiculo = resena?.resenaVehiculo;
     return {
       data: {
-        id_resena: json.idResena != null ? String(json.idResena) : null,
+        id_resena: resena?.id != null ? String(resena.id) : null,
         id_reserva,
-        id_vehiculo: json.idVehiculo != null ? String(json.idVehiculo) : null,
-        id_emisor: json.idEmisor != null ? String(json.idEmisor) : null,
-        calificacion_general: json.calificacionGeneral ?? null,
-        descripcion: json.descripcion ?? null,
-        fecha_creacion: json.fechaCreacion ?? null,
-        calificacion_limpieza: json.calificacionLimpieza ?? null,
-        calificacion_estado: json.calificacionEstado ?? null,
-        calificacion_comodidad: json.calificacionComodidad ?? null,
-        respuesta: json.respuesta ?? null,
+        id_vehiculo: resenaVehiculo?.idVehiculo != null ? String(resenaVehiculo.idVehiculo) : null,
+        id_emisor: resena?.idEmisor != null ? String(resena.idEmisor) : null,
+        calificacion_general: resena?.calificacionGeneral ?? null,
+        descripcion: resena?.descripcion ?? null,
+        fecha_creacion: resena?.fechaCreacion ?? null,
+        calificacion_limpieza: resenaVehiculo?.calificacionLimpieza ?? null,
+        calificacion_estado: resenaVehiculo?.calificacionEstado ?? null,
+        calificacion_comodidad: resenaVehiculo?.calificacionComodidad ?? null,
+        respuesta: resena?.respuesta ?? null,
       },
       error: null,
     };
@@ -173,18 +175,20 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
     }
 
     const json = await res.json();
+    const resena = json.resena;
+    const resenaPropietario = resena?.resenaPropietario;
     return {
       data: {
-        id_resena: json.idResena != null ? String(json.idResena) : null,
+        id_resena: resena?.id != null ? String(resena.id) : null,
         id_reserva,
-        id_propietario: json.idPropietario != null ? String(json.idPropietario) : null,
-        id_emisor: json.idEmisor != null ? String(json.idEmisor) : null,
-        calificacion_general: json.calificacionGeneral ?? null,
-        descripcion: json.descripcion ?? null,
-        fecha_creacion: json.fechaCreacion ?? null,
-        calificacion_comunicacion: json.calificacionComunicacion ?? null,
-        calificacion_puntualidad: json.calificacionPuntualidad ?? null,
-        respuesta: json.respuesta ?? null,
+        id_propietario: resenaPropietario?.idPropietario != null ? String(resenaPropietario.idPropietario) : null,
+        id_emisor: resena?.idEmisor != null ? String(resena.idEmisor) : null,
+        calificacion_general: resena?.calificacionGeneral ?? null,
+        descripcion: resena?.descripcion ?? null,
+        fecha_creacion: resena?.fechaCreacion ?? null,
+        calificacion_comunicacion: resenaPropietario?.calificacionComunicacion ?? null,
+        calificacion_puntualidad: resenaPropietario?.calificacionPuntualidad ?? null,
+        respuesta: resena?.respuesta ?? null,
       },
       error: null,
     };
@@ -222,19 +226,21 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
     }
 
     const json = await res.json();
+    const resena = json.resena;
+    const resenaAlquilador = resena?.resenaAlquilador;
     return {
       data: {
-        id_resena: json.idResena != null ? String(json.idResena) : null,
+        id_resena: resena?.id != null ? String(resena.id) : null,
         id_reserva,
-        id_alquilador: json.idAlquilador != null ? String(json.idAlquilador) : null,
-        id_emisor: json.idEmisor != null ? String(json.idEmisor) : null,
-        calificacion_general: json.calificacionGeneral ?? null,
-        descripcion: json.descripcion ?? null,
-        fecha_creacion: json.fechaCreacion ?? null,
-        calificacion_comunicacion: json.calificacionComunicacion ?? null,
-        calificacion_puntualidad: json.calificacionPuntualidad ?? null,
-        calificacion_devolucion: json.calificacionDevolucion ?? null,
-        respuesta: json.respuesta ?? null,
+        id_alquilador: resenaAlquilador?.idAlquilador != null ? String(resenaAlquilador.idAlquilador) : null,
+        id_emisor: resena?.idEmisor != null ? String(resena.idEmisor) : null,
+        calificacion_general: resena?.calificacionGeneral ?? null,
+        descripcion: resena?.descripcion ?? null,
+        fecha_creacion: resena?.fechaCreacion ?? null,
+        calificacion_comunicacion: resenaAlquilador?.calificacionComunicacion ?? null,
+        calificacion_puntualidad: resenaAlquilador?.calificacionPuntualidad ?? null,
+        calificacion_devolucion: resenaAlquilador?.calificacionDevolucion ?? null,
+        respuesta: resena?.respuesta ?? null,
       },
       error: null,
     };
@@ -264,21 +270,15 @@ export async function crearResena(data: {
   data: { id_resena: string; id_reserva: string; fecha_creacion: string; estado_moderacion: string } | null;
   error: string | null;
 }> {
-  const tipoReceptor: "vehiculo" | "propietario" | "alquilador" = data.idVehiculo
-    ? "vehiculo"
-    : data.idPropietario
-    ? "propietario"
-    : "alquilador";
-  const idReceptor = data.idVehiculo ?? data.idPropietario ?? data.idAlquilador ?? "";
-
   const body: Record<string, unknown> = {
     idReserva: data.idReserva,
     idEmisor: data.idEmisor,
-    idReceptor,
-    tipoReceptor,
     calificacionGeneral: data.calificacionGeneral,
     descripcion: data.descripcion,
   };
+  if (data.idVehiculo !== undefined) body.idVehiculo = data.idVehiculo;
+  if (data.idPropietario !== undefined) body.idPropietario = data.idPropietario;
+  if (data.idAlquilador !== undefined) body.idAlquilador = data.idAlquilador;
   if (data.calificacionComunicacion !== undefined) body.calificacionComunicacion = data.calificacionComunicacion;
   if (data.calificacionPuntualidad !== undefined) body.calificacionPuntualidad = data.calificacionPuntualidad;
   if (data.calificacionDevolucion !== undefined) body.calificacionDevolucion = data.calificacionDevolucion;
