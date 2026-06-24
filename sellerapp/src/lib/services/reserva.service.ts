@@ -31,6 +31,10 @@ export async function crearReserva(input: CrearReservaInput) {
     return { data: null, error: "Vehículo no encontrado" };
   }
 
+  if (vehiculo.estado !== "Disponible") {
+    return { data: null, error: "El vehículo ya no está disponible" };
+  }
+
   const propietario = await findPropietarioById(input.id_propietario);
   if (!propietario) {
     return { data: null, error: "Propietario no encontrado" };
