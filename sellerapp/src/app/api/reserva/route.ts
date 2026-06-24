@@ -23,7 +23,8 @@ export async function POST(req: Request) {
     const result = await crearReserva(validation.data);
 
     if (result.error) {
-      return NextResponse.json({ data: null, error: result.error }, { status: 404 });
+      const status = result.error === "Ya existe una solicitud pendiente para este vehículo" ? 409 : 404;
+      return NextResponse.json({ data: null, error: result.error }, { status });
     }
 
     return NextResponse.json({ data: result.data, error: null }, { status: 201 });

@@ -2,9 +2,9 @@
 import { findVehiculoById, updateVehiculo  } from "@/lib/repositories/vehiculo.repository";
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
-import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario, countPendientesUrgentesByPropietario } from "@/lib/repositories/reserva.repository";
+import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario, countPendientesUrgentesByPropietario, findReservaPendienteDuplicada } from "@/lib/repositories/reserva.repository";
 import type { ReservaFiltros } from "@/lib/repositories/reserva.repository";
-import { EstadoReserva } from "@prisma/client";
+import { EstadoReserva, Prisma } from "@prisma/client";
 import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
 import { iniciarPago } from "@/lib/mocks/paymentsApp";
 
@@ -43,15 +43,27 @@ export async function crearReserva(input: CrearReservaInput) {
     return { data: null, error: "La fecha de inicio debe ser anterior a la fecha final" };
   }
 
-  const reserva = await createReserva({
-    id_alquilador: input.id_alquilador,
-    id_vehiculo: input.id_vehiculo,
-    id_propietario: input.id_propietario,
-    fecha_inicio,
-    fecha_final,
-  });
+  const duplicada = await findReservaPendienteDuplicada(input.id_vehiculo, input.id_alquilador);
+  if (duplicada) {
+    return { data: null, error: "Ya existe una solicitud pendiente para este vehículo" };
+  }
 
-  return { data: { id_reserva: reserva.id_reserva }, error: null };
+  try {
+    const reserva = await createReserva({
+      id_alquilador: input.id_alquilador,
+      id_vehiculo: input.id_vehiculo,
+      id_propietario: input.id_propietario,
+      fecha_inicio,
+      fecha_final,
+    });
+
+    return { data: { id_reserva: reserva.id_reserva }, error: null };
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return { data: null, error: "Ya existe una solicitud pendiente para este vehículo" };
+    }
+    throw err;
+  }
 }
 
 
