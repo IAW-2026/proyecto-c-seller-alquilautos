@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
-import { EditarPropietarioModal } from "@/components/features/admin/EditarPropietarioModal";
 import { EliminarPropietarioButton } from "@/components/features/admin/EliminarPropietarioButton";
 import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
 import { exportarPropietariosAction } from "@/lib/actions/admin.actions";
@@ -114,7 +113,7 @@ export default async function AdminPropietariosPage({
                       <td className={tdClass}><strong>{o._count.vehiculos}</strong></td>
                       <td className={tdClass}>
                         <div className="flex gap-2 justify-end">
-                          <EditarPropietarioModal propietario={o} />
+                          <Link href={`/admin/propietarios/${o.id_propietario}`} className={linkBtnSmClass}>Ver propietario</Link>
                           <EliminarPropietarioButton id_propietario={o.id_propietario} nombre={`${o.nombre} ${o.apellido}`} />
                         </div>
                       </td>
