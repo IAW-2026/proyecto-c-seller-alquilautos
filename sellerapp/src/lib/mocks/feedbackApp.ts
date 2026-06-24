@@ -64,12 +64,14 @@ export async function getResenasPropietario(id_propietario: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json: { resenas: RawResena[] } = await res.json();
     return { data: { resenas: json.resenas.map(mapResena) }, error: null };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -85,12 +87,14 @@ export async function getResenasVehiculo(id_vehiculo: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json: { resenas: RawResena[] } = await res.json();
     return { data: { resenas: json.resenas.map(mapResena) }, error: null };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -120,10 +124,12 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json = await res.json();
+    console.log(`[FeedbackApp] ${res.url} ->`, JSON.stringify(json));
     const resena = json.resena;
     const resenaVehiculo = resena?.resenaVehiculo;
     return {
@@ -142,7 +148,8 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -171,10 +178,12 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json = await res.json();
+    console.log(`[FeedbackApp] ${res.url} ->`, JSON.stringify(json));
     const resena = json.resena;
     const resenaPropietario = resena?.resenaPropietario;
     return {
@@ -192,7 +201,8 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -222,10 +232,12 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json = await res.json();
+    console.log(`[FeedbackApp] ${res.url} ->`, JSON.stringify(json));
     const resena = json.resena;
     const resenaAlquilador = resena?.resenaAlquilador;
     return {
@@ -244,7 +256,8 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -295,6 +308,7 @@ export async function crearResena(data: {
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
@@ -308,7 +322,8 @@ export async function crearResena(data: {
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -326,7 +341,7 @@ export async function responderResena(data: {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(await authHeaders()) },
       body: JSON.stringify({
-        idResena: data.id_resena,
+        idResena: Number(data.id_resena),
         idAutor: data.id_propietario,
         comentario: data.respuesta,
       }),
@@ -334,6 +349,7 @@ export async function responderResena(data: {
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
@@ -347,7 +363,8 @@ export async function responderResena(data: {
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -363,12 +380,14 @@ export async function getResumenPropietario(id_propietario: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json = await res.json();
     return { data: { id_propietario, resumen: json.resumen }, error: null };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -384,12 +403,14 @@ export async function getResumenVehiculo(id_vehiculo: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
     const json = await res.json();
     return { data: { id_vehiculo, resumen: json.resumen }, error: null };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -405,6 +426,7 @@ export async function getPromedioPropietario(id_propietario: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
@@ -417,7 +439,8 @@ export async function getPromedioPropietario(id_propietario: string): Promise<{
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
@@ -433,6 +456,7 @@ export async function getPromedioVehiculo(id_vehiculo: string): Promise<{
     });
 
     if (!res.ok) {
+      console.error(`[FeedbackApp] ${res.url} -> ${res.status}`, await res.text().catch(() => ""));
       return { data: null, error: `Feedback App respondió ${res.status}` };
     }
 
@@ -445,7 +469,8 @@ export async function getPromedioVehiculo(id_vehiculo: string): Promise<{
       },
       error: null,
     };
-  } catch {
+  } catch (err) {
+    console.error("[FeedbackApp] fetch falló", err);
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
 }
