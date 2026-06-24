@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
 
 interface IngresoExportRow {
   fechaInicio: string;
@@ -64,11 +65,11 @@ export function ExportButtons({ rows, periodoLabel }: ExportButtonsProps) {
 
   return (
     <div className="flex gap-2">
-      <Button variant="secondary" size="sm" onClick={handleExcel} disabled={rows.length === 0}>
-        Exportar Excel
+      <Button variant="excel" size="sm" onClick={handleExcel} disabled={rows.length === 0}>
+        <Icon name="fileExcel" size={14} /> Exportar Excel
       </Button>
-      <Button variant="secondary" size="sm" onClick={handlePdf} disabled={rows.length === 0}>
-        Exportar PDF
+      <Button variant="pdf" size="sm" onClick={handlePdf} disabled={rows.length === 0}>
+        <Icon name="filePdf" size={14} /> Exportar PDF
       </Button>
     </div>
   );

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { EliminarPropietarioButton } from "@/components/features/admin/EliminarPropietarioButton";
-import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
+import { ExportButtons } from "@/components/features/admin/ExportButtons";
 import { exportarPropietariosAction } from "@/lib/actions/admin.actions";
 
 
@@ -79,7 +79,7 @@ export default async function AdminPropietariosPage({
             </Link>
           )}
           <div className="ml-auto">
-            <ExportExcelButton action={exportarPropietariosAction} params={{ q }} filename="propietarios.xlsx" />
+            <ExportButtons action={exportarPropietariosAction} params={{ q }} filename="propietarios" title="Propietarios" />
           </div>
         </div>
 
