@@ -43,10 +43,13 @@ export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   });
 }
 
+const ESTADOS_FINALIZADOS_NO_RELEVANTES: EstadoReserva[] = [EstadoReserva.Cancelada, EstadoReserva.Rechazada];
+
 export async function findReservasByPropietario(id_propietario: string, filtros?: ReservaFiltros) {
   const where: Prisma.ReservaWhereInput = { id_propietario };
 
   if (filtros?.estados?.length) where.estado = { in: filtros.estados };
+  else where.estado = { notIn: ESTADOS_FINALIZADOS_NO_RELEVANTES };
   if (filtros?.id_vehiculo) where.id_vehiculo = filtros.id_vehiculo;
   if (filtros?.fechaDesde || filtros?.fechaHasta) {
     where.fecha_inicio = {
