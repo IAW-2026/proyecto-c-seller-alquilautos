@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { StatusBadge } from "@/components/ui/Badge";
 import { MetricCard } from "@/components/ui/MetricCard";
+import { MetricasExportButtons } from "@/components/features/admin/MetricasExportButtons";
 import { fmtDate, fmtMoney, daysBetween } from "@/lib/utils";
 
 const thClass = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -87,6 +88,21 @@ export default async function AdminDashboardPage() {
     ? Math.round(((reservasEstaSemana - reservasSemanaAnterior) / reservasSemanaAnterior) * 100)
     : (reservasEstaSemana > 0 ? 100 : 0);
 
+  const metricasExport = [
+    { metrica: "Propietarios",                  valor: propietarios },
+    { metrica: "Vehículos publicados",           valor: vehiculos },
+    { metrica: "Reservas totales",               valor: totalReservas },
+    { metrica: "Pendientes",                     valor: pendientes },
+    { metrica: "Aceptadas",                      valor: aceptadas },
+    { metrica: "Rechazadas",                     valor: rechazadas },
+    { metrica: "Ingresos totales",                valor: fmtMoney(ingresosTotales) },
+    { metrica: "Reservas esta semana",            valor: reservasEstaSemana },
+    { metrica: "Propietario con más ingresos",    valor: propietarioTop ? `${propietarioTop.nombre} ${propietarioTop.apellido} (${fmtMoney(propietarioTop.ingresos)})` : "—" },
+    { metrica: "Vehículo más alquilado",          valor: vehiculoTop ? `${vehiculoTop.marca} ${vehiculoTop.modelo} (${vehiculoTop.cantidad})` : "—" },
+    { metrica: "Tasa de cancelación global",      valor: `${tasaCancelacionGlobal.toFixed(1)}%` },
+    { metrica: "Propietarios nuevos (este mes)",  valor: propietariosEsteMes },
+  ];
+
   return (
     <div>
       {/* Page header */}
@@ -133,8 +149,9 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Section head */}
-      <div className="flex items-center gap-[10px] mb-[14px]">
+      <div className="flex items-center justify-between gap-[10px] mb-[14px] flex-wrap">
         <h3 className="m-0 text-[17px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Métricas de la plataforma</h3>
+        <MetricasExportButtons rows={metricasExport} />
       </div>
 
       {/* Métricas adicionales */}

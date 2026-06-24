@@ -1,7 +1,7 @@
 import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "excel" | "pdf";
   size?: "sm" | "md" | "lg";
 }
 
@@ -13,6 +13,8 @@ const variants = {
   secondary: "bg-[var(--bg-surface)] text-[var(--text-primary)] border-[var(--border-default)] hover:bg-[var(--bg-hover)]",
   ghost:     "bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-hover)]",
   danger:    "bg-[var(--color-danger-500)] text-white hover:bg-[var(--color-danger-700)]",
+  excel:     "bg-[#1D6F42] text-white hover:bg-[#185c36]",
+  pdf:       "bg-[#C8102E] text-white hover:bg-[#a30d26]",
 };
 
 const sizes = {

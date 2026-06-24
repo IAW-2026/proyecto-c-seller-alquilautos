@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { fmtDate, daysBetween } from "@/lib/utils";
 import Link from "next/link";
 import { ReservasFilterBar } from "@/components/features/admin/ReservasFilterBar";
-import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
+import { ExportButtons } from "@/components/features/admin/ExportButtons";
 import { exportarReservasAction } from "@/lib/actions/admin.actions";
 import { EstadoReserva, Prisma } from "@prisma/client";
 import { CancelarReservaButton } from "@/components/features/admin/CancelarReservaButton";
@@ -101,10 +101,11 @@ export default async function AdminReservasPage({
             alquiladorActual={alquilador}
             propietarios={propietarios}
           />
-          <ExportExcelButton
+          <ExportButtons
             action={exportarReservasAction}
             params={{ estado, propietario, fechaDesde, fechaHasta, alquilador }}
-            filename="reservas.xlsx"
+            filename="reservas"
+            title="Reservas"
           />
         </div>
       </div>
