@@ -6,6 +6,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { fmtDate, daysBetween } from "@/lib/utils";
 import Link from "next/link";
 import { ReservasFilterBar } from "@/components/features/admin/ReservasFilterBar";
+import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
+import { exportarReservasAction } from "@/lib/actions/admin.actions";
 import { EstadoReserva, Prisma } from "@prisma/client";
 import { EliminarReservaButton } from "@/components/features/admin/EliminarReservaButton";
 
@@ -88,14 +90,21 @@ export default async function AdminReservasPage({
           <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Reservas</h2>
           <div className="text-[13px] text-[var(--text-secondary)] mt-1">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
-        <ReservasFilterBar
-          estadoActual={estado}
-          propietarioActual={propietario}
-          fechaDesde={fechaDesde}
-          fechaHasta={fechaHasta}
-          alquiladorActual={alquilador}
-          propietarios={propietarios}
-        />
+        <div className="flex items-end gap-3 flex-wrap">
+          <ReservasFilterBar
+            estadoActual={estado}
+            propietarioActual={propietario}
+            fechaDesde={fechaDesde}
+            fechaHasta={fechaHasta}
+            alquiladorActual={alquilador}
+            propietarios={propietarios}
+          />
+          <ExportExcelButton
+            action={exportarReservasAction}
+            params={{ estado, propietario, fechaDesde, fechaHasta, alquilador }}
+            filename="reservas.xlsx"
+          />
+        </div>
       </div>
 
       {/* Table */}

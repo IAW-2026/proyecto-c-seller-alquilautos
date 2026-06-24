@@ -5,6 +5,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { EditarPropietarioModal } from "@/components/features/admin/EditarPropietarioModal";
 import { EliminarPropietarioButton } from "@/components/features/admin/EliminarPropietarioButton";
+import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
+import { exportarPropietariosAction } from "@/lib/actions/admin.actions";
 
 
 const PAGE_SIZE = 8;
@@ -77,6 +79,9 @@ export default async function AdminPropietariosPage({
               Limpiar filtros
             </Link>
           )}
+          <div className="ml-auto">
+            <ExportExcelButton action={exportarPropietariosAction} params={{ q }} filename="propietarios.xlsx" />
+          </div>
         </div>
 
         {propietarios.length === 0 ? (

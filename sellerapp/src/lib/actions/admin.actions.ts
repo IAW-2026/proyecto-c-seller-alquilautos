@@ -2,7 +2,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { EstadoReserva } from "@prisma/client";
+import { EstadoReserva, Prisma } from "@prisma/client";
+import { daysBetween } from "@/lib/utils";
 
 async function verificarAdmin() {
   const { userId, sessionClaims } = await auth();
@@ -75,6 +76,62 @@ export async function actualizarPropietarioAdminAction(id_propietario: string, d
   }
 }
 
+export async function exportarPropietariosAction(filtros: { q?: string }) {
+  await verificarAdmin();
+
+  const { q } = filtros;
+  const where: Prisma.PropietarioWhereInput = q ? {
+    OR: [
+      { nombre:   { contains: q, mode: "insensitive" } },
+      { apellido: { contains: q, mode: "insensitive" } },
+      { email:    { contains: q, mode: "insensitive" } },
+      { dni:      { contains: q, mode: "insensitive" } },
+    ],
+  } : {};
+
+  try {
+    const propietarios = await db.propietario.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      select: {
+        nombre: true,
+        apellido: true,
+        email: true,
+        dni: true,
+        direccion: true,
+        telefono: true,
+        _count: { select: { vehiculos: true } },
+        reservas: {
+          where: { estado: "Finalizada" },
+          select: { fecha_inicio: true, fecha_final: true, vehiculo: { select: { precio: true } } },
+        },
+      },
+    });
+
+    const data = propietarios.map(p => {
+      const ingresosTotales = p.reservas.reduce(
+        (acc, r) => acc + Number(r.vehiculo.precio) * daysBetween(r.fecha_inicio, r.fecha_final),
+        0
+      );
+      return {
+        "Nombre":                        p.nombre,
+        "Apellido":                      p.apellido,
+        "Email":                         p.email,
+        "DNI":                           p.dni,
+        "Dirección":                     p.direccion,
+        "Teléfono":                      p.telefono ?? "",
+        "Cantidad Vehículos":            p._count.vehiculos,
+        "Cantidad Reservas Finalizadas": p.reservas.length,
+        "Ingresos Totales":              ingresosTotales,
+      };
+    });
+
+    return { data };
+  } catch {
+    return { error: "Error al generar el archivo de propietarios" };
+  }
+}
+
 // ===== VEHICULOS =====
 
 export async function eliminarVehiculoAction(id_vehiculo: string) {
@@ -128,6 +185,58 @@ export async function eliminarReservaAction(id_reserva: string) {
     return { data: "Reserva eliminada correctamente" };
   } catch {
     return { error: "Error al eliminar la reserva" };
+  }
+}
+
+export async function exportarReservasAction(filtros: {
+  estado?: string;
+  propietario?: string;
+  fechaDesde?: string;
+  fechaHasta?: string;
+  alquilador?: string;
+}) {
+  await verificarAdmin();
+
+  const { estado, propietario, fechaDesde, fechaHasta, alquilador } = filtros;
+  const where: Prisma.ReservaWhereInput = {
+    ...(estado && estado !== "Todos" && { estado: estado as EstadoReserva }),
+    ...(propietario && { id_propietario: propietario }),
+    ...(alquilador && { id_alquilador: { contains: alquilador, mode: "insensitive" } }),
+    ...((fechaDesde || fechaHasta) && {
+      fecha_inicio: {
+        ...(fechaDesde && { gte: new Date(fechaDesde) }),
+        ...(fechaHasta && { lte: new Date(`${fechaHasta}T23:59:59.999`) }),
+      },
+    }),
+  };
+
+  try {
+    const reservas = await db.reserva.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { vehiculo: true, propietario: true },
+    });
+
+    const data = reservas.map(r => {
+      const dias = daysBetween(r.fecha_inicio, r.fecha_final);
+      const precioDia = Number(r.vehiculo.precio);
+      return {
+        "ID Reserva":    r.id_reserva,
+        "Estado":        r.estado,
+        "Propietario":   `${r.propietario.nombre} ${r.propietario.apellido}`,
+        "Vehículo":      `${r.vehiculo.marca} ${r.vehiculo.modelo}`,
+        "ID Alquilador": r.id_alquilador,
+        "Fecha Inicio":  r.fecha_inicio.toISOString().slice(0, 10),
+        "Fecha Final":   r.fecha_final.toISOString().slice(0, 10),
+        "Días":          dias,
+        "Precio/Día":    precioDia,
+        "Total ARS":     precioDia * dias,
+      };
+    });
+
+    return { data };
+  } catch {
+    return { error: "Error al generar el archivo de reservas" };
   }
 }
 
