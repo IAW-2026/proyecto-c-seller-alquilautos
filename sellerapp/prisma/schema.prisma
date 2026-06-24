@@ -46,6 +46,9 @@ enum EstadoVehiculo {
   Alquilado
 }
 
+// Índice único parcial (id_vehiculo, id_alquilador) WHERE estado = 'Pendiente'
+// agregado en la migración 20260624000000_unique_reserva_pendiente (Prisma no soporta
+// unique index condicional en el schema, por eso no aparece como @@unique acá).
 model Reserva {
   id_reserva     String        @id @default(cuid())
   id_vehiculo    String

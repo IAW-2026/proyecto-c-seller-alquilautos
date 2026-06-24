@@ -35,6 +35,13 @@ export async function createReserva(data: {
   return db.reserva.create({ data, select: RESERVA_SELECT });
 }
 
+export async function findReservaPendienteDuplicada(id_vehiculo: string, id_alquilador: string) {
+  return db.reserva.findFirst({
+    where: { id_vehiculo, id_alquilador, estado: EstadoReserva.Pendiente },
+    select: RESERVA_SELECT,
+  });
+}
+
 export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   return db.reserva.update({
     where: { id_reserva: id },
@@ -43,7 +50,7 @@ export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   });
 }
 
-const ESTADOS_FINALIZADOS_NO_RELEVANTES: EstadoReserva[] = [EstadoReserva.Cancelada, EstadoReserva.Rechazada];
+const ESTADOS_FINALIZADOS_NO_RELEVANTES: EstadoReserva[] = [EstadoReserva.Cancelada, EstadoReserva.Rechazada, EstadoReserva.Finalizada];
 
 export async function findReservasByPropietario(id_propietario: string, filtros?: ReservaFiltros) {
   const where: Prisma.ReservaWhereInput = { id_propietario };

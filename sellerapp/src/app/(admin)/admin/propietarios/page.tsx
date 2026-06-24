@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
-import { EditarPropietarioModal } from "@/components/features/admin/EditarPropietarioModal";
 import { EliminarPropietarioButton } from "@/components/features/admin/EliminarPropietarioButton";
+import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
+import { exportarPropietariosAction } from "@/lib/actions/admin.actions";
 
 
 const PAGE_SIZE = 8;
@@ -69,13 +70,25 @@ export default async function AdminPropietariosPage({
               className="border border-[var(--border-default)] bg-[var(--bg-page)] text-[var(--text-primary)] px-3 py-2 rounded-[var(--radius-md)] text-[13px] font-[inherit] outline-none min-w-[240px]"
             />
           </form>
+          {q && (
+            <Link
+              href="/admin/propietarios"
+              className="inline-flex items-center justify-center gap-2 border border-[var(--border-default)] rounded-[var(--radius-md)] text-[13px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms] px-[16px] py-[9px]"
+            >
+              Limpiar filtros
+            </Link>
+          )}
           <div className="ml-auto">
-            <span className="text-[var(--text-secondary)] text-[13px]">{total} resultados</span>
+            <ExportExcelButton action={exportarPropietariosAction} params={{ q }} filename="propietarios.xlsx" />
           </div>
         </div>
 
         {propietarios.length === 0 ? (
-          <EmptyState icon="user" title="Sin resultados" message="No encontramos propietarios con ese criterio." />
+          <EmptyState
+            icon="user"
+            title="Sin resultados"
+            message={q ? "No encontramos propietarios que coincidan con la búsqueda." : "No hay propietarios registrados."}
+          />
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -100,7 +113,7 @@ export default async function AdminPropietariosPage({
                       <td className={tdClass}><strong>{o._count.vehiculos}</strong></td>
                       <td className={tdClass}>
                         <div className="flex gap-2 justify-end">
-                          <EditarPropietarioModal propietario={o} />
+                          <Link href={`/admin/propietarios/${o.id_propietario}`} className={linkBtnSmClass}>Ver propietario</Link>
                           <EliminarPropietarioButton id_propietario={o.id_propietario} nombre={`${o.nombre} ${o.apellido}`} />
                         </div>
                       </td>

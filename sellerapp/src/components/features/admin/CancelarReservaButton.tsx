@@ -1,16 +1,16 @@
 "use client";
 import { useState } from "react";
 import { ConfirmModal } from "@/components/ui/Modal";
-import { eliminarReservaAction } from "@/lib/actions/admin.actions";
+import { cancelarReservaAction } from "@/lib/actions/admin.actions";
 
-export function EliminarReservaButton({ id_reserva }: { id_reserva: string }) {
+export function CancelarReservaButton({ id_reserva }: { id_reserva: string }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleConfirm = async () => {
     setLoading(true);
-    const result = await eliminarReservaAction(id_reserva);
+    const result = await cancelarReservaAction(id_reserva);
     setLoading(false);
     if (result.error) { setError(result.error); setOpen(false); return; }
     setOpen(false);
@@ -24,13 +24,13 @@ export function EliminarReservaButton({ id_reserva }: { id_reserva: string }) {
         </div>
       )}
       <button onClick={() => setOpen(true)} className="inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--color-danger-500)] text-white hover:bg-[var(--color-danger-700)] transition-colors duration-[180ms]">
-        Eliminar
+        Cancelar
       </button>
       <ConfirmModal
         open={open}
-        title="¿Eliminar reserva?"
-        message="Esta acción no se puede deshacer."
-        confirmLabel={loading ? "Eliminando..." : "Eliminar"}
+        title="¿Cancelar esta reserva?"
+        message="La reserva pasará a estado Cancelada y el vehículo volverá a estar disponible."
+        confirmLabel={loading ? "Cancelando..." : "Cancelar reserva"}
         confirmVariant="danger"
         onConfirm={handleConfirm}
         onCancel={() => setOpen(false)}
