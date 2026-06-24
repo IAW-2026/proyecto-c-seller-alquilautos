@@ -110,7 +110,8 @@ export async function cancelarReserva(id: string) {
     return { data: null, error: "La reserva no puede cancelarse en su estado actual" };
   }
 
-  await updateReservaEstado(id, EstadoReserva.Cancelada);
+  const reservaActualizada = await updateReservaEstado(id, EstadoReserva.Cancelada);
+  console.log("[cancelarReserva] estado en DB luego del update:", reservaActualizada.estado);
 
   let avisoEntrega: string | null = null;
   if (reserva.estado === EstadoReserva.Coordinada) {
