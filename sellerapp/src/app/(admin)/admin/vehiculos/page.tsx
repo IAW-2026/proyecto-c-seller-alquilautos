@@ -5,7 +5,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { EditarVehiculoAdminModal } from "@/components/features/admin/EditarVehiculoAdminModal";
 import { EliminarVehiculoButton } from "@/components/features/admin/EliminarVehiculoButton";
+import { VehiculosFilterBar } from "@/components/features/admin/VehiculosFilterBar";
 import { getCloudinaryUrl } from "@/lib/utils";
+import { EstadoVehiculo, Prisma } from "@prisma/client";
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -15,7 +17,7 @@ const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6p
 export default async function AdminVehiculosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; estado?: string; page?: string }>;
 }) {
   const { userId, sessionClaims } = await auth();
   if (!userId) redirect("/sign-in");
@@ -23,16 +25,18 @@ export default async function AdminVehiculosPage({
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
   if (role !== "adminSeller") redirect("/dashboard");
 
-  const { q = "", page: pageParam = "1" } = await searchParams;
+  const { q = "", estado = "Todos", page: pageParam = "1" } = await searchParams;
   const page = parseInt(pageParam, 10);
 
-  const where = q ? {
-    OR: [
-      { marca:     { contains: q, mode: "insensitive" as const } },
-      { modelo:    { contains: q, mode: "insensitive" as const } },
-      { ubicacion: { contains: q, mode: "insensitive" as const } },
-    ]
-  } : {};
+  const where: Prisma.VehiculoWhereInput = {
+    ...(q && {
+      OR: [
+        { marca:  { contains: q, mode: "insensitive" as const } },
+        { modelo: { contains: q, mode: "insensitive" as const } },
+      ],
+    }),
+    ...(estado !== "Todos" && { estado: estado as EstadoVehiculo }),
+  };
 
   const [vehiculos, total] = await Promise.all([
     db.vehiculo.findMany({
@@ -47,6 +51,12 @@ export default async function AdminVehiculosPage({
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  const filterParams = new URLSearchParams();
+  if (q) filterParams.set("q", q);
+  if (estado !== "Todos") filterParams.set("estado", estado);
+  const filtrosQuery = filterParams.toString();
+  const hasFiltrosActivos = filtrosQuery.length > 0;
+
   return (
     <div>
       {/* Page header */}
@@ -59,22 +69,14 @@ export default async function AdminVehiculosPage({
 
       {/* Toolbar + table */}
       <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)]">
-        <div className="flex gap-3 items-center px-4 py-[14px] border-b border-[var(--border-default)] flex-wrap">
-          <form>
-            <input
-              type="search" name="q" defaultValue={q}
-              placeholder="Buscar por marca, modelo o ubicación..."
-              aria-label="Buscar vehículos"
-              className="border border-[var(--border-default)] bg-[var(--bg-page)] text-[var(--text-primary)] px-3 py-2 rounded-[var(--radius-md)] text-[13px] font-[inherit] outline-none min-w-[240px]"
-            />
-          </form>
-          <div className="ml-auto">
-            <span className="text-[var(--text-secondary)] text-[13px]">{total} resultados</span>
-          </div>
-        </div>
+        <VehiculosFilterBar qActual={q} estadoActual={estado} />
 
         {vehiculos.length === 0 ? (
-          <EmptyState icon="car" title="Sin resultados" message="No encontramos vehículos con ese criterio." />
+          <EmptyState
+            icon="car"
+            title="Sin resultados"
+            message={hasFiltrosActivos ? "No encontramos vehículos que coincidan con los filtros aplicados." : "No hay vehículos registrados."}
+          />
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -121,8 +123,8 @@ export default async function AdminVehiculosPage({
               <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-default)] text-[12px] text-[var(--text-secondary)] bg-[var(--bg-page)]">
                 <span>Página {page} de {totalPages}</span>
                 <div className="flex gap-2">
-                  {page > 1          && <Link href={`?q=${q}&page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
-                  {page < totalPages && <Link href={`?q=${q}&page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
+                  {page > 1          && <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
+                  {page < totalPages && <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
                 </div>
               </div>
             )}
