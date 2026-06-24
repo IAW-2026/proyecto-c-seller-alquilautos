@@ -13,6 +13,7 @@ export async function iniciarPago(data: {
   monto_pagar: number;
 }): Promise<{ data: { id_pago: string | number } | null; error: string | null }> {
   try {
+    console.log("[iniciarPago] body enviado:", data);
     const res = await fetch(`${process.env.PAYMENTS_API_URL}/api/pago`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(await authHeaders()) },
