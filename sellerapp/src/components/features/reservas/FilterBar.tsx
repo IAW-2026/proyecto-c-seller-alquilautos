@@ -90,7 +90,7 @@ export function FilterBar({ estadosActuales, fechaDesde, fechaHasta, vehiculoAct
         {open && (
           <>
             <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-            <div className="absolute top-[calc(100%+6px)] left-0 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] z-20 min-w-[180px] overflow-hidden">
+            <div className="absolute top-[calc(100%+6px)] right-0 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] shadow-[var(--shadow-lg)] z-20 min-w-[180px] overflow-hidden">
               {ESTADOS.map(estado => (
                 <label
                   key={estado}

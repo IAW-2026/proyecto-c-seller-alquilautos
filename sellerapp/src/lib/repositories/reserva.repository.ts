@@ -43,7 +43,7 @@ export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   });
 }
 
-const ESTADOS_FINALIZADOS_NO_RELEVANTES: EstadoReserva[] = [EstadoReserva.Cancelada, EstadoReserva.Rechazada];
+const ESTADOS_FINALIZADOS_NO_RELEVANTES: EstadoReserva[] = [EstadoReserva.Cancelada, EstadoReserva.Rechazada, EstadoReserva.Finalizada];
 
 export async function findReservasByPropietario(id_propietario: string, filtros?: ReservaFiltros) {
   const where: Prisma.ReservaWhereInput = { id_propietario };
