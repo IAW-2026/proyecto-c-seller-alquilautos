@@ -44,9 +44,11 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json();
+    console.log("[PATCH /api/reserva/" + id + "] body recibido de Payments:", JSON.stringify(body));
 
     const validation = patchSchema.safeParse(body);
     if (!validation.success) {
+      console.log("[PATCH /api/reserva/" + id + "] body inválido:", JSON.stringify(validation.error.flatten().fieldErrors));
       return NextResponse.json(
         { data: null, error: validation.error.flatten().fieldErrors },
         { status: 400 }
@@ -54,16 +56,16 @@ export async function PATCH(
     }
 
     const { estado } = validation.data;
+    console.log("[PATCH /api/reserva/" + id + "] estado parseado:", estado);
 
     if (estado === EstadoReserva.Cancelada) {
       const result = await cancelarReserva(id);
+      console.log("[PATCH /api/reserva/" + id + "] resultado de cancelarReserva:", JSON.stringify(result));
       if (result.error) {
         return NextResponse.json({ data: null, error: result.error }, { status: 400 });
       }
       return NextResponse.json({ data: result.data, error: null }, { status: 200 });
     }
-    //console.log
-    console.log("Estado de la reserva:", estado);
     if (estado === EstadoReserva.Coordinada) {
       const result = await coordinarReserva(id);
       if (result.error) {
@@ -73,6 +75,7 @@ export async function PATCH(
     }
 
     const result = await actualizarEstadoReserva(id, estado);
+    console.log("[PATCH /api/reserva/" + id + "] resultado de actualizarEstadoReserva:", JSON.stringify(result));
     if (result.error) {
       return NextResponse.json({ data: null, error: result.error }, { status: 404 });
     }

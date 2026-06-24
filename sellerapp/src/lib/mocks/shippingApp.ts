@@ -88,9 +88,11 @@ export async function cancelarEntrega(id_reserva: string): Promise<{
   data: { id_reserva: string; estado: string } | null;
   error: string | null;
 }> {
+  const url = `${process.env.SHIPPING_API_URL}/api/entregas/${id_reserva}`;
+  console.log("[cancelarEntrega] PATCH a Shipping App:", url, "(sin body)");
   try {
     const res = await fetch(
-      `${process.env.SHIPPING_API_URL}/api/entregas/${id_reserva}`,
+      url,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...(await authHeaders()) },
@@ -98,13 +100,17 @@ export async function cancelarEntrega(id_reserva: string): Promise<{
       }
     );
 
+    console.log("[cancelarEntrega] status de respuesta de Shipping App:", res.status);
+
     if (!res.ok) {
       return { data: null, error: `Shipping App respondió ${res.status}` };
     }
 
     const json = await res.json();
+    console.log("[cancelarEntrega] body de respuesta de Shipping App:", JSON.stringify(json));
     return { data: json, error: null };
-  } catch {
+  } catch (err) {
+    console.log("[cancelarEntrega] error al contactar a Shipping App:", err);
     return { data: null, error: "No se pudo contactar a Shipping App" };
   }
 }

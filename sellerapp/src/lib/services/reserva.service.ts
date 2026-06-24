@@ -97,6 +97,7 @@ export async function getPendientesUrgentesCount(id_propietario: string) {
 export async function cancelarReserva(id: string) {
   const reserva = await findReservaById(id);
   if (!reserva) return { data: null, error: "Reserva no encontrada" };
+  console.log("[cancelarReserva] estado actual de la reserva", id, ":", reserva.estado);
 
   const estadosCancelables: EstadoReserva[] = [
     EstadoReserva.Pendiente,
@@ -105,6 +106,7 @@ export async function cancelarReserva(id: string) {
   ];
 
   if (!estadosCancelables.includes(reserva.estado)) {
+    console.log("[cancelarReserva] estado", reserva.estado, "no es cancelable, no se actualiza ni se avisa a Shipping");
     return { data: null, error: "La reserva no puede cancelarse en su estado actual" };
   }
 
@@ -112,10 +114,14 @@ export async function cancelarReserva(id: string) {
 
   let avisoEntrega: string | null = null;
   if (reserva.estado === EstadoReserva.Coordinada) {
+    console.log("[cancelarReserva] reserva estaba Coordinada, avisando a Shipping App. id_reserva:", id);
     const entrega = await cancelarEntrega(id);
+    console.log("[cancelarReserva] respuesta de Shipping App:", JSON.stringify(entrega));
     if (entrega.error) {
       avisoEntrega = `La reserva se canceló, pero no se pudo avisar a Shipping App: ${entrega.error}`;
     }
+  } else {
+    console.log("[cancelarReserva] reserva no estaba Coordinada (estaba", reserva.estado, "), no se avisa a Shipping");
   }
 
   await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
