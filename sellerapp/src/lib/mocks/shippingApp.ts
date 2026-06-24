@@ -1,8 +1,9 @@
 import { auth } from "@clerk/nextjs/server";
 
 async function authHeaders(): Promise<Record<string, string>> {
-  const { getToken } = await auth();
+  const { userId, getToken } = await auth();
   const token = await getToken();
+  console.log("[authHeaders] userId:", userId, "| token presente:", !!token);
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -89,20 +90,16 @@ export async function cancelarEntrega(id_reserva: string): Promise<{
   error: string | null;
 }> {
   const url = `${process.env.SHIPPING_API_URL}/api/entregas/${id_reserva}`;
-  console.log("[cancelarEntrega] PATCH a Shipping App:", url, "(sin body)");
+  const headers = { "Content-Type": "application/json", ...(await authHeaders()) };
+  console.log("[cancelarEntrega] PATCH a Shipping App:", url, "| headers:", JSON.stringify(headers), "(sin body)");
   try {
-    const res = await fetch(
-      url,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", ...(await authHeaders()) },
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(url, { method: "PATCH", headers, cache: "no-store" });
 
     console.log("[cancelarEntrega] status de respuesta de Shipping App:", res.status);
 
     if (!res.ok) {
+      const errorBody = await res.text();
+      console.log("[cancelarEntrega] body de error de Shipping App:", errorBody);
       return { data: null, error: `Shipping App respondió ${res.status}` };
     }
 
