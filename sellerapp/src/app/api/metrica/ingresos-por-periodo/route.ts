@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   }
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") {
+  if (role !== "adminGlobal") {
     return NextResponse.json({ data: null, error: "Forbidden" }, { status: 403 });
   }
 
