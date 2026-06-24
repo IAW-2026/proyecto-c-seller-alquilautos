@@ -22,34 +22,34 @@ export interface ResenaItem {
 }
 
 interface RawResena {
-  ["id_reseña"]: string | number;
-  id_reserva: string | number;
-  id_emisor: string | number;
-  calificacion_general: number;
+  idResena: string | number;
+  idReserva: string | number;
+  idEmisor: string | number;
+  calificacionGeneral: number;
   descripcion: string;
-  fecha_creacion: string;
-  calificacion_comunicacion?: number;
-  calificacion_puntualidad?: number;
-  calificacion_devolucion?: number;
-  calificacion_limpieza?: number;
-  calificacion_estado?: number;
-  calificacion_comodidad?: number;
+  fechaCreacion: string;
+  calificacionComunicacion?: number;
+  calificacionPuntualidad?: number;
+  calificacionDevolucion?: number;
+  calificacionLimpieza?: number;
+  calificacionEstado?: number;
+  calificacionComodidad?: number;
 }
 
 function mapResena(r: RawResena): ResenaItem {
   return {
-    id_resena: String(r["id_reseña"]),
-    id_reserva: String(r.id_reserva),
-    id_emisor: String(r.id_emisor),
-    calificacion_general: r.calificacion_general,
+    id_resena: String(r.idResena),
+    id_reserva: String(r.idReserva),
+    id_emisor: String(r.idEmisor),
+    calificacion_general: r.calificacionGeneral,
     descripcion: r.descripcion,
-    fecha_creacion: r.fecha_creacion,
-    calificacion_comunicacion: r.calificacion_comunicacion,
-    calificacion_puntualidad: r.calificacion_puntualidad,
-    calificacion_devolucion: r.calificacion_devolucion,
-    calificacion_limpieza: r.calificacion_limpieza,
-    calificacion_estado: r.calificacion_estado,
-    calificacion_comodidad: r.calificacion_comodidad,
+    fecha_creacion: r.fechaCreacion,
+    calificacion_comunicacion: r.calificacionComunicacion,
+    calificacion_puntualidad: r.calificacionPuntualidad,
+    calificacion_devolucion: r.calificacionDevolucion,
+    calificacion_limpieza: r.calificacionLimpieza,
+    calificacion_estado: r.calificacionEstado,
+    calificacion_comodidad: r.calificacionComodidad,
   };
 }
 
@@ -126,16 +126,16 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
     const json = await res.json();
     return {
       data: {
-        id_resena: json["id_reseña"] != null ? String(json["id_reseña"]) : null,
+        id_resena: json.idResena != null ? String(json.idResena) : null,
         id_reserva,
-        id_vehiculo: json.id_vehiculo != null ? String(json.id_vehiculo) : null,
-        id_emisor: json.id_emisor != null ? String(json.id_emisor) : null,
-        calificacion_general: json.calificacion_general ?? null,
+        id_vehiculo: json.idVehiculo != null ? String(json.idVehiculo) : null,
+        id_emisor: json.idEmisor != null ? String(json.idEmisor) : null,
+        calificacion_general: json.calificacionGeneral ?? null,
         descripcion: json.descripcion ?? null,
-        fecha_creacion: json.fecha_creacion ?? null,
-        calificacion_limpieza: json.calificacion_limpieza ?? null,
-        calificacion_estado: json.calificacion_estado ?? null,
-        calificacion_comodidad: json.calificacion_comodidad ?? null,
+        fecha_creacion: json.fechaCreacion ?? null,
+        calificacion_limpieza: json.calificacionLimpieza ?? null,
+        calificacion_estado: json.calificacionEstado ?? null,
+        calificacion_comodidad: json.calificacionComodidad ?? null,
         respuesta: json.respuesta ?? null,
       },
       error: null,
@@ -175,15 +175,15 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
     const json = await res.json();
     return {
       data: {
-        id_resena: json["id_reseña"] != null ? String(json["id_reseña"]) : null,
+        id_resena: json.idResena != null ? String(json.idResena) : null,
         id_reserva,
-        id_propietario: json.id_propietario != null ? String(json.id_propietario) : null,
-        id_emisor: json.id_emisor != null ? String(json.id_emisor) : null,
-        calificacion_general: json.calificacion_general ?? null,
+        id_propietario: json.idPropietario != null ? String(json.idPropietario) : null,
+        id_emisor: json.idEmisor != null ? String(json.idEmisor) : null,
+        calificacion_general: json.calificacionGeneral ?? null,
         descripcion: json.descripcion ?? null,
-        fecha_creacion: json.fecha_creacion ?? null,
-        calificacion_comunicacion: json.calificacion_comunicacion ?? null,
-        calificacion_puntualidad: json.calificacion_puntualidad ?? null,
+        fecha_creacion: json.fechaCreacion ?? null,
+        calificacion_comunicacion: json.calificacionComunicacion ?? null,
+        calificacion_puntualidad: json.calificacionPuntualidad ?? null,
         respuesta: json.respuesta ?? null,
       },
       error: null,
@@ -224,16 +224,16 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
     const json = await res.json();
     return {
       data: {
-        id_resena: json["id_reseña"] != null ? String(json["id_reseña"]) : null,
+        id_resena: json.idResena != null ? String(json.idResena) : null,
         id_reserva,
-        id_alquilador: json.id_alquilador != null ? String(json.id_alquilador) : null,
-        id_emisor: json.id_emisor != null ? String(json.id_emisor) : null,
-        calificacion_general: json.calificacion_general ?? null,
+        id_alquilador: json.idAlquilador != null ? String(json.idAlquilador) : null,
+        id_emisor: json.idEmisor != null ? String(json.idEmisor) : null,
+        calificacion_general: json.calificacionGeneral ?? null,
         descripcion: json.descripcion ?? null,
-        fecha_creacion: json.fecha_creacion ?? null,
-        calificacion_comunicacion: json.calificacion_comunicacion ?? null,
-        calificacion_puntualidad: json.calificacion_puntualidad ?? null,
-        calificacion_devolucion: json.calificacion_devolucion ?? null,
+        fecha_creacion: json.fechaCreacion ?? null,
+        calificacion_comunicacion: json.calificacionComunicacion ?? null,
+        calificacion_puntualidad: json.calificacionPuntualidad ?? null,
+        calificacion_devolucion: json.calificacionDevolucion ?? null,
         respuesta: json.respuesta ?? null,
       },
       error: null,
@@ -264,34 +264,33 @@ export async function crearResena(data: {
   data: { id_resena: string; id_reserva: string; fecha_creacion: string; estado_moderacion: string } | null;
   error: string | null;
 }> {
-  const tipo_receptor: "vehiculo" | "propietario" | "alquilador" = data.idVehiculo
+  const tipoReceptor: "vehiculo" | "propietario" | "alquilador" = data.idVehiculo
     ? "vehiculo"
     : data.idPropietario
     ? "propietario"
     : "alquilador";
-  const id_receptor = data.idVehiculo ?? data.idPropietario ?? data.idAlquilador ?? "";
+  const idReceptor = data.idVehiculo ?? data.idPropietario ?? data.idAlquilador ?? "";
 
-  const calificaciones: Record<string, number> = {};
-  if (data.calificacionComunicacion !== undefined) calificaciones.calificacion_comunicacion = data.calificacionComunicacion;
-  if (data.calificacionPuntualidad !== undefined) calificaciones.calificacion_puntualidad = data.calificacionPuntualidad;
-  if (data.calificacionDevolucion !== undefined) calificaciones.calificacion_devolucion = data.calificacionDevolucion;
-  if (data.calificacionLimpieza !== undefined) calificaciones.calificacion_limpieza = data.calificacionLimpieza;
-  if (data.calificacionEstado !== undefined) calificaciones.calificacion_estado = data.calificacionEstado;
-  if (data.calificacionComodidad !== undefined) calificaciones.calificacion_comodidad = data.calificacionComodidad;
+  const body: Record<string, unknown> = {
+    idReserva: data.idReserva,
+    idEmisor: data.idEmisor,
+    idReceptor,
+    tipoReceptor,
+    calificacionGeneral: data.calificacionGeneral,
+    descripcion: data.descripcion,
+  };
+  if (data.calificacionComunicacion !== undefined) body.calificacionComunicacion = data.calificacionComunicacion;
+  if (data.calificacionPuntualidad !== undefined) body.calificacionPuntualidad = data.calificacionPuntualidad;
+  if (data.calificacionDevolucion !== undefined) body.calificacionDevolucion = data.calificacionDevolucion;
+  if (data.calificacionLimpieza !== undefined) body.calificacionLimpieza = data.calificacionLimpieza;
+  if (data.calificacionEstado !== undefined) body.calificacionEstado = data.calificacionEstado;
+  if (data.calificacionComodidad !== undefined) body.calificacionComodidad = data.calificacionComodidad;
 
   try {
     const res = await fetch(`${process.env.FEEDBACK_API_URL}/api/resena`, {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(await authHeaders()) },
-      body: JSON.stringify({
-        id_reserva: data.idReserva,
-        id_emisor: data.idEmisor,
-        id_receptor,
-        tipo_receptor,
-        calificacion_general: data.calificacionGeneral,
-        descripcion: data.descripcion,
-        calificaciones,
-      }),
+      body: JSON.stringify(body),
       cache: "no-store",
     });
 
@@ -302,10 +301,10 @@ export async function crearResena(data: {
     const json = await res.json();
     return {
       data: {
-        id_resena: String(json["id_reseña"]),
-        id_reserva: String(json.id_reserva),
-        fecha_creacion: json.fecha_creacion,
-        estado_moderacion: json.estado_moderacion,
+        id_resena: String(json.idResena),
+        id_reserva: String(json.idReserva),
+        fecha_creacion: json.fechaCreacion,
+        estado_moderacion: json.estadoModeracion,
       },
       error: null,
     };
@@ -327,8 +326,8 @@ export async function responderResena(data: {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(await authHeaders()) },
       body: JSON.stringify({
-        ["id_reseña"]: data.id_resena,
-        id_autor: data.id_propietario,
+        idResena: data.id_resena,
+        idAutor: data.id_propietario,
         comentario: data.respuesta,
       }),
       cache: "no-store",
@@ -341,10 +340,10 @@ export async function responderResena(data: {
     const json = await res.json();
     return {
       data: {
-        id_resena: String(json["id_reseña"]),
-        id_autor: String(json.id_autor),
+        id_resena: String(json.idResena),
+        id_autor: String(json.idAutor),
         comentario: json.comentario,
-        fecha_creacion: json.fecha_creacion,
+        fecha_creacion: json.fechaCreacion,
       },
       error: null,
     };
@@ -368,7 +367,7 @@ export async function getResumenPropietario(id_propietario: string): Promise<{
     }
 
     const json = await res.json();
-    return { data: json, error: null };
+    return { data: { id_propietario, resumen: json.resumen }, error: null };
   } catch {
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
@@ -389,7 +388,7 @@ export async function getResumenVehiculo(id_vehiculo: string): Promise<{
     }
 
     const json = await res.json();
-    return { data: json, error: null };
+    return { data: { id_vehiculo, resumen: json.resumen }, error: null };
   } catch {
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
@@ -410,7 +409,14 @@ export async function getPromedioPropietario(id_propietario: string): Promise<{
     }
 
     const json = await res.json();
-    return { data: json, error: null };
+    return {
+      data: {
+        id_propietario,
+        calificacion_promedio: json.calificacionPromedio,
+        cantidad_resenas: json.cantidadResenas,
+      },
+      error: null,
+    };
   } catch {
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
@@ -431,7 +437,14 @@ export async function getPromedioVehiculo(id_vehiculo: string): Promise<{
     }
 
     const json = await res.json();
-    return { data: json, error: null };
+    return {
+      data: {
+        id_vehiculo,
+        calificacion_promedio: json.calificacionPromedio,
+        cantidad_resenas: json.cantidadResenas,
+      },
+      error: null,
+    };
   } catch {
     return { data: null, error: "No se pudo contactar a Feedback App" };
   }
