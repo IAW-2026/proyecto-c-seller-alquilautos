@@ -176,15 +176,26 @@ export async function actualizarVehiculoAdminAction(id_vehiculo: string, data: {
 
 // ===== RESERVAS =====
 
-export async function eliminarReservaAction(id_reserva: string) {
+export async function cancelarReservaAction(id_reserva: string) {
   await verificarAdmin();
 
   try {
-    await db.reserva.delete({ where: { id_reserva } });
+    const reserva = await db.reserva.update({
+      where: { id_reserva },
+      data: { estado: "Cancelada" },
+    });
+
+    await db.vehiculo.update({
+      where: { id_vehiculo: reserva.id_vehiculo },
+      data: { estado: "Disponible" },
+    });
+
     revalidatePath("/admin/reservas");
-    return { data: "Reserva eliminada correctamente" };
+    revalidatePath("/admin/vehiculos");
+    revalidatePath(`/admin/propietarios/${reserva.id_propietario}`);
+    return { data: "Reserva cancelada correctamente" };
   } catch {
-    return { error: "Error al eliminar la reserva" };
+    return { error: "Error al cancelar la reserva" };
   }
 }
 

@@ -9,7 +9,9 @@ import { ReservasFilterBar } from "@/components/features/admin/ReservasFilterBar
 import { ExportExcelButton } from "@/components/features/admin/ExportExcelButton";
 import { exportarReservasAction } from "@/lib/actions/admin.actions";
 import { EstadoReserva, Prisma } from "@prisma/client";
-import { EliminarReservaButton } from "@/components/features/admin/EliminarReservaButton";
+import { CancelarReservaButton } from "@/components/features/admin/CancelarReservaButton";
+
+const ESTADOS_TERMINALES: EstadoReserva[] = ["Cancelada", "Rechazada", "Finalizada"];
 
 const PAGE_SIZE = 8;
 const thClass   = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
@@ -137,7 +139,9 @@ export default async function AdminReservasPage({
                       <td className={tdClass}><StatusBadge estado={r.estado} /></td>
                       <td className={tdClass}>
                         <div className="flex justify-end">
-                          <EliminarReservaButton id_reserva={r.id_reserva} />
+                          {!ESTADOS_TERMINALES.includes(r.estado) && (
+                            <CancelarReservaButton id_reserva={r.id_reserva} />
+                          )}
                         </div>
                       </td>
                     </tr>
