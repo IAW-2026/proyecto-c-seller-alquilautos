@@ -5,8 +5,8 @@ import { StatusBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { fmtDate, daysBetween } from "@/lib/utils";
 import Link from "next/link";
-import { EstadoFiltro } from "@/components/features/reservas/EstadoFiltro";
-import { EstadoReserva } from "@prisma/client";
+import { ReservasFilterBar } from "@/components/features/admin/ReservasFilterBar";
+import { EstadoReserva, Prisma } from "@prisma/client";
 import { EliminarReservaButton } from "@/components/features/admin/EliminarReservaButton";
 
 const PAGE_SIZE = 8;
@@ -17,7 +17,14 @@ const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6p
 export default async function AdminReservasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ estado?: string; page?: string }>;
+  searchParams: Promise<{
+    estado?: string;
+    propietario?: string;
+    fechaDesde?: string;
+    fechaHasta?: string;
+    alquilador?: string;
+    page?: string;
+  }>;
 }) {
   const { userId, sessionClaims } = await auth();
   if (!userId) redirect("/sign-in");
@@ -25,12 +32,29 @@ export default async function AdminReservasPage({
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
   if (role !== "adminSeller") redirect("/dashboard");
 
-  const { estado = "Todos", page: pageParam = "1" } = await searchParams;
+  const {
+    estado = "Todos",
+    propietario = "",
+    fechaDesde = "",
+    fechaHasta = "",
+    alquilador = "",
+    page: pageParam = "1",
+  } = await searchParams;
   const page = parseInt(pageParam, 10);
 
-  const where = estado !== "Todos" ? { estado: estado as EstadoReserva } : {};
+  const where: Prisma.ReservaWhereInput = {
+    ...(estado !== "Todos" && { estado: estado as EstadoReserva }),
+    ...(propietario && { id_propietario: propietario }),
+    ...(alquilador && { id_alquilador: { contains: alquilador, mode: "insensitive" } }),
+    ...((fechaDesde || fechaHasta) && {
+      fecha_inicio: {
+        ...(fechaDesde && { gte: new Date(fechaDesde) }),
+        ...(fechaHasta && { lte: new Date(`${fechaHasta}T23:59:59.999`) }),
+      },
+    }),
+  };
 
-  const [reservas, total] = await Promise.all([
+  const [reservas, total, propietarios] = await Promise.all([
     db.reserva.findMany({
       where,
       skip: (page - 1) * PAGE_SIZE,
@@ -39,9 +63,22 @@ export default async function AdminReservasPage({
       include: { vehiculo: true, propietario: true },
     }),
     db.reserva.count({ where }),
+    db.propietario.findMany({
+      select: { id_propietario: true, nombre: true, apellido: true },
+      orderBy: { nombre: "asc" },
+    }),
   ]);
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  const filterParams = new URLSearchParams();
+  if (estado !== "Todos") filterParams.set("estado", estado);
+  if (propietario) filterParams.set("propietario", propietario);
+  if (fechaDesde) filterParams.set("fechaDesde", fechaDesde);
+  if (fechaHasta) filterParams.set("fechaHasta", fechaHasta);
+  if (alquilador) filterParams.set("alquilador", alquilador);
+  const filtrosQuery = filterParams.toString();
+  const hasFiltrosActivos = filtrosQuery.length > 0;
 
   return (
     <div>
@@ -51,11 +88,14 @@ export default async function AdminReservasPage({
           <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Reservas</h2>
           <div className="text-[13px] text-[var(--text-secondary)] mt-1">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
-        <div className="self-end">
-          <EstadoFiltro estadoActual={estado} />
-        </div>
-       
-
+        <ReservasFilterBar
+          estadoActual={estado}
+          propietarioActual={propietario}
+          fechaDesde={fechaDesde}
+          fechaHasta={fechaHasta}
+          alquiladorActual={alquilador}
+          propietarios={propietarios}
+        />
       </div>
 
       {/* Table */}
@@ -64,7 +104,7 @@ export default async function AdminReservasPage({
           <EmptyState
             icon="calendar"
             title="Sin reservas"
-            message={estado !== "Todos" ? `No hay reservas en estado "${estado}".` : "No hay reservas registradas."}
+            message={hasFiltrosActivos ? "No hay reservas que coincidan con los filtros aplicados." : "No hay reservas registradas."}
           />
         ) : (
           <>
@@ -100,8 +140,8 @@ export default async function AdminReservasPage({
               <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-default)] text-[12px] text-[var(--text-secondary)] bg-[var(--bg-page)]">
                 <span>Página {page} de {totalPages}</span>
                 <div className="flex gap-2">
-                  {page > 1          && <Link href={`?estado=${estado}&page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
-                  {page < totalPages && <Link href={`?estado=${estado}&page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
+                  {page > 1          && <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
+                  {page < totalPages && <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
                 </div>
               </div>
             )}
