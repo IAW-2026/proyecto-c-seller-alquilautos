@@ -1,9 +1,11 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { db } from "@/lib/db";
 import { isAdminRole } from "@/lib/auth/roles";
 import { StatusBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { fmtDate, daysBetween } from "@/lib/utils";
 import Link from "next/link";
 import { ReservasFilterBar } from "@/components/features/admin/ReservasFilterBar";
@@ -47,34 +49,10 @@ export default async function AdminReservasPage({
   } = await searchParams;
   const page = parseInt(pageParam, 10);
 
-  const where: Prisma.ReservaWhereInput = {
-    ...(estado !== "Todos" && { estado: estado as EstadoReserva }),
-    ...(propietario && { id_propietario: propietario }),
-    ...(alquilador && { id_alquilador: { contains: alquilador, mode: "insensitive" } }),
-    ...((fechaDesde || fechaHasta) && {
-      fecha_inicio: {
-        ...(fechaDesde && { gte: new Date(fechaDesde) }),
-        ...(fechaHasta && { lte: new Date(`${fechaHasta}T23:59:59.999`) }),
-      },
-    }),
-  };
-
-  const [reservas, total, propietarios] = await Promise.all([
-    db.reserva.findMany({
-      where,
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE,
-      orderBy: { createdAt: "desc" },
-      include: { vehiculo: true, propietario: true },
-    }),
-    db.reserva.count({ where }),
-    db.propietario.findMany({
-      select: { id_propietario: true, nombre: true, apellido: true },
-      orderBy: { nombre: "asc" },
-    }),
-  ]);
-
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const propietarios = await db.propietario.findMany({
+    select: { id_propietario: true, nombre: true, apellido: true },
+    orderBy: { nombre: "asc" },
+  });
 
   const filterParams = new URLSearchParams();
   if (estado !== "Todos") filterParams.set("estado", estado);
@@ -83,7 +61,6 @@ export default async function AdminReservasPage({
   if (fechaHasta) filterParams.set("fechaHasta", fechaHasta);
   if (alquilador) filterParams.set("alquilador", alquilador);
   const filtrosQuery = filterParams.toString();
-  const hasFiltrosActivos = filtrosQuery.length > 0;
 
   return (
     <div>
@@ -91,7 +68,6 @@ export default async function AdminReservasPage({
       <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
         <div>
           <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Reservas</h2>
-          <div className="text-[13px] text-[var(--text-secondary)] mt-1">{total} registro{total === 1 ? "" : "s"} en total</div>
         </div>
         <div className="flex items-end gap-3 flex-wrap">
           <ReservasFilterBar
@@ -111,7 +87,69 @@ export default async function AdminReservasPage({
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table: only this part re-suspends when filters/page change */}
+      <Suspense key={`${estado}|${propietario}|${fechaDesde}|${fechaHasta}|${alquilador}|${page}`} fallback={<ReservasTableSkeleton />}>
+        <ReservasTable
+          estado={estado}
+          propietario={propietario}
+          fechaDesde={fechaDesde}
+          fechaHasta={fechaHasta}
+          alquilador={alquilador}
+          page={page}
+          filtrosQuery={filtrosQuery}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+async function ReservasTable({
+  estado,
+  propietario,
+  fechaDesde,
+  fechaHasta,
+  alquilador,
+  page,
+  filtrosQuery,
+}: {
+  estado: string;
+  propietario: string;
+  fechaDesde: string;
+  fechaHasta: string;
+  alquilador: string;
+  page: number;
+  filtrosQuery: string;
+}) {
+  const where: Prisma.ReservaWhereInput = {
+    ...(estado !== "Todos" && { estado: estado as EstadoReserva }),
+    ...(propietario && { id_propietario: propietario }),
+    ...(alquilador && { id_alquilador: { contains: alquilador, mode: "insensitive" } }),
+    ...((fechaDesde || fechaHasta) && {
+      fecha_inicio: {
+        ...(fechaDesde && { gte: new Date(fechaDesde) }),
+        ...(fechaHasta && { lte: new Date(`${fechaHasta}T23:59:59.999`) }),
+      },
+    }),
+  };
+
+  const [reservas, total] = await Promise.all([
+    db.reserva.findMany({
+      where,
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+      orderBy: { createdAt: "desc" },
+      include: { vehiculo: true, propietario: true },
+    }),
+    db.reserva.count({ where }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const hasFiltrosActivos = filtrosQuery.length > 0;
+
+  return (
+    <>
+      <div className="text-[13px] text-[var(--text-secondary)] mb-3">{total} registro{total === 1 ? "" : "s"} en total</div>
+
       <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)]">
         {reservas.length === 0 ? (
           <EmptyState
@@ -163,6 +201,44 @@ export default async function AdminReservasPage({
           </>
         )}
       </div>
-    </div>
+    </>
+  );
+}
+
+function ReservasTableSkeleton() {
+  return (
+    <>
+      <Skeleton className="h-[13px] w-[150px] mb-3" />
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)]">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse max-[900px]:min-w-[700px]">
+            <thead>
+              <tr>
+                {["ID Alquilador", "Vehículo", "Propietario", "Fechas", "Días", "Estado", ""].map((h, i) => (
+                  <th key={i} className={thClass}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[90px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[100px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[110px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[150px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[20px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[22px] w-[80px] rounded-[var(--radius-full)]" /></td>
+                  <td className={tdClass}>
+                    <div className="flex justify-end">
+                      <Skeleton className="h-[28px] w-[80px]" />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   );
 }

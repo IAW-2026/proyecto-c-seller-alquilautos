@@ -1,10 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getReservasByPropietario } from "@/lib/services/reserva.service";
 import { getVehiculosByPropietario } from "@/lib/services/vehiculo.service";
 import { getAlquilador } from "@/lib/mocks/buyerApp";
 import { fmtDate, fmtMoney, daysBetween, getDolarBlue, pesToDolar, getRangoPeriodo } from "@/lib/utils";
 import type { Alquilador } from "@/lib/types";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { IngresosFilterBar } from "@/components/features/ingresos/IngresosFilterBar";
 import { ExportButtons } from "@/components/features/ingresos/ExportButtons";
 
@@ -16,6 +18,10 @@ const PERIODO_LABELS: Record<string, string> = {
   esteAnio: "Este año",
   custom: "Rango personalizado",
 };
+
+const kpiClass = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] px-5 py-[18px] shadow-[var(--shadow-sm)]";
+const thClass  = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
+const tdClass  = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle";
 
 export default async function IngresosPage({
   searchParams,
@@ -29,22 +35,73 @@ export default async function IngresosPage({
   if (!id_propietario) redirect("/onboarding");
 
   const { periodo = "esteMes", fechaDesde, fechaHasta, vehiculo } = await searchParams;
+
+  const vehiculosResult = await getVehiculosByPropietario(id_propietario);
+  const vehiculos = vehiculosResult.data?.vehiculos ?? [];
+
+  return (
+    <div>
+      {/* Page header */}
+      <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
+        <div>
+          <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Ingresos</h2>
+          <div className="text-[13px] text-[var(--text-secondary)] mt-1">Resumen de tus cobros según el período seleccionado</div>
+        </div>
+        <IngresosFilterBar
+          periodoActual={periodo}
+          fechaDesde={fechaDesde}
+          fechaHasta={fechaHasta}
+          vehiculoActual={vehiculo}
+          vehiculos={vehiculos}
+        />
+      </div>
+
+      {/* KPIs + table: only this part re-suspends when filters change */}
+      <Suspense
+        key={`${periodo}|${fechaDesde ?? ""}|${fechaHasta ?? ""}|${vehiculo ?? ""}`}
+        fallback={<IngresosContentSkeleton />}
+      >
+        <IngresosContent
+          id_propietario={id_propietario}
+          periodo={periodo}
+          fechaDesde={fechaDesde}
+          fechaHasta={fechaHasta}
+          vehiculo={vehiculo}
+          vehiculos={vehiculos}
+        />
+      </Suspense>
+    </div>
+  );
+}
+
+async function IngresosContent({
+  id_propietario,
+  periodo,
+  fechaDesde,
+  fechaHasta,
+  vehiculo,
+  vehiculos,
+}: {
+  id_propietario: string;
+  periodo: string;
+  fechaDesde?: string;
+  fechaHasta?: string;
+  vehiculo?: string;
+  vehiculos: { id_vehiculo: string; marca: string; modelo: string; precio: number }[];
+}) {
   const { desde, hasta } = getRangoPeriodo(periodo, fechaDesde, fechaHasta);
 
-  const [reservasResult, vehiculosResult, tipoCambio] = await Promise.all([
+  const [reservasResult, tipoCambio] = await Promise.all([
     getReservasByPropietario(id_propietario, {
       estados: ["Finalizada"],
       id_vehiculo: vehiculo,
       fechaDesde: desde,
       fechaHasta: hasta,
     }),
-    getVehiculosByPropietario(id_propietario),
     getDolarBlue(),
   ]);
 
   const finalizadas = reservasResult.data?.reservas ?? [];
-  const vehiculos   = vehiculosResult.data?.vehiculos ?? [];
-
   const vehiculosMap = Object.fromEntries(vehiculos.map(v => [v.id_vehiculo, v]));
 
   const totalMes = finalizadas.reduce((sum, r) => {
@@ -77,27 +134,8 @@ export default async function IngresosPage({
     };
   });
 
-  const kpiClass   = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] px-5 py-[18px] shadow-[var(--shadow-sm)]";
-  const thClass    = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
-  const tdClass    = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle";
-
   return (
-    <div>
-      {/* Page header */}
-      <div className="flex items-end justify-between mb-5 gap-4 flex-wrap max-[900px]:flex-col max-[900px]:items-start">
-        <div>
-          <h2 className="m-0 text-[22px] font-bold tracking-[-0.01em] text-[var(--text-primary)]">Ingresos</h2>
-          <div className="text-[13px] text-[var(--text-secondary)] mt-1">Resumen de tus cobros según el período seleccionado</div>
-        </div>
-        <IngresosFilterBar
-          periodoActual={periodo}
-          fechaDesde={fechaDesde}
-          fechaHasta={fechaHasta}
-          vehiculoActual={vehiculo}
-          vehiculos={vehiculos}
-        />
-      </div>
-
+    <>
       {/* KPIs */}
       <div className="grid gap-[14px] mb-7" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
         <div className={kpiClass}>
@@ -172,6 +210,61 @@ export default async function IngresosPage({
           </table>
         </div>
       </div>
-    </div>
+    </>
+  );
+}
+
+function IngresosContentSkeleton() {
+  return (
+    <>
+      {/* KPIs */}
+      <div className="grid gap-[14px] mb-7" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className={kpiClass}>
+            <Skeleton className="h-[12px] w-[110px]" />
+            <Skeleton className="h-[26px] w-[120px] mt-2" />
+            <Skeleton className="h-[11px] w-[80px] mt-2" />
+          </div>
+        ))}
+      </div>
+
+      {/* Section head */}
+      <div className="flex items-center justify-between gap-[10px] mt-7 mb-[14px] flex-wrap">
+        <Skeleton className="h-[17px] w-[70px]" />
+        <div className="flex gap-2">
+          <Skeleton className="h-[34px] w-[80px]" />
+          <Skeleton className="h-[34px] w-[70px]" />
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)]">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse max-[900px]:min-w-[700px]">
+            <thead>
+              <tr>
+                {["Fecha", "Vehículo", "Alquilador", "Días", "Monto"].map((h, i) => (
+                  <th key={i} className={thClass}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i}>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[70px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[110px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[120px]" /></td>
+                  <td className={tdClass}><Skeleton className="h-[13px] w-[20px]" /></td>
+                  <td className={tdClass}>
+                    <Skeleton className="h-[13px] w-[90px]" />
+                    <Skeleton className="h-[11px] w-[60px] mt-1" />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
   );
 }
