@@ -167,7 +167,33 @@ a { text-decoration: none; }
   to   { opacity: 1; transform: none; }
 }
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0 0    color-mix(in srgb, var(--color-accent-400) 60%, transparent); }
-  70%  { box-shadow: 0 0 0 10px color-mix(in srgb, var(--color-accent-400)  0%, transparent); }
-  100% { box-shadow: 0 0 0 0    color-mix(in srgb, var(--color-accent-400)  0%, transparent); }
+  0%   { box-shadow: 0 0 0 0    color-mix(in srgb, var(--pulse-color, var(--color-accent-400)) 60%, transparent); }
+  70%  { box-shadow: 0 0 0 10px color-mix(in srgb, var(--pulse-color, var(--color-accent-400))  0%, transparent); }
+  100% { box-shadow: 0 0 0 0    color-mix(in srgb, var(--pulse-color, var(--color-accent-400))  0%, transparent); }
+}
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* ====== SKELETON ====== */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-hover);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--color-neutral-400) 35%, transparent),
+    transparent
+  );
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton::after { animation: none; }
 }
