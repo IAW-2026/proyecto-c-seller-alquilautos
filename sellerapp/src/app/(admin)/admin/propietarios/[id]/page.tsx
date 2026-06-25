@@ -11,6 +11,7 @@ import { VerImagenModal } from "@/components/features/admin/VerImagenModal";
 import { fmtDate, fmtMoney, daysBetween, getCloudinaryUrl } from "@/lib/utils";
 import { getPromedioPropietario } from "@/lib/mocks/feedbackApp";
 import { EstadoReserva } from "@prisma/client";
+import { isAdminRole } from "@/lib/auth/roles";
 
 const thClass    = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
 const tdClass    = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle";
@@ -30,7 +31,7 @@ export default async function PropietarioDetallePage({
   if (!userId) redirect("/sign-in");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") redirect("/dashboard");
+  if (!isAdminRole(role)) redirect("/dashboard");
 
   const { id } = await params;
   const { reservasPage: reservasPageParam = "1" } = await searchParams;

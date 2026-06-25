@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { isAdminRole } from "@/lib/auth/roles";
 import { StatusBadge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { fmtDate, daysBetween } from "@/lib/utils";
@@ -34,7 +35,7 @@ export default async function AdminReservasPage({
   if (!userId) redirect("/sign-in");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") redirect("/dashboard");
+  if (!isAdminRole(role)) redirect("/dashboard");
 
   const {
     estado = "Todos",

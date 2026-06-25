@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { isAdminRole } from "@/lib/auth/roles";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { EditarVehiculoAdminModal } from "@/components/features/admin/EditarVehiculoAdminModal";
@@ -23,7 +24,7 @@ export default async function AdminVehiculosPage({
   if (!userId) redirect("/sign-in");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") redirect("/dashboard");
+  if (!isAdminRole(role)) redirect("/dashboard");
 
   const { q = "", estado = "Todos", page: pageParam = "1" } = await searchParams;
   const page = parseInt(pageParam, 10);

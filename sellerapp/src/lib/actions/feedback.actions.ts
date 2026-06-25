@@ -7,6 +7,7 @@ import {
   responderResena,
 } from "@/lib/mocks/feedbackApp";
 import { auth } from "@clerk/nextjs/server";
+import { isAdminRole } from "@/lib/auth/roles";
 
 export async function getResenasReservaAction(id_reserva: string) {
   const { userId } = await auth();
@@ -63,7 +64,7 @@ export async function responderResenaAction(data: {
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
+  if (role !== "propietario" && !isAdminRole(role)) throw new Error("No autorizado");
 
   return responderResena(data);
 }
@@ -82,7 +83,7 @@ export async function crearResenaAction(data: {
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
+  if (role !== "propietario" && !isAdminRole(role)) throw new Error("No autorizado");
 
   return crearResena(data);
 }

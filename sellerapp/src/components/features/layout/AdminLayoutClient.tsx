@@ -21,7 +21,7 @@ export function AdminLayoutClient({
         isAdminSeller={isAdminSeller}
       />
       <div className="flex flex-col min-h-screen overflow-x-auto">
-        <Header onMenu={() => setSidebarOpen(true)} />
+        <Header onMenu={() => setSidebarOpen(true)} mostrarPerfil={isAdminSeller} />
         <main className="px-8 pt-7 pb-12 max-[900px]:p-[18px]">{children}</main>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { crearVehiculo, actualizarVehiculo } from "@/lib/services/vehiculo.servi
 import { crearVehiculoSchema, actualizarVehiculoSchema } from "@/lib/validators/vehiculo";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
+import { isAdminRole } from "@/lib/auth/roles";
 
 export async function crearVehiculoAction(formData: {
   marca: string;
@@ -16,7 +17,7 @@ export async function crearVehiculoAction(formData: {
   if (!userId) throw new Error("No autorizado");
 
   const metadata = sessionClaims?.publicMetadata as { role?: string; id_propietario?: string };
-  if (metadata?.role !== "propietario" && metadata?.role !== "adminSeller") throw new Error("No autorizado");
+  if (metadata?.role !== "propietario" && !isAdminRole(metadata?.role)) throw new Error("No autorizado");
   if (!metadata?.id_propietario) throw new Error("Propietario no encontrado");
 
   const validation = crearVehiculoSchema.safeParse(formData);
@@ -43,7 +44,7 @@ export async function actualizarVehiculoAction(id: string, formData: {
   if (!userId) throw new Error("No autorizado");
 
   const metadata = sessionClaims?.publicMetadata as { role?: string };
-  if (metadata?.role !== "propietario" && metadata?.role !== "adminSeller") throw new Error("No autorizado");
+  if (metadata?.role !== "propietario" && !isAdminRole(metadata?.role)) throw new Error("No autorizado");
 
   const validation = actualizarVehiculoSchema.safeParse(formData);
   if (!validation.success) {
@@ -63,7 +64,7 @@ export async function eliminarVehiculoAction(id_vehiculo: string) {
   if (!userId) throw new Error("No autorizado");
 
   const metadata = sessionClaims?.publicMetadata as { role?: string; id_propietario?: string };
-  if (metadata?.role !== "propietario" && metadata?.role !== "adminSeller") throw new Error("No autorizado");
+  if (metadata?.role !== "propietario" && !isAdminRole(metadata?.role)) throw new Error("No autorizado");
 
   const reservasActivas = await db.reserva.count({
     where: {

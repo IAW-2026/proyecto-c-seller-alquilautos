@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { isAdminRole } from "@/lib/auth/roles";
 import { EmptyState } from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { EliminarPropietarioButton } from "@/components/features/admin/EliminarPropietarioButton";
@@ -22,7 +23,7 @@ export default async function AdminPropietariosPage({
   if (!userId) redirect("/sign-in");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") redirect("/dashboard");
+  if (!isAdminRole(role)) redirect("/dashboard");
 
   const { q = "", page: pageParam = "1" } = await searchParams;
   const page = parseInt(pageParam, 10);

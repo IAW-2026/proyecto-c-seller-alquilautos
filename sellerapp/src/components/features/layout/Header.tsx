@@ -23,9 +23,10 @@ function titleFor(path: string): string {
 
 interface HeaderProps {
   onMenu?: () => void;
+  mostrarPerfil?: boolean;
 }
 
-export function Header({ onMenu }: HeaderProps) {
+export function Header({ onMenu, mostrarPerfil = true }: HeaderProps) {
   const pathname  = usePathname();
   const title     = titleFor(pathname);
   const [theme, setTheme]     = useState<"light" | "dark" | "system">("system");
@@ -102,13 +103,15 @@ export function Header({ onMenu }: HeaderProps) {
         <div className="w-px h-[22px] bg-[var(--chrome-border)]" />
 
         <UserButton>
-          <UserButton.MenuItems>
-            <UserButton.Link
-              label="Mi perfil"
-              labelIcon={<Icon name="user" size={14} />}
-              href="/dashboard/perfil"
-            />
-          </UserButton.MenuItems>
+          {mostrarPerfil && (
+            <UserButton.MenuItems>
+              <UserButton.Link
+                label="Mi perfil"
+                labelIcon={<Icon name="user" size={14} />}
+                href="/dashboard/perfil"
+              />
+            </UserButton.MenuItems>
+          )}
         </UserButton>
       </header>
     </>
