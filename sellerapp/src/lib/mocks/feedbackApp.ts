@@ -144,7 +144,7 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
         calificacion_limpieza: resenaVehiculo?.calificacionLimpieza ?? null,
         calificacion_estado: resenaVehiculo?.calificacionEstado ?? null,
         calificacion_comodidad: resenaVehiculo?.calificacionComodidad ?? null,
-        respuesta: resena?.respuesta ?? null,
+        respuesta: resena?.respuesta?.comentario ?? null,
       },
       error: null,
     };
@@ -197,7 +197,7 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
         fecha_creacion: resena?.fechaCreacion ?? null,
         calificacion_comunicacion: resenaPropietario?.calificacionComunicacion ?? null,
         calificacion_puntualidad: resenaPropietario?.calificacionPuntualidad ?? null,
-        respuesta: resena?.respuesta ?? null,
+        respuesta: resena?.respuesta?.comentario ?? null,
       },
       error: null,
     };
@@ -252,7 +252,7 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
         calificacion_comunicacion: resenaAlquilador?.calificacionComunicacion ?? null,
         calificacion_puntualidad: resenaAlquilador?.calificacionPuntualidad ?? null,
         calificacion_devolucion: resenaAlquilador?.calificacionDevolucion ?? null,
-        respuesta: resena?.respuesta ?? null,
+        respuesta: resena?.respuesta?.comentario ?? null,
       },
       error: null,
     };

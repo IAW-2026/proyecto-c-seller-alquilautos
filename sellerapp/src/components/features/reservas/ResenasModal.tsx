@@ -181,6 +181,18 @@ export function ResenasModal({ reserva, alquilador, id_propietario }: ResenasMod
                 />
               </div>
 
+              {/* Respuesta del alquilador a tu reseña */}
+              {data.resenaAlquilador.respuesta && (
+                <div className="flex flex-col gap-1 mb-4">
+                  <span className="text-[11px] font-bold tracking-[0.05em] text-[var(--text-secondary)]">
+                    RESPUESTA DE {alquilador ? alquilador.nombre.toUpperCase() : "EL ALQUILADOR"}
+                  </span>
+                  <div className="text-[13px] text-[var(--text-primary)] px-2 py-2 rounded-[var(--radius-md)] border border-[var(--border-default)] bg-[var(--bg-surface)]">
+                    {data.resenaAlquilador.respuesta}
+                  </div>
+                </div>
+              )}
+
               {/* Footer */}
               <div className="flex justify-between items-center">
                 {readonly ? (
