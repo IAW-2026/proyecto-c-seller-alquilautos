@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
       db.reserva.count(),
       db.reserva.findMany({
         where: { estado: "Finalizada" },
-        select: { createdAt: true, updatedAt: true },
+        select: { fecha_inicio: true, fecha_final: true },
       }),
       db.reserva.count({ where: { estado: "Cancelada" } }),
       db.reserva.count({ where: { estado: "Rechazada" } }),
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     if (finalizadas > 0) {
       const totalDias = finalizadasData.reduce((acc, r) => {
         const dias =
-          (new Date(r.updatedAt).getTime() - new Date(r.createdAt).getTime()) /
+          (new Date(r.fecha_final).getTime() - new Date(r.fecha_inicio).getTime()) /
           (1000 * 60 * 60 * 24);
         return acc + dias;
       }, 0);
