@@ -24,8 +24,6 @@ const NAV_ADMIN: NavItem[] = [
   { to: "/admin/propietarios",  label: "Propietarios", icon: "user"     },
   { to: "/admin/vehiculos",     label: "Vehículos",    icon: "car"      },
   { to: "/admin/reservas",      label: "Reservas",     icon: "calendar" },
-  // ===== SIMULADOR ===== se borra para etapa 3
-  { to: "/admin/simulador", label: "Simulador", icon: "arrow" },
 ];
 
 interface SidebarProps {
