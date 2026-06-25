@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
@@ -26,7 +26,7 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string>(vehiculo?.fotos ?? "");
 
@@ -63,37 +63,36 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
-    const body = {
-      marca:  form.marca,
-      modelo: form.modelo,
-      anio:   Number(form.anio),
-      precio: Number(form.precio),
-      fotos:  form.fotos,
-    };
+    startTransition(async () => {
+      const body = {
+        marca:  form.marca,
+        modelo: form.modelo,
+        anio:   Number(form.anio),
+        precio: Number(form.precio),
+        fotos:  form.fotos,
+      };
 
-    const result = isEditing
-      ? await actualizarVehiculoAction(vehiculo.id_vehiculo, body)
-      : await crearVehiculoAction(body);
+      const result = isEditing
+        ? await actualizarVehiculoAction(vehiculo.id_vehiculo, body)
+        : await crearVehiculoAction(body);
 
-    setLoading(false);
-
-    if (result.error) {
-      if (typeof result.error === "object") {
-        const fieldErrors: Record<string, string> = {};
-        Object.entries(result.error).forEach(([k, v]) => {
-          fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
-        });
-        setErrors(fieldErrors);
+      if (result.error) {
+        if (typeof result.error === "object") {
+          const fieldErrors: Record<string, string> = {};
+          Object.entries(result.error).forEach(([k, v]) => {
+            fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
+          });
+          setErrors(fieldErrors);
+        }
+        return;
       }
-      return;
-    }
 
-    if (onSuccess) onSuccess();
-    else router.push("/dashboard/vehiculos");
+      if (onSuccess) onSuccess();
+      else router.push("/dashboard/vehiculos");
+    });
   };
 
   return (
@@ -170,8 +169,8 @@ export function VehiculoForm({ vehiculo, onSuccess }: VehiculoFormProps) {
         <Button type="button" variant="secondary" onClick={() => router.back()}>
           Cancelar
         </Button>
-        <Button type="submit" variant="primary" disabled={loading}>
-          {loading ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear vehículo"}
+        <Button type="submit" variant="primary" loading={isPending}>
+          {isPending ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear vehículo"}
         </Button>
       </div>
     </form>

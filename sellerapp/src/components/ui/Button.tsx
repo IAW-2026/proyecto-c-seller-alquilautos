@@ -3,6 +3,16 @@ import React from "react";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger" | "excel" | "pdf";
   size?: "sm" | "md" | "lg";
+  loading?: boolean;
+}
+
+function Spinner() {
+  return (
+    <svg className="animate-spin h-[14px] w-[14px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z" />
+    </svg>
+  );
 }
 
 const base =
@@ -26,6 +36,8 @@ const sizes = {
 export function Button({
   variant = "primary",
   size = "md",
+  loading = false,
+  disabled,
   children,
   className,
   ...rest
@@ -33,8 +45,10 @@ export function Button({
   return (
     <button
       className={[base, variants[variant], sizes[size], className].filter(Boolean).join(" ")}
+      disabled={disabled || loading}
       {...rest}
     >
+      {loading && <Spinner />}
       {children}
     </button>
   );
