@@ -49,7 +49,7 @@ export function EditarPropietarioModal({ propietario }: EditarPropietarioModalPr
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-colors duration-[180ms]">
+      <button onClick={() => setOpen(true)} className="inline-flex items-center justify-center px-[16px] py-[9px] rounded-[var(--radius-md)] text-[13px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-colors duration-[180ms]">
         Editar
       </button>
       <DetalleModal open={open} onClose={() => setOpen(false)} title="Editar propietario">

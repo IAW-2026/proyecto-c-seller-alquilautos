@@ -132,7 +132,7 @@ export default async function PropietarioDetallePage({
         <MetricCard label="Tasa de aceptación" value={`${tasaAceptacion.toFixed(1)}%`} foot="Aceptadas o posteriores" />
         <MetricCard
           label="Calificación promedio"
-          value={promedio ? promedio.calificacion_promedio.toFixed(1) : "—"}
+          value={typeof promedio?.calificacion_promedio === "number" ? promedio.calificacion_promedio.toFixed(1) : "—"}
           foot={promedio ? `${promedio.cantidad_resenas} reseña${promedio.cantidad_resenas === 1 ? "" : "s"}` : "Sin reseñas"}
         />
       </div>
@@ -190,14 +190,17 @@ export default async function PropietarioDetallePage({
                     <span className="text-[14px] font-semibold text-[var(--text-primary)] text-right">{value}</span>
                   </div>
                 ))}
-                <div className="flex-1 flex items-center justify-center px-6 py-[18px]">
+                <div className="relative flex-1 min-h-[180px]">
                   {vehiculoTop.fotos ? (
                     <VerImagenModal
+                      variant="cover"
                       src={getCloudinaryUrl(vehiculoTop.fotos, 800, 500)}
                       alt={`${vehiculoTop.marca} ${vehiculoTop.modelo}`}
                     />
                   ) : (
-                    <span className="text-[13px] text-[var(--text-secondary)]">Sin foto disponible</span>
+                    <div className="absolute inset-0 flex items-center justify-center bg-[var(--bg-page)]">
+                      <span className="text-[13px] text-[var(--text-secondary)]">Sin foto disponible</span>
+                    </div>
                   )}
                 </div>
               </>
