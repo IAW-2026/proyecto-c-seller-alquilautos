@@ -1,4 +1,5 @@
 
+import { db } from "@/lib/db";
 import { findVehiculoById, updateVehiculo  } from "@/lib/repositories/vehiculo.repository";
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
@@ -75,16 +76,21 @@ export async function crearReserva(input: CrearReservaInput) {
 export async function actualizarEstadoReserva(id: string, estado: EstadoReserva) {
   const reserva = await findReservaById(id);
   if (!reserva) return { data: null, error: "Reserva no encontrada" };
-  await updateReservaEstado(id, estado);
+
+  await db.$transaction(async (tx) => {
+    await updateReservaEstado(id, estado, tx);
+    if (estado === EstadoReserva.Aceptada) {
+      const pendientes = await findReservasPendientesByVehiculo(reserva.id_vehiculo, id, tx);
+      if (pendientes.length) {
+        await rechazarReservasByIds(pendientes.map((r) => r.id_reserva), tx);
+      }
+    }
+  });
+
   if (estado === EstadoReserva.Finalizada || estado === EstadoReserva.Rechazada) {
     await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
   }
-  if (estado === EstadoReserva.Aceptada) {
-    const pendientes = await findReservasPendientesByVehiculo(reserva.id_vehiculo, id);
-    if (pendientes.length) {
-      await rechazarReservasByIds(pendientes.map((r) => r.id_reserva));
-    }
-  }
+
   return { data: { id_reserva: id, estado }, error: null };
 }
 

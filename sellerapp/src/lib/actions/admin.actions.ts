@@ -14,7 +14,6 @@ async function verificarAdmin() {
 }
 
 const ESTADOS_ACTIVOS: EstadoReserva[] = [
-  EstadoReserva.Pendiente,
   EstadoReserva.Aceptada,
   EstadoReserva.Coordinada,
   EstadoReserva.Pagada,
@@ -34,9 +33,15 @@ export async function eliminarPropietarioAction(id_propietario: string) {
     return { error: "El propietario tiene reservas activas. Esperá a que finalicen." };
   }
 
-  await db.reserva.deleteMany({ where: { id_propietario } });
-  await db.vehiculo.deleteMany({ where: { id_propietario } });
-  await db.propietario.delete({ where: { id_propietario } });
+  await db.$transaction(async (tx) => {
+    await tx.reserva.updateMany({
+      where: { id_propietario, estado: "Pendiente" },
+      data: { estado: "Rechazada" },
+    });
+    await tx.reserva.deleteMany({ where: { id_propietario } });
+    await tx.vehiculo.deleteMany({ where: { id_propietario } });
+    await tx.propietario.delete({ where: { id_propietario } });
+  });
 
   revalidatePath("/admin/propietarios");
   return { data: "Propietario eliminado correctamente" };
@@ -133,8 +138,14 @@ export async function eliminarVehiculoAction(id_vehiculo: string) {
     return { error: "El vehículo tiene reservas activas. Esperá a que finalicen." };
   }
 
-  await db.reserva.deleteMany({ where: { id_vehiculo } });
-  await db.vehiculo.delete({ where: { id_vehiculo } });
+  await db.$transaction(async (tx) => {
+    await tx.reserva.updateMany({
+      where: { id_vehiculo, estado: "Pendiente" },
+      data: { estado: "Rechazada" },
+    });
+    await tx.reserva.deleteMany({ where: { id_vehiculo } });
+    await tx.vehiculo.delete({ where: { id_vehiculo } });
+  });
 
   revalidatePath("/admin/vehiculos");
   return { data: "Vehículo eliminado correctamente" };

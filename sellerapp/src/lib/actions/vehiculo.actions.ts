@@ -69,7 +69,7 @@ export async function eliminarVehiculoAction(id_vehiculo: string) {
   const reservasActivas = await db.reserva.count({
     where: {
       id_vehiculo,
-      estado: { in: ["Pendiente", "Aceptada", "Coordinada", "Pagada", "Entregada"] },
+      estado: { in: ["Aceptada", "Coordinada", "Pagada", "Entregada"] },
     },
   });
 
@@ -77,8 +77,14 @@ export async function eliminarVehiculoAction(id_vehiculo: string) {
     return { error: "El vehículo tiene reservas activas. Esperá a que finalicen." };
   }
 
-  await db.reserva.deleteMany({ where: { id_vehiculo } });
-  await db.vehiculo.delete({ where: { id_vehiculo } });
+  await db.$transaction(async (tx) => {
+    await tx.reserva.updateMany({
+      where: { id_vehiculo, estado: "Pendiente" },
+      data: { estado: "Rechazada" },
+    });
+    await tx.reserva.deleteMany({ where: { id_vehiculo } });
+    await tx.vehiculo.delete({ where: { id_vehiculo } });
+  });
 
   revalidatePath("/dashboard/vehiculos");
   return { data: "Vehículo eliminado correctamente" };
