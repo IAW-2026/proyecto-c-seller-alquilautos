@@ -90,8 +90,9 @@ export default async function ConfiguracionPage() {
         <div className="flex flex-col gap-4">
           <div className={cardClass}>
             <div className="text-[13px] font-bold mb-4 text-[var(--text-primary)]">Calificación general</div>
-            <div className="text-[32px] font-extrabold text-[var(--color-primary-400)]">
+            <div className="flex items-center gap-2 text-[32px] font-extrabold text-[var(--color-primary-400)]">
               {promedio.calificacion_promedio}
+              <span aria-hidden="true" className="text-yellow-400">★</span>
             </div>
             <div className="text-[12px] text-[var(--text-secondary)] mb-4">
               Basado en {promedio.cantidad_resenas} reseñas

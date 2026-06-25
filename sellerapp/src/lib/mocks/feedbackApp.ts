@@ -434,8 +434,8 @@ export async function getPromedioPropietario(id_propietario: string): Promise<{
     return {
       data: {
         id_propietario,
-        calificacion_promedio: json.calificacionPromedio,
-        cantidad_resenas: json.cantidadResenas,
+        calificacion_promedio: json.calificacion_promedio,
+        cantidad_resenas: json.cantidad_resenas,
       },
       error: null,
     };
@@ -464,8 +464,8 @@ export async function getPromedioVehiculo(id_vehiculo: string): Promise<{
     return {
       data: {
         id_vehiculo,
-        calificacion_promedio: json.calificacionPromedio,
-        cantidad_resenas: json.cantidadResenas,
+        calificacion_promedio: json.calificacion_promedio,
+        cantidad_resenas: json.cantidad_resenas,
       },
       error: null,
     };
