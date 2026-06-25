@@ -111,6 +111,7 @@ export interface ResenaVehiculoReserva {
   calificacion_estado: number | null;
   calificacion_comodidad: number | null;
   respuesta: string | null;
+  estado_moderacion: string | null;
 }
 
 export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
@@ -144,6 +145,7 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
         calificacion_estado: resenaVehiculo?.calificacionEstado ?? null,
         calificacion_comodidad: resenaVehiculo?.calificacionComodidad ?? null,
         respuesta: resena?.respuesta?.comentario ?? null,
+        estado_moderacion: resena?.estadoModeracion ?? null,
       },
       error: null,
     };
@@ -164,6 +166,7 @@ export interface ResenaPropietarioReserva {
   calificacion_comunicacion: number | null;
   calificacion_puntualidad: number | null;
   respuesta: string | null;
+  estado_moderacion: string | null;
 }
 
 export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
@@ -196,6 +199,7 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
         calificacion_comunicacion: resenaPropietario?.calificacionComunicacion ?? null,
         calificacion_puntualidad: resenaPropietario?.calificacionPuntualidad ?? null,
         respuesta: resena?.respuesta?.comentario ?? null,
+        estado_moderacion: resena?.estadoModeracion ?? null,
       },
       error: null,
     };
@@ -217,6 +221,7 @@ export interface ResenaAlquiladorReserva {
   calificacion_puntualidad: number | null;
   calificacion_devolucion: number | null;
   respuesta: string | null;
+  estado_moderacion: string | null;
 }
 
 export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
@@ -250,6 +255,7 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
         calificacion_puntualidad: resenaAlquilador?.calificacionPuntualidad ?? null,
         calificacion_devolucion: resenaAlquilador?.calificacionDevolucion ?? null,
         respuesta: resena?.respuesta?.comentario ?? null,
+        estado_moderacion: resena?.estadoModeracion ?? null,
       },
       error: null,
     };

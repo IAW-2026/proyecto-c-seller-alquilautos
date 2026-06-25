@@ -9,6 +9,8 @@ import {
 import { auth } from "@clerk/nextjs/server";
 import { isAdminRole } from "@/lib/auth/roles";
 
+const ESTADO_APROBADA = "APROBADA";
+
 export async function getResenasReservaAction(id_reserva: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("No autorizado");
@@ -19,22 +21,29 @@ export async function getResenasReservaAction(id_reserva: string) {
     getResenaAlquiladorReserva(id_reserva),
   ]);
 
+  // Las reseñas que el alquilador dejó sobre el vehículo/propietario solo se muestran
+  // si ya fueron aprobadas por moderación. La reseña que el propietario escribe sobre
+  // el alquilador no se filtra: se usa para detectar si ya fue enviada y evitar duplicados.
+  const vehiculoData    = vehiculoRes.data?.estado_moderacion    === ESTADO_APROBADA ? vehiculoRes.data    : null;
+  const propietarioData = propietarioRes.data?.estado_moderacion === ESTADO_APROBADA ? propietarioRes.data : null;
+  const alquiladorData  = alquiladorRes.data;
+
   const resenaVehiculo = {
-    ...vehiculoRes.data,
-    id_resena: vehiculoRes.data?.id_resena ?? null,
+    ...vehiculoData,
+    id_resena: vehiculoData?.id_resena ?? null,
     id_reserva,
-    calificacion_general: vehiculoRes.data?.calificacion_general ?? 0,
-    descripcion: vehiculoRes.data?.descripcion ?? "",
-    respuesta: vehiculoRes.data?.respuesta ?? null,
+    calificacion_general: vehiculoData?.calificacion_general ?? 0,
+    descripcion: vehiculoData?.descripcion ?? "",
+    respuesta: vehiculoData?.respuesta ?? null,
   };
 
   const resenaPropietario = {
-    ...propietarioRes.data,
-    id_resena: propietarioRes.data?.id_resena ?? null,
+    ...propietarioData,
+    id_resena: propietarioData?.id_resena ?? null,
     id_reserva,
-    calificacion_general: propietarioRes.data?.calificacion_general ?? 0,
-    descripcion: propietarioRes.data?.descripcion ?? "",
-    respuesta: propietarioRes.data?.respuesta ?? null,
+    calificacion_general: propietarioData?.calificacion_general ?? 0,
+    descripcion: propietarioData?.descripcion ?? "",
+    respuesta: propietarioData?.respuesta ?? null,
   };
 
   const resenaAlquilador = {
@@ -49,7 +58,8 @@ export async function getResenasReservaAction(id_reserva: string) {
     calificacion_puntualidad: null,
     calificacion_devolucion: null,
     respuesta: null,
-    ...alquiladorRes.data,
+    estado_moderacion: null,
+    ...alquiladorData,
   };
 
   return { resenaVehiculo, resenaPropietario, resenaAlquilador };
