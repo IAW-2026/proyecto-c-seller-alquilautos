@@ -2,7 +2,7 @@
 import { findVehiculoById, updateVehiculo  } from "@/lib/repositories/vehiculo.repository";
 import { findPropietarioById } from "@/lib/repositories/propietario.repository";
 import type { CrearReservaInput } from "@/lib/validators/reserva";
-import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario, countPendientesUrgentesByPropietario, findReservaPendienteDuplicada } from "@/lib/repositories/reserva.repository";
+import { findReservasByAlquilador, findReservaById, createReserva, updateReservaEstado, findReservasByPropietario, countPendientesUrgentesByPropietario, findReservaPendienteDuplicada, findReservasPendientesByVehiculo, rechazarReservasByIds } from "@/lib/repositories/reserva.repository";
 import type { ReservaFiltros } from "@/lib/repositories/reserva.repository";
 import { EstadoReserva, Prisma } from "@prisma/client";
 import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
@@ -78,6 +78,12 @@ export async function actualizarEstadoReserva(id: string, estado: EstadoReserva)
   await updateReservaEstado(id, estado);
   if (estado === EstadoReserva.Finalizada || estado === EstadoReserva.Rechazada) {
     await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
+  }
+  if (estado === EstadoReserva.Aceptada) {
+    const pendientes = await findReservasPendientesByVehiculo(reserva.id_vehiculo, id);
+    if (pendientes.length) {
+      await rechazarReservasByIds(pendientes.map((r) => r.id_reserva));
+    }
   }
   return { data: { id_reserva: id, estado }, error: null };
 }
