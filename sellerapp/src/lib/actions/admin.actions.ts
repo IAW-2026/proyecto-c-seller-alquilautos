@@ -4,12 +4,13 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { EstadoReserva, Prisma } from "@prisma/client";
 import { daysBetween } from "@/lib/utils";
+import { isAdminRole } from "@/lib/auth/roles";
 
 async function verificarAdmin() {
   const { userId, sessionClaims } = await auth();
   if (!userId) throw new Error("No autorizado");
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") throw new Error("No autorizado");
+  if (!isAdminRole(role)) throw new Error("No autorizado");
 }
 
 const ESTADOS_ACTIVOS: EstadoReserva[] = [

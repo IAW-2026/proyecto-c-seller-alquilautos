@@ -4,6 +4,7 @@ import { actualizarEstadoReserva, getReserva  } from "@/lib/services/reserva.ser
 import { revalidatePath } from "next/cache";
 import { createEntrega  } from "@/lib/mocks/shippingApp";
 import { updateVehiculo } from "../repositories/vehiculo.repository";
+import { isAdminRole } from "@/lib/auth/roles";
 
 
 export async function aceptarReservaAction(
@@ -23,7 +24,7 @@ export async function aceptarReservaAction(
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
+  if (role !== "propietario" && !isAdminRole(role)) throw new Error("No autorizado");
 
   const reservaResult = await getReserva(id_reserva);
   if (reservaResult.error || !reservaResult.data) throw new Error("Reserva no encontrada");
@@ -65,7 +66,7 @@ export async function rechazarReservaAction(id_reserva: string) {
   if (!userId) throw new Error("No autorizado");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "propietario" && role !== "adminSeller") throw new Error("No autorizado");
+  if (role !== "propietario" && !isAdminRole(role)) throw new Error("No autorizado");
 
   const result = await actualizarEstadoReserva(id_reserva, "Rechazada");
   if (result.error) throw new Error(result.error);

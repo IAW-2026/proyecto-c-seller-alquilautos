@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
+import { isAdminRole } from "@/lib/auth/roles";
 import { StatusBadge } from "@/components/ui/Badge";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { MetricasExportButtons } from "@/components/features/admin/MetricasExportButtons";
@@ -15,7 +16,7 @@ export default async function AdminDashboardPage() {
   if (!userId) redirect("/sign-in");
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  if (role !== "adminSeller") redirect("/dashboard");
+  if (!isAdminRole(role)) redirect("/dashboard");
 
   const [propietarios, vehiculos, reservas] = await Promise.all([
     db.propietario.count(),

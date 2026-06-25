@@ -97,7 +97,7 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
           })}
           <div className="flex-1" />
 
-          {/* Botón Panel Admin — solo si es adminSeller en el dashboard */}
+          {/* Botón Panel Admin — solo si es admin (adminSeller o adminGlobal) en el dashboard */}
           {isAdminSeller && (
             <div>
               <button
