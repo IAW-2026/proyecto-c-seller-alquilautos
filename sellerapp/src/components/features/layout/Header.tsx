@@ -71,9 +71,6 @@ export function Header({ onMenu, mostrarPerfil = true }: HeaderProps) {
         </button>
         <strong className="text-[var(--chrome-text-active)]">{title}</strong>
         <div className="flex-1" />
-        <button onClick={toggleTheme} aria-label="Cambiar tema" className="cursor-pointer bg-transparent border-none text-[var(--chrome-text-active)]">
-          <Icon name={resolved === "dark" ? "sun" : "moon"} />
-        </button>
       </div>
 
       {/* Desktop header */}
