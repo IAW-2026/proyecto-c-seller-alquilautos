@@ -1,9 +1,10 @@
 import { SignIn } from "@clerk/nextjs";
+import { AuthBackground } from "@/components/features/auth/AuthBackground";
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <AuthBackground>
       <SignIn />
-    </div>
+    </AuthBackground>
   );
 }
