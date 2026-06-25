@@ -10,11 +10,12 @@ import type { Vehiculo } from "@/lib/types";
 interface VehiculosGridProps {
   vehiculos: Vehiculo[];
   tipoCambio?: number;
+  statsPorVehiculo?: Map<string, { vecesAlquilado: number; totalGenerado: number }>;
 }
 
 const PAGE_SIZE = 10;
 
-export function VehiculosGrid({ vehiculos, tipoCambio = 0 }: VehiculosGridProps) {
+export function VehiculosGrid({ vehiculos, tipoCambio = 0, statsPorVehiculo }: VehiculosGridProps) {
   const [filtro, setFiltro] = useState<"Todos" | "Disponible" | "Alquilado">("Todos");
   const [page, setPage] = useState(1);
   const disponibles = vehiculos.filter(v => v.estado === "Disponible");
@@ -74,9 +75,18 @@ export function VehiculosGrid({ vehiculos, tipoCambio = 0 }: VehiculosGridProps)
         />
       ) : (
         <div className="grid gap-[18px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
-          {pageItems.map(v => (
-            <VehiculoCard key={v.id_vehiculo} vehiculo={v} tipoCambio={tipoCambio} />
-          ))}
+          {pageItems.map(v => {
+            const stats = statsPorVehiculo?.get(v.id_vehiculo);
+            return (
+              <VehiculoCard
+                key={v.id_vehiculo}
+                vehiculo={v}
+                tipoCambio={tipoCambio}
+                vecesAlquilado={stats?.vecesAlquilado ?? 0}
+                totalGenerado={stats?.totalGenerado ?? 0}
+              />
+            );
+          })}
         </div>
       )}
       {totalPages > 1 && (

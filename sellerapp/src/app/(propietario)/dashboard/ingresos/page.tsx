@@ -9,6 +9,7 @@ import type { Alquilador } from "@/lib/types";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { IngresosFilterBar } from "@/components/features/ingresos/IngresosFilterBar";
 import { ExportButtons } from "@/components/features/ingresos/ExportButtons";
+import Link from "next/link";
 
 const PERIODO_LABELS: Record<string, string> = {
   "7d": "Últimos 7 días",
@@ -19,14 +20,16 @@ const PERIODO_LABELS: Record<string, string> = {
   custom: "Rango personalizado",
 };
 
+const PAGE_SIZE = 8;
 const kpiClass = "bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] px-5 py-[18px] shadow-[var(--shadow-sm)]";
 const thClass  = "text-left text-[11px] font-semibold tracking-[0.04em] uppercase text-[var(--text-tertiary)] px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-page)]";
 const tdClass  = "px-4 py-[14px] border-b border-[var(--border-default)] text-[13px] align-middle";
+const linkBtnSmClass = "inline-flex items-center justify-center px-[10px] py-[6px] rounded-[var(--radius-md)] text-[12px] font-semibold bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] transition-[background] duration-[180ms]";
 
 export default async function IngresosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ periodo?: string; fechaDesde?: string; fechaHasta?: string; vehiculo?: string }>;
+  searchParams: Promise<{ periodo?: string; fechaDesde?: string; fechaHasta?: string; vehiculo?: string; page?: string }>;
 }) {
   const { userId, sessionClaims } = await auth();
   if (!userId) redirect("/sign-in");
@@ -34,7 +37,8 @@ export default async function IngresosPage({
   const id_propietario = (sessionClaims?.publicMetadata as { id_propietario?: string })?.id_propietario;
   if (!id_propietario) redirect("/onboarding");
 
-  const { periodo = "esteMes", fechaDesde, fechaHasta, vehiculo } = await searchParams;
+  const { periodo = "esteMes", fechaDesde, fechaHasta, vehiculo, page: pageParam = "1" } = await searchParams;
+  const page = parseInt(pageParam, 10);
 
   const vehiculosResult = await getVehiculosByPropietario(id_propietario);
   const vehiculos = vehiculosResult.data?.vehiculos ?? [];
@@ -56,9 +60,9 @@ export default async function IngresosPage({
         />
       </div>
 
-      {/* KPIs + table: only this part re-suspends when filters change */}
+      {/* KPIs + table: only this part re-suspends when filters/page change */}
       <Suspense
-        key={`${periodo}|${fechaDesde ?? ""}|${fechaHasta ?? ""}|${vehiculo ?? ""}`}
+        key={`${periodo}|${fechaDesde ?? ""}|${fechaHasta ?? ""}|${vehiculo ?? ""}|${page}`}
         fallback={<IngresosContentSkeleton />}
       >
         <IngresosContent
@@ -67,6 +71,7 @@ export default async function IngresosPage({
           fechaDesde={fechaDesde}
           fechaHasta={fechaHasta}
           vehiculo={vehiculo}
+          page={page}
           vehiculos={vehiculos}
         />
       </Suspense>
@@ -80,6 +85,7 @@ async function IngresosContent({
   fechaDesde,
   fechaHasta,
   vehiculo,
+  page,
   vehiculos,
 }: {
   id_propietario: string;
@@ -87,6 +93,7 @@ async function IngresosContent({
   fechaDesde?: string;
   fechaHasta?: string;
   vehiculo?: string;
+  page: number;
   vehiculos: { id_vehiculo: string; marca: string; modelo: string; precio: number }[];
 }) {
   const { desde, hasta } = getRangoPeriodo(periodo, fechaDesde, fechaHasta);
@@ -104,6 +111,7 @@ async function IngresosContent({
   const finalizadas = reservasResult.data?.reservas ?? [];
   const vehiculosMap = Object.fromEntries(vehiculos.map(v => [v.id_vehiculo, v]));
 
+  // KPIs y export se calculan sobre el período completo; solo la tabla se pagina.
   const totalMes = finalizadas.reduce((sum, r) => {
     const v    = vehiculosMap[r.id_vehiculo];
     const dias = daysBetween(r.fecha_inicio, r.fecha_final);
@@ -112,8 +120,18 @@ async function IngresosContent({
 
   const ticketPromedio = finalizadas.length > 0 ? totalMes / finalizadas.length : 0;
 
+  const totalPages = Math.max(1, Math.ceil(finalizadas.length / PAGE_SIZE));
+  const pageItems   = finalizadas.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const filterParams = new URLSearchParams();
+  if (periodo !== "esteMes") filterParams.set("periodo", periodo);
+  if (fechaDesde) filterParams.set("fechaDesde", fechaDesde);
+  if (fechaHasta) filterParams.set("fechaHasta", fechaHasta);
+  if (vehiculo) filterParams.set("vehiculo", vehiculo);
+  const filtrosQuery = filterParams.toString();
+
   const alquiladoresMap: Record<string, Alquilador | undefined> = {};
-  await Promise.all(finalizadas.map(async r => {
+  await Promise.all(pageItems.map(async r => {
     alquiladoresMap[r.id_alquilador] = (await getAlquilador(r.id_alquilador)).data ?? undefined;
   }));
 
@@ -179,7 +197,7 @@ async function IngresosContent({
               </tr>
             </thead>
             <tbody>
-              {finalizadas.map(r => {
+              {pageItems.map(r => {
                 const v     = vehiculosMap[r.id_vehiculo];
                 const al    = alquiladoresMap[r.id_alquilador];
                 const dias  = daysBetween(r.fecha_inicio, r.fecha_final);
@@ -209,6 +227,15 @@ async function IngresosContent({
             </tbody>
           </table>
         </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[var(--border-default)] text-[12px] text-[var(--text-secondary)] bg-[var(--bg-page)]">
+            <span>Página {page} de {totalPages}</span>
+            <div className="flex gap-2">
+              {page > 1          && <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page - 1}`} className={linkBtnSmClass}>Anterior</Link>}
+              {page < totalPages && <Link href={`?${filtrosQuery}${filtrosQuery ? "&" : ""}page=${page + 1}`} className={linkBtnSmClass}>Siguiente</Link>}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

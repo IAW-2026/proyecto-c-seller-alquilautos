@@ -7,7 +7,7 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { VehiculosGrid } from "@/components/features/vehiculos/VehiculosGrid";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
-import { getDolarBlue } from "@/lib/utils";
+import { getDolarBlue, daysBetween } from "@/lib/utils";
 
 export default async function DashboardPage() {
   const { userId, sessionClaims } = await auth();
@@ -16,25 +16,39 @@ export default async function DashboardPage() {
   const id_propietario = (sessionClaims?.publicMetadata as { id_propietario?: string })?.id_propietario;
   if (!id_propietario) redirect("/onboarding");
 
-  const [, vehiculosResult, reservasResult, tipoCambio] = await Promise.all([
+  const [, vehiculosResult, reservasResult, reservasRechazadasResult, reservasFinalizadasResult, tipoCambio] = await Promise.all([
     getPropietario(id_propietario),
     getVehiculosByPropietario(id_propietario),
     getReservasByPropietario(id_propietario),
+    getReservasByPropietario(id_propietario, { estados: ["Rechazada"] }),
+    getReservasByPropietario(id_propietario, { estados: ["Finalizada"] }),
     getDolarBlue(),
   ]);
 
   const vehiculos = (vehiculosResult.data?.vehiculos ?? []).map(v => ({ ...v, precio: Number(v.precio) }));
-  const reservas   = reservasResult.data?.reservas ?? [];
+  const reservas            = reservasResult.data?.reservas ?? [];
+  const reservasFinalizadas = reservasFinalizadasResult.data?.reservas ?? [];
   const pendientes = reservas.filter(r => r.estado === "Pendiente");
-  const aceptadas  = reservas.filter(r => r.estado === "Aceptada");
-  const rechazadas = reservas.filter(r => r.estado === "Rechazada");
+  const rechazadas = reservasRechazadasResult.data?.reservas ?? [];
 
   const vehiculosMap = Object.fromEntries(vehiculos.map(v => [v.id_vehiculo, v]));
 
+  // Una sola query de reservas finalizadas, agrupada en memoria por id_vehiculo
+  // (mismo patrón que dashboard/vehiculos/page.tsx) para el top y las stats de cada card.
   const conteoPorVehiculo = new Map<string, number>();
-  for (const r of reservas) {
-    if (r.estado !== "Finalizada") continue;
+  const precioPorVehiculo = new Map(vehiculos.map(v => [v.id_vehiculo, v.precio]));
+  const statsPorVehiculo  = new Map<string, { vecesAlquilado: number; totalGenerado: number }>();
+  for (const r of reservasFinalizadas) {
     conteoPorVehiculo.set(r.id_vehiculo, (conteoPorVehiculo.get(r.id_vehiculo) ?? 0) + 1);
+
+    const precio = precioPorVehiculo.get(r.id_vehiculo);
+    if (precio === undefined) continue;
+    const dias = daysBetween(r.fecha_inicio, r.fecha_final);
+    const prev = statsPorVehiculo.get(r.id_vehiculo) ?? { vecesAlquilado: 0, totalGenerado: 0 };
+    statsPorVehiculo.set(r.id_vehiculo, {
+      vecesAlquilado: prev.vecesAlquilado + 1,
+      totalGenerado: prev.totalGenerado + precio * dias,
+    });
   }
   let vehiculoTopId: string | null = null;
   let vehiculoTopCantidad = 0;
@@ -68,8 +82,8 @@ export default async function DashboardPage() {
             </svg>
           }
         />
-        <MetricCard label="Reservas aceptadas"  value={aceptadas.length}  foot="Total histórico" />
-        <MetricCard label="Reservas rechazadas" value={rechazadas.length} foot="Total histórico" />
+        <MetricCard label="Reservas finalizadas" value={reservasFinalizadas.length} foot="Total histórico" />
+        <MetricCard label="Reservas rechazadas"  value={rechazadas.length}          foot="Total histórico" />
 
         {/* Metric card clickeable — pendientes */}
         <Link
@@ -101,7 +115,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <VehiculosGrid vehiculos={vehiculos} tipoCambio={tipoCambio}/>
+      <VehiculosGrid vehiculos={vehiculos} tipoCambio={tipoCambio} statsPorVehiculo={statsPorVehiculo} />
     </div>
   );
 }
