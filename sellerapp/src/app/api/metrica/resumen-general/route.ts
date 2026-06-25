@@ -1,4 +1,3 @@
-// src/app/api/metricas/resumen-general/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
@@ -10,7 +9,6 @@ export async function GET(req: NextRequest) {
   }
 
   const role = (sessionClaims?.publicMetadata as { role?: string })?.role;
-  // Solo admins pueden consultar métricas
   if (role !== "adminGlobal") {
     return NextResponse.json({ data: null, error: "Forbidden" }, { status: 403 });
   }

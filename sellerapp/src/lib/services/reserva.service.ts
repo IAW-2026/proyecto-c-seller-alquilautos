@@ -25,7 +25,6 @@ export async function getReserva(id: string) {
   return { data: reserva, error: null };
 }
 
-//valida que el vehiculo y el propietario existan, y que las fechas sean correctas antes de crear la reserva
 export async function crearReserva(input: CrearReservaInput) {
   const vehiculo = await findVehiculoById(input.id_vehiculo);
   if (!vehiculo) {
@@ -113,7 +112,6 @@ export async function getPendientesUrgentesCount(id_propietario: string) {
 export async function cancelarReserva(id: string) {
   const reserva = await findReservaById(id);
   if (!reserva) return { data: null, error: "Reserva no encontrada" };
-  console.log("[cancelarReserva] estado actual de la reserva", id, ":", reserva.estado);
 
   const estadosCancelables: EstadoReserva[] = [
     EstadoReserva.Pendiente,
@@ -122,23 +120,17 @@ export async function cancelarReserva(id: string) {
   ];
 
   if (!estadosCancelables.includes(reserva.estado)) {
-    console.log("[cancelarReserva] estado", reserva.estado, "no es cancelable, no se actualiza ni se avisa a Shipping");
     return { data: null, error: "La reserva no puede cancelarse en su estado actual" };
   }
 
-  const reservaActualizada = await updateReservaEstado(id, EstadoReserva.Cancelada);
-  console.log("[cancelarReserva] estado en DB luego del update:", reservaActualizada.estado);
+  await updateReservaEstado(id, EstadoReserva.Cancelada);
 
   let avisoEntrega: string | null = null;
   if (reserva.estado === EstadoReserva.Coordinada) {
-    console.log("[cancelarReserva] reserva estaba Coordinada, avisando a Shipping App. id_reserva:", id);
     const entrega = await cancelarEntrega(id);
-    console.log("[cancelarReserva] respuesta de Shipping App:", JSON.stringify(entrega));
     if (entrega.error) {
       avisoEntrega = `La reserva se canceló, pero no se pudo avisar a Shipping App: ${entrega.error}`;
     }
-  } else {
-    console.log("[cancelarReserva] reserva no estaba Coordinada (estaba", reserva.estado, "), no se avisa a Shipping");
   }
 
   await updateVehiculo(reserva.id_vehiculo, { estado: "Disponible" });
@@ -149,13 +141,11 @@ export async function cancelarReserva(id: string) {
 export async function coordinarReserva(id: string) {
   const reserva = await findReservaById(id);
   if (!reserva) {
-    console.log("[coordinarReserva] Reserva no encontrada:", id);
     return { data: null, error: "Reserva no encontrada" };
   }
 
   const vehiculo = await findVehiculoById(reserva.id_vehiculo);
   if (!vehiculo) {
-    console.log("[coordinarReserva] Vehículo no encontrado:", reserva.id_vehiculo);
     return { data: null, error: "Vehículo no encontrado" };
   }
 
@@ -174,7 +164,6 @@ export async function coordinarReserva(id: string) {
   });
 
   if (pago.error) {
-    console.log("[coordinarReserva] Falló iniciarPago:", pago.error);
     return { data: null, error: `No se pudo iniciar el pago: ${pago.error}` };
   }
 

@@ -29,7 +29,6 @@ export default async function AdminDashboardPage() {
   const rechazadas    = await db.reserva.count({ where: { estado: "Rechazada" } });
   const totalReservas = pendientes + aceptadas + rechazadas;
 
-  // Métricas adicionales de la plataforma
   const ahora = new Date();
   const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
   const inicioEstaSemana = new Date(ahora.getTime() - 7 * 24 * 60 * 60 * 1000);
