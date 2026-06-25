@@ -56,7 +56,6 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
       )}
       <aside className={[
         "bg-[var(--chrome-bg)] border-r border-[var(--chrome-border)] flex flex-col sticky top-0 h-screen",
-        // mobile
         "max-[900px]:fixed max-[900px]:left-0 max-[900px]:top-0 max-[900px]:bottom-0 max-[900px]:w-[260px] max-[900px]:z-[90] max-[900px]:transition-transform max-[900px]:duration-[220ms]",
         open ? "max-[900px]:translate-x-0" : "max-[900px]:-translate-x-full",
       ].join(" ")}>

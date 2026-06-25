@@ -129,7 +129,6 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
     }
 
     const json = await res.json();
-    console.log(`[FeedbackApp] ${res.url} ->`, JSON.stringify(json));
     const resena = json.resena;
     const resenaVehiculo = resena?.resenaVehiculo;
     return {
@@ -183,7 +182,6 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
     }
 
     const json = await res.json();
-    console.log(`[FeedbackApp] ${res.url} ->`, JSON.stringify(json));
     const resena = json.resena;
     const resenaPropietario = resena?.resenaPropietario;
     return {
@@ -237,7 +235,6 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
     }
 
     const json = await res.json();
-    console.log(`[FeedbackApp] ${res.url} ->`, JSON.stringify(json));
     const resena = json.resena;
     const resenaAlquilador = resena?.resenaAlquilador;
     return {

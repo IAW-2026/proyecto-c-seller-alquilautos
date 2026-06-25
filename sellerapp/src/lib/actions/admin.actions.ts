@@ -21,8 +21,6 @@ const ESTADOS_ACTIVOS: EstadoReserva[] = [
   EstadoReserva.Entregada,
 ];
 
-// ===== PROPIETARIOS =====
-
 export async function eliminarPropietarioAction(id_propietario: string) {
   await verificarAdmin();
 
@@ -120,8 +118,6 @@ export async function exportarPropietariosAction(filtros: { q?: string }) {
   }
 }
 
-// ===== VEHICULOS =====
-
 export async function eliminarVehiculoAction(id_vehiculo: string) {
   await verificarAdmin();
 
@@ -161,8 +157,6 @@ export async function actualizarVehiculoAdminAction(id_vehiculo: string, data: {
     return { error: "Error al actualizar el vehículo" };
   }
 }
-
-// ===== RESERVAS =====
 
 export async function cancelarReservaAction(id_reserva: string) {
   await verificarAdmin();

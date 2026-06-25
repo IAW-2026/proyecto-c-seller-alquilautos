@@ -27,7 +27,6 @@ export function fmtMoney(n: MoneyInput): string {
     maximumFractionDigits: 2,
   })}`;
 }
-//api externa para obtener el dolar blue para convertir precios de pesos a dolares 
 export async function getDolarBlue(): Promise<number> {
   try {
     const res = await fetch("https://dolarapi.com/v1/dolares/blue", {
