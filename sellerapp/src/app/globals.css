@@ -3,10 +3,22 @@
 
 /* ====== VARIABLES ====== */
 :root {
-  --color-primary-400: #1A5CFF;
-  --color-primary-500: #0040CC;
-  --color-primary-600: #002E99;
-  --color-primary-300: #5280FF;
+  /* Escala "Primary" (paleta de marca): 300 = Tertiary (acento claro, hover/focus en superficies oscuras),
+     400 = Primary (azul principal, el más usado en toda la app), 500/600 = variantes oscuras para hover/pressed. */
+  --color-primary-300: #3B82F6;
+  --color-primary-400: #1E40AF;
+  --color-primary-500: #1E3A8A;
+  --color-primary-600: #172554;
+
+  /* "Chrome" = sidebar + header. Navy mezclado con un poco de Primary: queda azul oscuro,
+     no negro/gris puro, y un poco más claro que el navy puro. */
+  --chrome-bg:          color-mix(in srgb, var(--color-neutral-900) 80%, var(--color-primary-400) 20%);
+  --chrome-bg-hover:    color-mix(in srgb, white 8%, var(--chrome-bg));
+  --chrome-bg-active:   var(--color-primary-400);
+  --chrome-border:      color-mix(in srgb, white 10%, transparent);
+  --chrome-text:        color-mix(in srgb, white 65%, transparent);
+  --chrome-text-active: #FFFFFF;
+  --chrome-accent:      var(--color-primary-300);
 
   --color-accent-400: #F59E0B;
   --color-accent-700: #78350F;

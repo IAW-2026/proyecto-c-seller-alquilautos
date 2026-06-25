@@ -55,28 +55,28 @@ export function Header({ onMenu }: HeaderProps) {
 
   const toggleTheme = () => setTheme(resolved === "dark" ? "light" : "dark");
 
-  const iconBtnClass = "w-9 h-9 grid place-items-center bg-transparent border-none rounded-[var(--radius-full)] text-[var(--text-secondary)] cursor-pointer transition-[background] duration-[180ms] hover:bg-[var(--bg-hover)] relative";
+  const iconBtnClass = "w-9 h-9 grid place-items-center bg-transparent border-none rounded-[var(--radius-full)] text-[var(--chrome-text)] cursor-pointer transition-[background,color] duration-[180ms] hover:bg-[var(--chrome-bg-hover)] hover:text-[var(--chrome-text-active)] relative";
 
   return (
     <>
       {/* Mobile bar */}
-      <div className="hidden max-[900px]:flex items-center gap-3 px-4 py-3 border-b border-[var(--border-default)] bg-[var(--bg-surface)]">
+      <div className="hidden max-[900px]:flex items-center gap-3 px-4 py-3 border-b border-[var(--chrome-border)] bg-[var(--chrome-bg)]">
         <button
           onClick={onMenu}
           aria-label="Abrir menú"
-          className="border border-[var(--border-default)] bg-[var(--bg-surface)] rounded-[var(--radius-md)] px-[10px] py-[6px] cursor-pointer"
+          className="border border-[var(--chrome-border)] bg-[var(--chrome-bg-hover)] text-[var(--chrome-text-active)] rounded-[var(--radius-md)] px-[10px] py-[6px] cursor-pointer"
         >
           <Icon name="menu" />
         </button>
-        <strong className="text-[var(--text-primary)]">{title}</strong>
+        <strong className="text-[var(--chrome-text-active)]">{title}</strong>
         <div className="flex-1" />
-        <button onClick={toggleTheme} aria-label="Cambiar tema" className="cursor-pointer bg-transparent border-none">
+        <button onClick={toggleTheme} aria-label="Cambiar tema" className="cursor-pointer bg-transparent border-none text-[var(--chrome-text-active)]">
           <Icon name={resolved === "dark" ? "sun" : "moon"} />
         </button>
       </div>
 
       {/* Desktop header */}
-      <header className="flex items-center gap-4 px-8 py-[18px] border-b border-[var(--border-default)] bg-[var(--bg-surface)] sticky top-0 z-10 max-[900px]:px-[18px] max-[900px]:py-[14px]">
+      <header className="flex items-center gap-4 px-8 py-[18px] border-b border-[var(--chrome-border)] bg-[var(--chrome-bg)] sticky top-0 z-10 max-[900px]:px-[18px] max-[900px]:py-[14px]">
 
         {/* Search */}
         <div className="flex-1 max-w-[480px] mr-auto relative">
@@ -90,7 +90,7 @@ export function Header({ onMenu }: HeaderProps) {
         </div>
 
         {/* Section title — desktop only */}
-        <span className="text-[18px] font-bold text-[var(--color-primary-400)] tracking-[-0.01em] max-[900px]:hidden">
+        <span className="text-[18px] font-bold text-[var(--chrome-accent)] tracking-[-0.01em] max-[900px]:hidden">
           {title}
         </span>
 
@@ -98,8 +98,8 @@ export function Header({ onMenu }: HeaderProps) {
         <button className={iconBtnClass} onClick={toggleTheme} aria-label="Cambiar tema">
           <Icon name={resolved === "dark" ? "sun" : "moon"} />
         </button>
-        
-        <div className="w-px h-[22px] bg-[var(--border-default)]" />
+
+        <div className="w-px h-[22px] bg-[var(--chrome-border)]" />
 
         <UserButton>
           <UserButton.MenuItems>

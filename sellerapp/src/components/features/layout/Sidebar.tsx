@@ -57,7 +57,7 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
         />
       )}
       <aside className={[
-        "bg-[var(--bg-surface)] border-r border-[var(--border-default)] flex flex-col sticky top-0 h-screen",
+        "bg-[var(--chrome-bg)] border-r border-[var(--chrome-border)] flex flex-col sticky top-0 h-screen",
         // mobile
         "max-[900px]:fixed max-[900px]:left-0 max-[900px]:top-0 max-[900px]:bottom-0 max-[900px]:w-[260px] max-[900px]:z-[90] max-[900px]:transition-transform max-[900px]:duration-[220ms]",
         open ? "max-[900px]:translate-x-0" : "max-[900px]:-translate-x-full",
@@ -65,10 +65,10 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
 
         {/* Brand */}
         <div className="px-6 pt-6 pb-5">
-          <h1 className="m-0 text-[22px] font-bold tracking-[-0.02em] text-[var(--text-primary)]">
+          <h1 className="m-0 text-[22px] font-bold tracking-[-0.02em] text-[var(--chrome-text-active)]">
             AlquilAutos
           </h1>
-          <p className="m-0 mt-[2px] text-[12px] text-[var(--text-secondary)]">
+          <p className="m-0 mt-[2px] text-[12px] text-[var(--chrome-text)]">
             {isAdmin && !isAdminSeller ? "Panel Admin" : "Gestión de Flota"}
           </p>
         </div>
@@ -85,8 +85,8 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
                 className={[
                   "flex items-center gap-3 px-[14px] py-[10px] rounded-[var(--radius-md)] text-[14px] cursor-pointer relative transition-[background,color] duration-[180ms]",
                   active
-                    ? "text-[var(--color-primary-400)] font-semibold after:content-[''] after:absolute after:right-[-12px] after:top-2 after:bottom-2 after:w-[3px] after:rounded-[3px] after:bg-[var(--color-primary-400)]"
-                    : "text-[var(--color-neutral-700)] [[data-theme='dark']_&]:text-[var(--color-neutral-400)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
+                    ? "bg-[var(--chrome-bg-active)] text-[var(--chrome-text-active)] font-semibold shadow-[var(--shadow-sm)]"
+                    : "text-[var(--chrome-text)] hover:bg-[var(--chrome-bg-hover)] hover:text-[var(--chrome-text-active)]",
                 ].join(" ")}
               >
                 <Icon name={item.icon} className="w-[18px] h-[18px] shrink-0" />
@@ -104,7 +104,7 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
             <div>
               <button
                 onClick={() => setAdminOpen(prev => !prev)}
-                className="w-full flex items-center gap-3 px-[14px] py-[10px] rounded-[var(--radius-md)] text-[14px] cursor-pointer transition-[background,color] duration-[180ms] text-[var(--color-neutral-700)] [[data-theme='dark']_&]:text-[var(--color-neutral-400)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
+                className="w-full flex items-center gap-3 px-[14px] py-[10px] rounded-[var(--radius-md)] text-[14px] cursor-pointer transition-[background,color] duration-[180ms] text-[var(--chrome-text)] hover:bg-[var(--chrome-bg-hover)] hover:text-[var(--chrome-text-active)]"
               >
                 <Icon name="shield" className="w-[18px] h-[18px] shrink-0" />
                 <span>Panel Admin</span>
@@ -122,8 +122,8 @@ export function Sidebar({ open = false, onClose, isAdmin = false, isAdminSeller 
                         className={[
                           "flex items-center gap-3 px-[14px] py-[9px] rounded-[var(--radius-md)] text-[13px] cursor-pointer transition-[background,color] duration-[180ms]",
                           active
-                            ? "text-[var(--color-primary-400)] font-semibold"
-                            : "text-[var(--color-neutral-700)] [[data-theme='dark']_&]:text-[var(--color-neutral-400)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
+                            ? "bg-[var(--chrome-bg-active)] text-[var(--chrome-text-active)] font-semibold"
+                            : "text-[var(--chrome-text)] hover:bg-[var(--chrome-bg-hover)] hover:text-[var(--chrome-text-active)]",
                         ].join(" ")}
                       >
                         <Icon name={item.icon} className="w-[16px] h-[16px] shrink-0" />
