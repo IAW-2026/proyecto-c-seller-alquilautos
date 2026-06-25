@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getPropietario } from "@/lib/services/propietario.service";
 import { getResumenPropietario, getResenasPropietario, getPromedioPropietario } from "@/lib/mocks/feedbackApp";
@@ -19,6 +19,10 @@ export default async function ConfiguracionPage() {
   const result = await getPropietario(id_propietario);
   if (result.error || !result.data) redirect("/dashboard");
   const propietario = result.data;
+
+  const user = await currentUser();
+  const fotoPerfilUrl = user?.imageUrl;
+  const iniciales = `${propietario.nombre?.[0] ?? ""}${propietario.apellido?.[0] ?? ""}`.toUpperCase();
 
   const [promedioRes, resumenRes, resenasRes] = await Promise.all([
     getPromedioPropietario(id_propietario),
@@ -46,6 +50,23 @@ export default async function ConfiguracionPage() {
 
         {/* Columna izquierda */}
         <div className={cardClass}>
+          <div className="flex items-center gap-4 mb-5">
+            {fotoPerfilUrl ? (
+              <img
+                src={fotoPerfilUrl}
+                alt={`${propietario.nombre} ${propietario.apellido}`}
+                className="w-16 h-16 rounded-full object-cover border border-[var(--border-default)]"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-[18px] font-bold bg-[var(--color-primary-400)] text-white">
+                {iniciales}
+              </div>
+            )}
+            <div>
+              <div className="text-[15px] font-bold text-[var(--text-primary)]">{propietario.nombre} {propietario.apellido}</div>
+              <div className="text-[12px] text-[var(--text-secondary)]">{propietario.email}</div>
+            </div>
+          </div>
           <div className="text-[13px] font-bold mb-4 text-[var(--text-primary)]">Información personal</div>
           <div className="grid grid-cols-2 gap-x-5 gap-y-[18px] max-[700px]:grid-cols-1">
             {[

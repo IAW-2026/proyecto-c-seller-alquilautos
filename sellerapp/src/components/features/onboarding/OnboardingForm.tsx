@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
@@ -19,7 +19,7 @@ export default function OnboardingForm() {
   });
   const [errors, setErrors]       = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string>("");
-  const [loading, setLoading]     = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -27,35 +27,34 @@ export default function OnboardingForm() {
     setFormError("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setFormError("");
     setErrors({});
 
-    try {
-      const result = await onboardingAction(form);
+    startTransition(async () => {
+      try {
+        const result = await onboardingAction(form);
 
-      if ("error" in result) {
-        if (typeof result.error === "object") {
-          const fieldErrors: Record<string, string> = {};
-          Object.entries(result.error).forEach(([k, v]) => {
-            fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
-          });
-          setErrors(fieldErrors);
-        } else {
-          setFormError(String(result.error));
+        if ("error" in result) {
+          if (typeof result.error === "object") {
+            const fieldErrors: Record<string, string> = {};
+            Object.entries(result.error).forEach(([k, v]) => {
+              fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
+            });
+            setErrors(fieldErrors);
+          } else {
+            setFormError(String(result.error));
+          }
+          return;
         }
-        setLoading(false);
-        return;
-      }
 
-      await user?.reload();
-      window.location.href = "/dashboard";
-    } catch (err: any) {
-      setFormError(err?.message ?? "Error inesperado");
-      setLoading(false);
-    }
+        await user?.reload();
+        window.location.href = "/dashboard";
+      } catch (err) {
+        setFormError(err instanceof Error ? err.message : "Error inesperado");
+      }
+    });
   };
 
   return (
@@ -91,8 +90,8 @@ export default function OnboardingForm() {
       </div>
 
       <div className="flex justify-end mt-5">
-        <Button type="submit" variant="primary" disabled={loading}>
-          {loading ? "Guardando..." : "Completar perfil"}
+        <Button type="submit" variant="primary" loading={isPending}>
+          {isPending ? "Guardando..." : "Completar perfil"}
         </Button>
       </div>
     </form>

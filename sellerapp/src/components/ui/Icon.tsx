@@ -3,7 +3,7 @@ export type IconName =
   | "bell" | "help" | "plus" | "pin" | "trendUp" | "user" | "edit"
   | "trash" | "chevronLeft" | "chevronRight" | "arrow" | "check" | "x"
   | "shield" | "image" | "star" | "menu" | "filter" | "sun" | "moon"
-  | "fileExcel" | "filePdf";
+  | "fileExcel" | "filePdf" | "expand";
 
 interface IconProps extends React.SVGProps<SVGSVGElement> {
   name: IconName;
@@ -45,6 +45,7 @@ export function Icon({ name, size = 18, ...rest }: IconProps) {
     moon: <><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" /></>,
     fileExcel: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="m8.5 13 3 4M11.5 13l-3 4" /></>,
     filePdf: <><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /><path d="M8 17v-4h1.5a1.2 1.2 0 0 1 0 2.4H8M13 17v-4h1.3a1.3 1.3 0 0 1 0 2.6H13v1.4" /></>,
+    expand: <><path d="M15 3h6v6" /><path d="M9 21H3v-6" /><path d="M21 3l-7 7" /><path d="M3 21l7-7" /></>,
   };
   return <svg {...props}>{paths[name] || null}</svg>;
 }

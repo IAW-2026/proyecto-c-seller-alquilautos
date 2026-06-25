@@ -1,11 +1,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { getVehiculosByPropietario } from "@/lib/services/vehiculo.service";
+import { getReservasByPropietario } from "@/lib/services/reserva.service";
 import { VehiculoCard } from "@/components/features/vehiculos/VehiculoCard";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Icon } from "@/components/ui/Icon";
 import Link from "next/link";
-import { getDolarBlue } from "@/lib/utils"
+import { getDolarBlue, daysBetween } from "@/lib/utils"
 
 const PAGE_SIZE = 10;
 
@@ -26,8 +27,12 @@ export default async function VehiculosPage({
   const { q = "", page: pageParam = "1" } = await searchParams;
   const page = parseInt(pageParam, 10);
 
-  const result = await getVehiculosByPropietario(id_propietario);
-  const todos  = result.data?.vehiculos ?? [];
+  const [result, reservasFinalizadasResult, tipoCambio] = await Promise.all([
+    getVehiculosByPropietario(id_propietario),
+    getReservasByPropietario(id_propietario, { estados: ["Finalizada"] }),
+    getDolarBlue(),
+  ]);
+  const todos = result.data?.vehiculos ?? [];
 
   const filtered = todos.filter(v => {
     const s = q.toLowerCase();
@@ -36,7 +41,21 @@ export default async function VehiculosPage({
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const pageItems  = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const tipoCambio = await getDolarBlue();
+
+  // Una sola query de reservas finalizadas para todos los vehículos del propietario,
+  // agrupada en memoria por id_vehiculo (evita N+1 contra la base).
+  const precioPorVehiculo = new Map(todos.map(v => [v.id_vehiculo, v.precio]));
+  const statsPorVehiculo = new Map<string, { vecesAlquilado: number; totalGenerado: number }>();
+  for (const r of reservasFinalizadasResult.data?.reservas ?? []) {
+    const precio = precioPorVehiculo.get(r.id_vehiculo);
+    if (precio === undefined) continue;
+    const dias = daysBetween(r.fecha_inicio, r.fecha_final);
+    const prev = statsPorVehiculo.get(r.id_vehiculo) ?? { vecesAlquilado: 0, totalGenerado: 0 };
+    statsPorVehiculo.set(r.id_vehiculo, {
+      vecesAlquilado: prev.vecesAlquilado + 1,
+      totalGenerado: prev.totalGenerado + precio * dias,
+    });
+  }
 
   return (
     <div>
@@ -91,9 +110,18 @@ export default async function VehiculosPage({
       ) : (
         <>
           <div className="grid gap-[18px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
-            {pageItems.map(v => (
-              <VehiculoCard key={v.id_vehiculo} vehiculo={v} tipoCambio={tipoCambio} />
-            ))}
+            {pageItems.map(v => {
+              const stats = statsPorVehiculo.get(v.id_vehiculo);
+              return (
+                <VehiculoCard
+                  key={v.id_vehiculo}
+                  vehiculo={v}
+                  tipoCambio={tipoCambio}
+                  vecesAlquilado={stats?.vecesAlquilado ?? 0}
+                  totalGenerado={stats?.totalGenerado ?? 0}
+                />
+              );
+            })}
           </div>
           {totalPages > 1 && (
             <div className="flex items-center justify-between mt-5 text-[12px] text-[var(--text-secondary)]">

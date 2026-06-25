@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { DetalleModal } from "@/components/ui/Modal";
 import { StatusBadge } from "@/components/ui/Badge";
+import { TimelineEstado } from "@/components/ui/TimelineEstado";
 import { fmtDate, daysBetween, fmtMoney } from "@/lib/utils";
 import type { Reserva } from "@/lib/types";
 
@@ -55,6 +56,11 @@ export function ReservaDetalleModal({ reserva, alquilador, vehiculo, horario }: 
           {/* Header */}
           <div className="flex justify-between items-center">
             <StatusBadge estado={reserva.estado} />
+          </div>
+
+          {/* Timeline de estado */}
+          <div className="border-b border-[var(--border-default)] pb-4">
+            <TimelineEstado estado={reserva.estado} />
           </div>
 
           {/* Grid principal */}

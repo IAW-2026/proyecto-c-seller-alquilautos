@@ -42,6 +42,20 @@ export async function findReservaPendienteDuplicada(id_vehiculo: string, id_alqu
   });
 }
 
+export async function findReservasPendientesByVehiculo(id_vehiculo: string, excluirId: string) {
+  return db.reserva.findMany({
+    where: { id_vehiculo, estado: EstadoReserva.Pendiente, id_reserva: { not: excluirId } },
+    select: RESERVA_SELECT,
+  });
+}
+
+export async function rechazarReservasByIds(ids: string[]) {
+  return db.reserva.updateMany({
+    where: { id_reserva: { in: ids } },
+    data: { estado: EstadoReserva.Rechazada },
+  });
+}
+
 export async function updateReservaEstado(id: string, estado: EstadoReserva) {
   return db.reserva.update({
     where: { id_reserva: id },

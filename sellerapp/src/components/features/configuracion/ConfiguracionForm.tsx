@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Field } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
@@ -27,7 +27,7 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
   });
 
   const [errors, setErrors]   = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
   const [formError, setFormError] = useState("");
 
@@ -37,28 +37,29 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
     setSuccess(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const result = await actualizarPropietarioAction(form);
-    setLoading(false);
 
-    if (result.error) {
-      if (typeof result.error === "object") {
-        const fieldErrors: Record<string, string> = {};
-        Object.entries(result.error).forEach(([k, v]) => {
-          fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
-        });
-        setErrors(fieldErrors);
-      } else {
-        setFormError(String(result.error));
+    startTransition(async () => {
+      const result = await actualizarPropietarioAction(form);
+
+      if (result.error) {
+        if (typeof result.error === "object") {
+          const fieldErrors: Record<string, string> = {};
+          Object.entries(result.error).forEach(([k, v]) => {
+            fieldErrors[k] = Array.isArray(v) ? v[0] : String(v);
+          });
+          setErrors(fieldErrors);
+        } else {
+          setFormError(String(result.error));
+        }
+        return;
       }
-      return;
-    }
 
-    setSuccess(true);
-    router.refresh();
-    if (onSuccess) onSuccess();
+      setSuccess(true);
+      router.refresh();
+      if (onSuccess) onSuccess();
+    });
   };
 
   return (
@@ -103,8 +104,8 @@ export function ConfiguracionForm({ propietario, onSuccess }: ConfiguracionFormP
 
       <div className="flex justify-end gap-[10px] mt-5">
         <Button type="button" variant="secondary" onClick={() => router.back()}>Cancelar</Button>
-        <Button type="submit" variant="primary" disabled={loading}>
-          {loading ? "Guardando..." : "Guardar cambios"}
+        <Button type="submit" variant="primary" loading={isPending}>
+          {isPending ? "Guardando..." : "Guardar cambios"}
         </Button>
       </div>
     </form>

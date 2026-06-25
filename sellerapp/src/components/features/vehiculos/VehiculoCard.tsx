@@ -7,9 +7,11 @@ import type { Vehiculo } from "@/lib/types";
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
   tipoCambio?: number;
+  vecesAlquilado?: number;
+  totalGenerado?: number;
 }
 
-export function VehiculoCard({ vehiculo, tipoCambio = 0 }: VehiculoCardProps) {
+export function VehiculoCard({ vehiculo, tipoCambio = 0, vecesAlquilado = 0, totalGenerado = 0 }: VehiculoCardProps) {
   return (
     <article className="bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-[var(--radius-lg)] overflow-hidden shadow-[var(--shadow-sm)] flex flex-col transition-[transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]">
 
@@ -35,8 +37,18 @@ export function VehiculoCard({ vehiculo, tipoCambio = 0 }: VehiculoCardProps) {
         )}
       </div>
 
+      {/* Stats */}
+      <div className="px-4 pt-3 flex items-center gap-4 text-[12px] text-[var(--text-secondary)]">
+        <span className="inline-flex items-center gap-[6px]">
+          <Icon name="trendUp" size={13} aria-hidden="true" /> {vecesAlquilado} {vecesAlquilado === 1 ? "vez" : "veces"} alquilado
+        </span>
+        <span className="inline-flex items-center gap-[6px]">
+          <Icon name="money" size={13} aria-hidden="true" /> ARS {Math.round(totalGenerado).toLocaleString("es-AR")} generados
+        </span>
+      </div>
+
       {/* Body */}
-      <div className="px-4 pt-[14px] pb-1 flex justify-between items-start gap-3">
+      <div className="px-4 pt-[10px] pb-1 flex justify-between items-start gap-3">
         <div>
           <div className="font-bold text-[15px] text-[var(--text-primary)]">
             {vehiculo.marca} {vehiculo.modelo}
