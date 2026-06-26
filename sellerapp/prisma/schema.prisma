@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Propietario {
+  id_propietario  String    @id @default(cuid())
+  email           String    @unique
+  nombre          String
+  apellido        String
+  fecha_nacimiento DateTime
+  dni             String    @unique
+  direccion       String
+  telefono         String?
+
+  vehiculos       Vehiculo[]
+  reservas        Reserva[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Vehiculo {
+  id_vehiculo    String    @id @default(cuid())
+  id_propietario String
+  marca          String
+  modelo         String
+  precio         Decimal   @db.Decimal(10, 2)
+  anio           Int
+  fotos          String
+  estado         EstadoVehiculo @default(Disponible)
+  
+
+  propietario    Propietario @relation(fields: [id_propietario], references: [id_propietario])
+  reservas       Reserva[]
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum EstadoVehiculo {
+  Disponible
+  Alquilado
+}
+
+// Índice único parcial (id_vehiculo, id_alquilador) WHERE estado = 'Pendiente'
+// agregado en la migración 20260624000000_unique_reserva_pendiente (Prisma no soporta
+// unique index condicional en el schema, por eso no aparece como @@unique acá).
+model Reserva {
+  id_reserva     String        @id @default(cuid())
+  id_vehiculo    String
+  id_propietario String
+  id_alquilador  String
+  fecha_inicio   DateTime
+  fecha_final    DateTime
+  estado         EstadoReserva @default(Pendiente)
+
+  vehiculo       Vehiculo    @relation(fields: [id_vehiculo], references: [id_vehiculo])
+  propietario    Propietario @relation(fields: [id_propietario], references: [id_propietario])
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+enum EstadoReserva {
+  Pendiente
+  Aceptada
+  Rechazada
+  Coordinada
+  Pagada
+  Finalizada
+  Entregada
+  Cancelada
+}
