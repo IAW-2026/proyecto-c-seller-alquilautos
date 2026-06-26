@@ -8,6 +8,7 @@ import type { ReservaFiltros } from "@/lib/repositories/reserva.repository";
 import { EstadoReserva, Prisma } from "@prisma/client";
 import {cancelarEntrega  } from "@/lib/mocks/shippingApp";
 import { iniciarPago } from "@/lib/mocks/paymentsApp";
+import { daysBetween } from "@/lib/utils";
 
 
 function parseFecha(fecha: string): Date {
@@ -149,9 +150,7 @@ export async function coordinarReserva(id: string) {
     return { data: null, error: "Vehículo no encontrado" };
   }
 
-  const dias = Math.ceil(
-    (reserva.fecha_final.getTime() - reserva.fecha_inicio.getTime()) / (1000 * 60 * 60 * 24)
-  );
+  const dias = daysBetween(reserva.fecha_inicio, reserva.fecha_final);
   const monto_pagar = Number(vehiculo.precio) * dias;
 
   await updateReservaEstado(id, EstadoReserva.Coordinada);

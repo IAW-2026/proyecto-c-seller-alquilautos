@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { daysBetween } from "@/lib/utils";
 
 function getPeriodoKey(fecha: Date, granularity: "month" | "week"): string {
   if (granularity === "week") {
@@ -53,13 +54,7 @@ export async function GET(req: NextRequest) {
     const mapa = new Map<string, { ingresos: number; cantidad_reservas: number }>();
 
     for (const r of reservas) {
-      const dias = Math.max(
-        1,
-        Math.ceil(
-          (new Date(r.fecha_final).getTime() - new Date(r.fecha_inicio).getTime()) /
-            (1000 * 60 * 60 * 24)
-        )
-      );
+      const dias = daysBetween(r.fecha_inicio, r.fecha_final);
       const ingreso = Number(r.vehiculo.precio) * dias;
       const key = getPeriodoKey(new Date(r.fecha_final), granularity);
 

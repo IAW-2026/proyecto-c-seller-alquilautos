@@ -1,6 +1,6 @@
 export function daysBetween(a: string | Date, b: string | Date): number {
   const d = (new Date(b).getTime() - new Date(a).getTime()) / (1000 * 60 * 60 * 24);
-  return Math.max(1, Math.round(d));
+  return Math.max(1, Math.round(d) + 1);
 }
 
 export function fullName(o: { nombre: string; apellido: string } | null | undefined): string {

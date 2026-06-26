@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
+import { daysBetween } from "@/lib/utils";
 
 export async function GET(req: NextRequest) {
   const { userId, sessionClaims } = await auth();
@@ -35,13 +36,7 @@ export async function GET(req: NextRequest) {
       .map((p) => {
         let ingresos_totales = 0;
         for (const r of p.reservas) {
-          const dias = Math.max(
-            1,
-            Math.ceil(
-              (new Date(r.fecha_final).getTime() - new Date(r.fecha_inicio).getTime()) /
-                (1000 * 60 * 60 * 24)
-            )
-          );
+          const dias = daysBetween(r.fecha_inicio, r.fecha_final);
           ingresos_totales += Number(r.vehiculo.precio) * dias;
         }
 
