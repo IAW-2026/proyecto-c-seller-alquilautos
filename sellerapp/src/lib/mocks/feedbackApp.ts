@@ -6,6 +6,18 @@ async function authHeaders(): Promise<Record<string, string>> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+interface Moderacion {
+  estado: string;
+  fechaCreacion: string;
+}
+
+function getEstadoModeracionActual(moderaciones?: Moderacion[] | null): string | null {
+  if (!moderaciones || moderaciones.length === 0) return null;
+  return moderaciones.reduce((mas_reciente, m) =>
+    new Date(m.fechaCreacion) > new Date(mas_reciente.fechaCreacion) ? m : mas_reciente
+  ).estado;
+}
+
 export interface ResenaItem {
   id_resena: string;
   id_reserva: string;
@@ -145,7 +157,7 @@ export async function getResenaVehiculoReserva(id_reserva: string): Promise<{
         calificacion_estado: resenaVehiculo?.calificacionEstado ?? null,
         calificacion_comodidad: resenaVehiculo?.calificacionComodidad ?? null,
         respuesta: resena?.respuesta?.comentario ?? null,
-        estado_moderacion: resena?.estadoModeracion ?? null,
+        estado_moderacion: getEstadoModeracionActual(resena?.moderaciones),
       },
       error: null,
     };
@@ -199,7 +211,7 @@ export async function getResenaPropietarioReserva(id_reserva: string): Promise<{
         calificacion_comunicacion: resenaPropietario?.calificacionComunicacion ?? null,
         calificacion_puntualidad: resenaPropietario?.calificacionPuntualidad ?? null,
         respuesta: resena?.respuesta?.comentario ?? null,
-        estado_moderacion: resena?.estadoModeracion ?? null,
+        estado_moderacion: getEstadoModeracionActual(resena?.moderaciones),
       },
       error: null,
     };
@@ -255,7 +267,7 @@ export async function getResenaAlquiladorReserva(id_reserva: string): Promise<{
         calificacion_puntualidad: resenaAlquilador?.calificacionPuntualidad ?? null,
         calificacion_devolucion: resenaAlquilador?.calificacionDevolucion ?? null,
         respuesta: resena?.respuesta?.comentario ?? null,
-        estado_moderacion: resena?.estadoModeracion ?? null,
+        estado_moderacion: getEstadoModeracionActual(resena?.moderaciones),
       },
       error: null,
     };
