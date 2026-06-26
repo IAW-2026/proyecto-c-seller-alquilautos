@@ -133,7 +133,6 @@ export interface ActividadRecientePropietario {
 export interface ActividadReciente {
   ultimas_reservas: ActividadRecienteReserva[];
   nuevos_propietarios: ActividadRecientePropietario[];
-  pendientes_vencidos: Omit<ActividadRecienteReserva, "estado">[];
 }
 
 export interface MetricasResponse<T> {

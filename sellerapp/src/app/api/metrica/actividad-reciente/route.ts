@@ -16,10 +16,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const limit = Math.min(parseInt(searchParams.get("limit") ?? "5"), 50);
 
-  const hace24hs = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
   try {
-    const [ultimasReservas, nuevosPropietarios, pendientesVencidos] = await Promise.all([
+    const [ultimasReservas, nuevosPropietarios] = await Promise.all([
       db.reserva.findMany({
         orderBy: { createdAt: "desc" },
         take: limit,
@@ -42,18 +40,6 @@ export async function GET(req: NextRequest) {
           createdAt: true,
         },
       }),
-      db.reserva.findMany({
-        where: {
-          estado: "Pendiente",
-          createdAt: { lt: hace24hs },
-        },
-        select: {
-          id_reserva: true,
-          id_propietario: true,
-          createdAt: true,
-          vehiculo: { select: { marca: true, modelo: true } },
-        },
-      }),
     ]);
 
     const ultimas_reservas = ultimasReservas.map((r) => ({
@@ -64,19 +50,11 @@ export async function GET(req: NextRequest) {
       createdAt: r.createdAt,
     }));
 
-    const pendientes_vencidos = pendientesVencidos.map((r) => ({
-      id_reserva: r.id_reserva,
-      id_propietario: r.id_propietario,
-      vehiculo: `${r.vehiculo.marca} ${r.vehiculo.modelo}`,
-      createdAt: r.createdAt,
-    }));
-
     return NextResponse.json(
       {
         data: {
           ultimas_reservas,
           nuevos_propietarios: nuevosPropietarios,
-          pendientes_vencidos,
         },
         error: null,
       },
